@@ -6,9 +6,11 @@ is proven on chain.
 
 ## Live on GenLayer Studionet
 
-* Halt guardian `0x7368D52E76123e2bcD22bF1702229a581179C2cE`
+* Halt guardian `0xDcA01305c6c7Bebc43a12eBF43D559eCEdCFFE51` (reads the target before judging)
+* Halt guardian, first version `0x7368D52E76123e2bcD22bF1702229a581179C2cE`
 * Vault, the first demo protocol `0xADd274618E50Bb61E622F4268264cc0016472544`
 * Vault, the clean one the watcher run used `0x63c17b0335d6dE0306bEe82c9A065b9D96E92Bd3`
+* Vault, untouched, used for the lying tests `0x6CBbADfD06B64EE30B497fef5306775Dcae392eF`
 
 ## Measured so far
 
@@ -17,6 +19,12 @@ is proven on chain.
   `results/battery.json`.
 * **Alarm to halted: 57, 62, 65, 69, 80 seconds**, median 69 across separate
   runs.
+* **A well written lie does not stop a healthy protocol.** Three claims against
+  an untouched vault, each written to be believed: invented withdrawals with
+  precise figures, a half true claim wrong where it mattered, and a true claim
+  of no violation. All three refused, and the reasons name the contradiction:
+  "the protocol reports a current balance of 0.04 GEN, which contradicts the
+  claim that the balance has already fallen". `liar.log`.
 * **The watcher works.** It read the vault's own ledger, saw an address take 75
   percent of its deposit across three withdrawals, raised the alarm itself, and
   the protocol was halted 62 seconds later. First malicious withdrawal to halt:
@@ -39,10 +47,12 @@ is proven on chain.
 
 ## What is next, in order
 
-1. **Verify the evidence instead of believing it.** The round should read the
-   target's own state with `gl.get_contract_at(target).view()` and compare the
-   claim against it. Everything else rests on this, and the spike proving cross
-   contract reads work is in `spike/`.
+1. ~~Verify the evidence~~ **done**. The guard reads the target's own `status()`
+   before the round and puts it in front of the validators, marked as read
+   rather than supplied. A claim the protocol's own account does not support is
+   refused. This shrinks the lying surface rather than closing it: a lie about
+   something the protocol does not report is still possible, so the integration
+   guide should tell a protocol to report what its red lines are about.
 2. **An appeal.** A wrongly halted owner needs a way to contest with counter
    evidence, decided by a second round, with the alarmist's deposit at stake.
 3. **More than one red line per protocol**, each with its own bounty.

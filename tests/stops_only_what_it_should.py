@@ -62,6 +62,21 @@ class _Nondet:
         return self.answer
 
 
+class _Target:
+    """The protected contract, answering for itself.
+
+    The guard reads this rather than believing the alarm, so the tests need a
+    protocol that can report something, report nothing, or refuse to answer at
+    all.
+    """
+    def __init__(self, gl): self._gl = gl
+    def view(self): return self
+    def status(self):
+        if self._gl.target_answers is None:
+            raise RuntimeError("no such contract")
+        return self._gl.target_answers
+
+
 class _Write:
     def __call__(self, fn): return fn
     def payable(self, fn): return fn
@@ -85,6 +100,8 @@ class _GL:
         self.evm = _Evm()
         self.nondet = _Nondet()
         self.eq_principle = _EqPrinciple()
+        self.target_answers = None
+        self.get_contract_at = lambda address: _Target(self)
 
 
 def load():
@@ -281,6 +298,50 @@ def main():
     check("and a retired guard takes no more alarms",
           not json.loads(c.raise_alarm(VAULT, REAL))["ok"]
           and gl.evm.transfers == [(OTHER, 400)])
+
+    print("\nfunding a retired guard brings it back")
+    gl.evm.transfers.clear()
+    as_(OWNER, 4000)
+    back = json.loads(c.protect(VAULT, LINE))
+    check("it reopens rather than taking the money for nothing",
+          back["ok"] and back["reopened"] is True and back["state"] == "OPEN")
+    check("and nothing was refunded, the bounty was accepted", not gl.evm.transfers)
+
+    print("\nthe guard reads the protocol rather than believing the alarm")
+    gl.target_answers = ('{"held": "50000000000000000", "holders": 2, '
+                         '"withdrawals_blocked": 0}')
+    gl.evm.transfers.clear()
+    as_(OTHER, 600)
+    answers('{"reading": "NOT_CROSSED", "why": "the claim is not supported by what the protocol reports"}')
+    read_back = json.loads(c.raise_alarm(VAULT, REAL))
+    task = " ".join(gl.nondet.last_task.split())
+    check("what the protocol reports is put in front of the validators",
+          "50000000000000000" in task)
+    check("and it is marked as read rather than supplied",
+          "read from it just now rather than supplied by" in task)
+    check("the prompt tells them to check the claim against it first",
+          "Check the claim against what the protocol reports before anything else" in task)
+    check("and to refuse a claim the protocol's account does not support",
+          "answer NOT_CROSSED" in task and "contradicts the protocol" in task)
+    check("what was read is recorded with the alarm, so it can be audited",
+          "50000000000000000" in str(json.loads(c.alarm_at(str(read_back["alarm"])))["reported_by_target"]))
+
+    print("\na protocol that will not answer is not punished for it")
+    gl.target_answers = None
+    as_(OTHER, 600)
+    answers('{"reading": "NOT_CROSSED", "why": "nothing supports this"}')
+    json.loads(c.raise_alarm(VAULT, REAL))
+    silent = " ".join(gl.nondet.last_task.split())
+    check("the round is told plainly that it heard nothing",
+          "The protocol did not answer when it was asked" in silent)
+    check("and the alarm still gets a decision", not c.halted(VAULT))
+
+    print("\nan owner cannot alarm its own protocol")
+    gl.evm.transfers.clear()
+    as_(OWNER, 900)
+    own = json.loads(c.raise_alarm(VAULT, REAL))
+    check("refused", not own["ok"] and "owner" in own["error"])
+    check("and the deposit comes straight back", gl.evm.transfers == [(OWNER, 900)])
 
     print("\nthe question the validators are asked")
     task = " ".join(gl.nondet.last_task.split())

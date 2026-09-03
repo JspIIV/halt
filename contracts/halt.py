@@ -85,6 +85,11 @@ UPHELD = "UPHELD"
 REFUSED = "REFUSED"
 UNDECIDED = "UNDECIDED"
 
+# How much of the protocol's own account of itself is put in front of the
+# validators. Enough to check a claim against, short enough that the round is
+# still about the claim.
+MAX_FACTS = 900
+
 MAX_LINE = 800
 MAX_EVIDENCE = 1200
 MAX_WHY = 300
@@ -191,8 +196,12 @@ def _read_why(raw: str) -> str:
     return _clip(str(raw), MAX_WHY)
 
 
-def _task(line: str, evidence: str, target: str) -> str:
+def _task(line: str, evidence: str, target: str, facts: str) -> str:
     """Built from locals only. Nothing here may touch `self`."""
+    reported = facts if facts else (
+        "The protocol did not answer when it was asked. Nothing about its current "
+        "state is known here, so the claim below stands unsupported by anything "
+        "except itself.")
     return f"""A protocol published a red line. Somebody says it is being crossed
 right now and wants the protocol stopped. Decide one thing only.
 
@@ -201,12 +210,23 @@ THE PROTOCOL: {target}
 THE RED LINE, exactly as its owner published it:
 {line}
 
-THE EVIDENCE OFFERED:
+WHAT THE PROTOCOL ITSELF REPORTS, read from it just now rather than supplied by
+whoever raised the alarm:
+{reported}
+
+THE CLAIM MADE ABOUT IT:
 {evidence}
 
-Answer {CROSSED} only if the evidence shows this red line is being crossed now.
-The evidence has to point at something that has happened or is happening, and
-that something has to be the thing this line forbids.
+Check the claim against what the protocol reports before anything else. **If the
+claim contradicts the protocol's own account, or asserts figures the protocol's
+account does not support, answer {NOT_CROSSED}.** A well written claim about
+things that are not in the record is the failure this check exists to catch, and
+it is the one that reads most convincingly.
+
+Answer {CROSSED} only if the claim is consistent with what the protocol reports
+and together they show this red line being crossed now. The evidence has to
+point at something that has happened or is happening, and that something has to
+be the thing this line forbids.
 
 Answer {NOT_CROSSED} for everything else, and the list is deliberately long:
 evidence about a different protocol, a bug that might be exploitable one day, a
@@ -269,8 +289,20 @@ class Halt(gl.Contract):
                 return refuse("that contract is already protected by " + existing["owner"])
             existing["bounty"] = int(existing["bounty"]) + int(value)
             existing["topped_up_at"] = _now_iso()
+            reopened = False
+            if existing["state"] == RETIRED:
+                # Funding a retired guard brings it back. Taking the money and
+                # leaving it retired would be selling a guard that can never be
+                # raised, which is worse than refusing the payment.
+                existing["state"] = OPEN
+                existing["red_line"] = line
+                existing["reopened_at"] = _now_iso()
+                reopened = True
+            elif existing["state"] == HALTED:
+                return refuse("that guard is up; lower it before funding it again")
             self.guards[address] = json.dumps(existing)
             return json.dumps({"ok": True, "target": address, "topped_up": True,
+                               "reopened": reopened, "state": existing["state"],
                                "bounty": str(existing["bounty"])})
 
         record = {
@@ -318,13 +350,31 @@ class Halt(gl.Contract):
             return refuse("put a deposit behind the alarm; stopping a protocol is not free")
 
         record = json.loads(self.guards[address])
+        if caller == record["owner"]:
+            # An owner stopping its own protocol needs no bounty and no round.
+            # Allowing it would also let a bounty funded by somebody else be
+            # collected by the party who published the line.
+            return refuse("the owner cannot alarm its own protocol")
         if record["state"] != OPEN:
             return refuse("that guard is already up" if record["state"] == HALTED
                           else "that guard has been retired")
 
-        # Into locals before the block opens.
+        # The protocol's own account of itself, read here rather than taken on
+        # trust from the alarm. This is deterministic and happens before the
+        # block opens, because nothing inside the block may read state.
+        #
+        # The convention a protected contract has to meet is one view called
+        # `status` returning a string. A protocol that does not answer is not
+        # punished for it: the round is told so plainly and judges the claim on
+        # its own, which is where this started.
+        facts = ""
+        try:
+            facts = _clip(str(gl.get_contract_at(Address(address)).view().status()), MAX_FACTS)
+        except Exception:
+            facts = ""
+
         line = str(record["red_line"])
-        task = _task(line, shown, address)
+        task = _task(line, shown, address, facts)
 
         def run() -> str:
             try:
@@ -351,6 +401,7 @@ class Halt(gl.Contract):
             "by": caller,
             "evidence": shown,
             "deposit": int(value),
+            "reported_by_target": facts or None,
             "at": _now_iso(),
             "at_epoch": _now_epoch(),
         }
