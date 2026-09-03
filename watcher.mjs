@@ -28,6 +28,8 @@ const HALT = process.argv[2];
 const VAULT = process.argv[3];
 const EVERY = Number(process.argv[4] || 20) * 1000;
 const MAX_ALARMS = Number(process.argv[5] || 1);
+// A bounded run, for recording what the threshold rule does and does not see.
+const MAX_LOOKS = Number(process.argv[6] || 0);
 const KS = String.raw`C:\Users\ysfym\.genlayer\keystores`;
 
 // Which account the watcher runs as. Anyone may watch; in the recorded run it
@@ -133,10 +135,12 @@ const guard = (await look('guard', [VAULT], HALT)).guard;
 log('red line:', String(guard.red_line).slice(0, 100) + '...');
 
 let raised = 0;
+let looks = 0;
 const seen = new Set();
 const journal = [];
 
 while (raised < MAX_ALARMS) {
+  looks += 1;
   try {
     const status = await look('status');
     if (status.halted) { log('the guard is already up; nothing to do'); break; }
@@ -163,14 +167,18 @@ while (raised < MAX_ALARMS) {
   } catch (e) {
     log('look failed:', String(e && (e.details || e.message) || e).slice(0, 120));
   }
+  if (MAX_LOOKS && looks >= MAX_LOOKS) { log('stopping after ' + looks + ' looks'); break; }
   if (raised < MAX_ALARMS) await new Promise(r => setTimeout(r, EVERY));
 }
 
 fs.mkdirSync('results', { recursive: true });
-fs.writeFileSync('results/watcher.json', JSON.stringify({
+// Named per run, because a bounded run recording what the rule does NOT see must
+// not overwrite the record of a run where it saw something.
+const OUT = process.env.WATCHER_OUT || 'results/watcher.json';
+fs.writeFileSync(OUT, JSON.stringify({
   halt: HALT, vault: VAULT, ran_at: new Date().toISOString(),
   window_seconds: WINDOW_SECONDS, share_that_looks_wrong: SHARE_THAT_LOOKS_WRONG,
   note: 'the watcher notices and asks; the deciding stays with the validators',
   alarms: journal,
 }, null, 2));
-log('wrote results/watcher.json');
+log('wrote ' + OUT);

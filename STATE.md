@@ -81,11 +81,53 @@ is proven on chain.
 5. **A real benchmark**: forty or more evidence cases across true, plausible but
    false, prompt injection, stale, and wrong protocol, with a published accuracy
    number.
-6. Multiple red lines per protocol, each with its own bounty.
+6. ~~Multiple red lines per protocol~~ **dropped.** It is a second `TreeMap`
+   and it proves nothing that one line does not already prove.
 7. The study done properly: read the chain directly, take every incident above
    some size, and measure the loss curve minute by minute from the first
    malicious transaction. Nobody has published that.
 8. README, GitHub repo, and the submission.
+
+## The objection this project has to answer
+
+> Why is any of this a language model? Five lines of Solidity and a Chainlink
+> feed hold "no address may take more than half of its deposit in ten minutes"
+> for a fraction of the cost.
+
+Correct, and that objection kills the project if the demo stops at a threshold.
+So it does not. `coordination.mjs` runs a line with no implementation:
+
+> Addresses acting together are one actor, and no actor may take more than a
+> third of what the vault holds in ten minutes, however many addresses it
+> spreads itself across.
+
+Two addresses each take a fifth of the vault, forty percent of their own
+deposits, both inside every per address limit. Our own threshold watcher was
+pointed at that exact state and reported `nothing out of line` three times over.
+The round read the deposit and withdrawal timing out of the vault's ledger,
+decided the two addresses were one actor, applied the ordinary number to that
+actor, and halted the protocol in 87 seconds.
+
+Written up with the transcripts in
+[results/the_line_code_cannot_hold.md](results/the_line_code_cannot_hold.md).
+This is the centre of the submission. Everything else is machinery around it.
+
+## The attack we have not closed
+
+A halt is public the moment it lands. So an owner could publish a hair trigger
+red line on its own protocol, arrange for it to be crossed, and take a position
+against its own token before the halt becomes visible.
+
+Three things narrow it and none of them shut it. The line is published when the
+protection is opened, so a deliberately brittle one is visible to everybody
+before it can be used. The owner cannot raise an alarm on its own protocol. The
+minimum hold means the stop cannot be flicked on and off around a trade.
+
+The honest answer is that this is not a power the guard hands anybody. An owner
+who wants to freeze its own protocol to move a market already has an admin
+pause and does not need permission. What the guard changes is the other
+direction: it makes stopping possible for a protocol that has *no* admin key,
+and it makes every stop carry a published reason, a deposit, and an appeal.
 
 ## Notes for whoever picks this up
 
