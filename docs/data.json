@@ -1,90 +1,245 @@
 {
-  "halt": "0x7368D52E76123e2bcD22bF1702229a581179C2cE",
-  "vault": "0x63c17b0335d6dE0306bEe82c9A065b9D96E92Bd3",
+  "halt": "0xD3fa0Eb2398a7bfF453fE9e4C3e5Ebaf2e571C23",
+  "vault": "0x93f0A8e8bD0A6174eCB0dF71BC6605Abf3c605dd",
   "network": "GenLayer Studionet",
-  "exported_at": "2026-09-03T17:24:20.807Z",
+  "exported_at": "2026-09-03T18:34:57.654Z",
   "size": {
-    "protected": 6,
+    "protected": 4,
     "guard_states": {
-      "OPEN": 1,
-      "HALTED": 5
+      "OPEN": 3,
+      "HALTED": 1
     },
-    "alarms": 21,
+    "alarms": 4,
     "outcomes": {
-      "REFUSED": 15,
-      "UPHELD": 6
+      "REFUSED": 2,
+      "OVERTURNED": 1,
+      "UPHELD": 1
     },
     "note": "anyone may raise a guard and only the owner may lower it, because an attacker sends transactions faster than a person does"
   },
   "guard": {
-    "target": "0x63c17b0335d6de0306bee82c9a065b9d96e92bd3",
+    "target": "0x93f0a8e8bd0a6174ecb0df71bc6605abf3c605dd",
     "owner": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
     "red_line": "No address may withdraw more than half of what it deposited into this vault within ten minutes. A pattern of repeated withdrawals that empties a holder position faster than that is forbidden and the vault must stop.",
     "bounty": 0,
-    "state": "HALTED",
-    "raised_at": "2026-09-03T17:21:48.361403+00:00",
-    "raised_at_epoch": 1788456108,
-    "raised_by": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
-    "alarms_upheld": 1,
+    "state": "OPEN",
+    "raised_at": "2026-09-03T17:57:36.851970+00:00",
+    "raised_at_epoch": 1788458256,
+    "raised_by": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
+    "alarms_upheld": 0,
     "alarms_refused": 0,
-    "opened_at": "2026-09-03T17:16:05.513535+00:00"
+    "alarms_overturned": 1,
+    "opened_at": "2026-09-03T17:55:31.501882+00:00",
+    "overturned_at": "2026-09-03T18:00:04.328588+00:00"
   },
   "alarms": [
     {
-      "index": 20,
-      "target": "0x63c17b0335d6de0306bee82c9a065b9d96e92bd3",
-      "by": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
-      "evidence": "Read from the vault's own ledger just now. Address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c deposited 0.04 GEN into this vault and has withdrawn 0.03 GEN of that within the last ten minutes, across 3 withdrawals. That is 75 percent of what it deposited, inside the window the published line names. Total withdrawn by this address all time: 0.03 GEN. The published line: No address may withdraw more than half of what it deposited into this vault within ten minutes. A pattern of repeated withdrawals that empties a holder position faster than that is forbidden and the vault must stop.",
+      "index": 1,
+      "target": "0x93f0a8e8bd0a6174ecb0df71bc6605abf3c605dd",
+      "by": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
+      "evidence": "Address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c deposited 0.04 GEN into this vault and has now withdrawn 0.03 GEN of it, which is three quarters of its position, inside the ten minute window the published line names.",
       "deposit": 2000000000000000,
-      "at": "2026-09-03T17:21:48.361403+00:00",
-      "at_epoch": 1788456108,
-      "why": "The evidence says address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c deposited 0.04 GEN and withdrew 0.03 GEN within the last ten minutes across 3 withdrawals, which is 75% and therefore more than half within the forbidden window.",
-      "outcome": "UPHELD",
+      "reported_by_target": "{\"guardian\": \"0xd3fa0eb2398a7bff453fe9e4c3e5ebaf2e571c23\", \"halted\": false, \"held\": \"10000000000000000\", \"positions\": [{\"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"holds\": \"10000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"30000000000000000\"}], \"recent\": [{\"kind\": \"withdraw\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"30000000000000000\", \"at\": \"2026-09-03T17:56:53.553365+00:00\"}, {\"kind\": \"deposit\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"40000000000000000\", \"at\": \"2026-09-03T17:56:13.153043+00:00\"}], \"withdrawals_blocked\": 0, \"note\": \"the halted flag is read from the guardian in this call; the vault stores no copy of it, so nothing here can go stale\"}",
+      "at": "2026-09-03T17:57:36.851970+00:00",
+      "at_epoch": 1788458256,
+      "why": "The protocol's own record confirms 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c deposited 0.04 GEN and withdrew 0.03 GEN (75%, more than half) within roughly 40 seconds, matching the claim and crossing the published red line.",
+      "outcome": "OVERTURNED",
       "paid": 12000000000000000,
-      "paid_to": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258"
+      "paid_to": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
+      "appealed": true,
+      "appeal_reading": "WRONGLY_RAISED",
+      "appeal_why": "The red line forbids a *pattern of repeated withdrawals* that empties a position faster than the half-in-ten-minutes rate, but the protocol reports exactly one withdrawal transaction, which is not a pattern of repeated withdrawals and therefore does not match what the red line actually forbids.",
+      "appeal_answer": "The withdrawal was a single transaction, not a pattern of repeated withdrawals emptying a position, and the depositor is the vault operator moving its own funds. The line forbids a pattern of repeated withdrawals; one withdrawal by the only depositor is not that.",
+      "appealed_at": "2026-09-03T18:00:04.328588+00:00"
     }
   ],
   "vault_status": {
-    "guardian": "0x7368d52e76123e2bcd22bf1702229a581179c2ce",
-    "halted": true,
-    "holders": 1,
+    "guardian": "0xd3fa0eb2398a7bff453fe9e4c3e5ebaf2e571c23",
+    "halted": false,
     "held": "10000000000000000",
-    "withdrawals_blocked": 1,
+    "positions": [
+      {
+        "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
+        "holds": "10000000000000000",
+        "deposited": "40000000000000000",
+        "withdrawn": "30000000000000000"
+      }
+    ],
+    "recent": [
+      {
+        "kind": "withdraw",
+        "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
+        "amount": "30000000000000000",
+        "at": "2026-09-03T17:56:53.553365+00:00"
+      },
+      {
+        "kind": "deposit",
+        "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
+        "amount": "40000000000000000",
+        "at": "2026-09-03T17:56:13.153043+00:00"
+      }
+    ],
+    "withdrawals_blocked": 0,
     "note": "the halted flag is read from the guardian in this call; the vault stores no copy of it, so nothing here can go stale"
   },
   "ledger": [
     {
-      "kind": "blocked",
-      "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
-      "wanted": "10000000000000000",
-      "at": "2026-09-03T17:23:07.238907+00:00"
-    },
-    {
       "kind": "withdraw",
       "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
-      "amount": 10000000000000000,
-      "at": "2026-09-03T17:21:24.244899+00:00"
-    },
-    {
-      "kind": "withdraw",
-      "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
-      "amount": 10000000000000000,
-      "at": "2026-09-03T17:20:44.772571+00:00"
-    },
-    {
-      "kind": "withdraw",
-      "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
-      "amount": 10000000000000000,
-      "at": "2026-09-03T17:20:05.340917+00:00"
+      "amount": 30000000000000000,
+      "at": "2026-09-03T17:56:53.553365+00:00"
     },
     {
       "kind": "deposit",
       "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
       "amount": 40000000000000000,
-      "at": "2026-09-03T17:18:58.732018+00:00"
+      "at": "2026-09-03T17:56:13.153043+00:00"
     }
   ],
+  "coordination": {
+    "vault": "0x8Cf74DC48af18D18eD7A708eD37151e6aE2DB9E2",
+    "guard": {
+      "target": "0x8cf74dc48af18d18ed7a708ed37151e6ae2db9e2",
+      "owner": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
+      "red_line": "Addresses acting together are one actor in this vault, and no actor may take out more than a third of everything the vault holds inside ten minutes, however many separate addresses it spreads itself across. Positions funded at the same time and withdrawn in lockstep, in the same order, are to be read as one actor rather than as several.",
+      "bounty": 0,
+      "state": "HALTED",
+      "raised_at": "2026-09-03T18:23:31.852044+00:00",
+      "raised_at_epoch": 1788459811,
+      "raised_by": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
+      "alarms_upheld": 1,
+      "alarms_refused": 0,
+      "alarms_overturned": 0,
+      "opened_at": "2026-09-03T18:20:10.475572+00:00"
+    },
+    "alarms": [
+      {
+        "index": 3,
+        "target": "0x8cf74dc48af18d18ed7a708ed37151e6ae2db9e2",
+        "by": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
+        "evidence": "Two addresses are taking this vault apart between them while each one stays inside every per address limit. The vault reports both positions funded with 40000000000000000 wei about a minute apart, and both have now withdrawn 16000000000000000 wei, about a minute apart and in the same order they were funded. That is 32000000000000000 wei out of the 80000000000000000 wei the vault held, forty percent of it, inside the same ten minutes. Read as two addresses this is a fifth each and nothing is wrong. Read as one actor using two addresses, which is what the timing shows, it is forty percent and the line is crossed.",
+        "deposit": 2000000000000000,
+        "reported_by_target": "{\"guardian\": \"0xd3fa0eb2398a7bff453fe9e4c3e5ebaf2e571c23\", \"halted\": false, \"held\": \"48000000000000000\", \"positions\": [{\"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\"}, {\"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\"}], \"recent\": [{\"kind\": \"withdraw\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-03T18:22:50.715516+00:00\"}, {\"kind\": \"withdraw\", \"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-03T18:22:10.827875+00:00\"}, {\"kind\": \"deposit\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"40000000000000000\", \"at\": \"2026-09-03T18:21:31.363088+00:00\"}, {\"kind\": \"deposit\",  [...]",
+        "at": "2026-09-03T18:23:31.852044+00:00",
+        "at_epoch": 1788459811,
+        "why": "The protocol's own records show two addresses funded simultaneously and withdrawing in lockstep within ten minutes, totaling 40% of the vault's holdings, matching the red line's definition of a single actor.",
+        "outcome": "UPHELD",
+        "paid": 12000000000000000,
+        "paid_to": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c"
+      }
+    ],
+    "status": {
+      "guardian": "0xd3fa0eb2398a7bff453fe9e4c3e5ebaf2e571c23",
+      "halted": true,
+      "held": "48000000000000000",
+      "positions": [
+        {
+          "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
+          "holds": "24000000000000000",
+          "deposited": "40000000000000000",
+          "withdrawn": "16000000000000000"
+        },
+        {
+          "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
+          "holds": "24000000000000000",
+          "deposited": "40000000000000000",
+          "withdrawn": "16000000000000000"
+        }
+      ],
+      "recent": [
+        {
+          "kind": "withdraw",
+          "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
+          "amount": "16000000000000000",
+          "at": "2026-09-03T18:22:50.715516+00:00"
+        },
+        {
+          "kind": "withdraw",
+          "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
+          "amount": "16000000000000000",
+          "at": "2026-09-03T18:22:10.827875+00:00"
+        },
+        {
+          "kind": "deposit",
+          "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
+          "amount": "40000000000000000",
+          "at": "2026-09-03T18:21:31.363088+00:00"
+        },
+        {
+          "kind": "deposit",
+          "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
+          "amount": "40000000000000000",
+          "at": "2026-09-03T18:20:50.738816+00:00"
+        }
+      ],
+      "withdrawals_blocked": 0,
+      "note": "the halted flag is read from the guardian in this call; the vault stores no copy of it, so nothing here can go stale"
+    },
+    "threshold": {
+      "vault": "0xCdb304fe191040451C108f8c7F97Da024d5FE37f",
+      "status": {
+        "guardian": "0xd3fa0eb2398a7bff453fe9e4c3e5ebaf2e571c23",
+        "halted": false,
+        "held": "48000000000000000",
+        "positions": [
+          {
+            "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
+            "holds": "24000000000000000",
+            "deposited": "40000000000000000",
+            "withdrawn": "16000000000000000"
+          },
+          {
+            "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
+            "holds": "24000000000000000",
+            "deposited": "40000000000000000",
+            "withdrawn": "16000000000000000"
+          }
+        ],
+        "recent": [
+          {
+            "kind": "withdraw",
+            "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
+            "amount": "16000000000000000",
+            "at": "2026-09-03T18:11:37.780487+00:00"
+          },
+          {
+            "kind": "withdraw",
+            "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
+            "amount": "16000000000000000",
+            "at": "2026-09-03T18:10:58.086855+00:00"
+          },
+          {
+            "kind": "deposit",
+            "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
+            "amount": "40000000000000000",
+            "at": "2026-09-03T18:10:18.171358+00:00"
+          },
+          {
+            "kind": "deposit",
+            "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
+            "amount": "40000000000000000",
+            "at": "2026-09-03T18:09:38.074699+00:00"
+          }
+        ],
+        "withdrawals_blocked": 0,
+        "note": "the halted flag is read from the guardian in this call; the vault stores no copy of it, so nothing here can go stale"
+      },
+      "rule": {
+        "window_seconds": 600,
+        "share_that_looks_wrong": 0.5
+      },
+      "alarms_raised": 0
+    },
+    "seconds": 87,
+    "first_attempt": {
+      "outcome": "REFUSED",
+      "why": "protocol data shows total withdrawn 32e15 of 48e15 (approximately 66%), not 40%, and the vault is not drained, so the claim contradicts the evidence",
+      "vault": "0xCdb304fe191040451C108f8c7F97Da024d5FE37f",
+      "kept_because": "the claim was true in substance and lost its deposit for a loose figure, which is the standard the deposit is buying"
+    }
+  },
   "battery": {
+    "halt": "0x7368D52E76123e2bcD22bF1702229a581179C2cE",
     "summary": {
       "false_alarms": 10,
       "refused": 10,

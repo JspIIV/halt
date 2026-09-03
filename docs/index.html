@@ -54,6 +54,16 @@
   .note { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--hold);
           border-radius: 8px; padding: 18px 22px; color: var(--dim); font-size: 15px; }
   .note strong { color: var(--text); }
+  .pair { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; margin: 18px 0; }
+  @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } }
+  .pair .note { margin: 0; }
+  .pair .note b { display: block; color: var(--text); margin-bottom: 8px; }
+  .blind { border-color: var(--line); }
+  .saw { border-color: #2f6b46; }
+  .ledger { font: 13px ui-monospace, Menlo, Consolas, monospace; color: var(--dim);
+            background: #0e0f11; border: 1px solid var(--line); border-radius: 8px;
+            padding: 14px 16px; overflow-x: auto; white-space: pre; }
+  .provenance { color: var(--faint); font-size: 13px; margin-top: 10px; }
   footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line);
            color: var(--faint); font-size: 14px; }
 </style>
@@ -68,6 +78,16 @@
   the protocol stops in that same transaction.</p>
 
   <div id="live"></div>
+
+  <h2>A red line with no implementation</h2>
+  <p>The obvious version of this project is a threshold, and a threshold belongs
+  in Solidity. So the line below is the other kind. There is still a number in
+  it. What no contract can work out is <b>who the number applies to</b>, because
+  an actor is not a field in any ledger.</p>
+  <div class="line" id="coordline"></div>
+  <div class="ledger" id="coordledger"></div>
+  <div class="pair" id="coordpair"></div>
+  <div id="coordfirst"></div>
 
   <h2>Measured, not asserted</h2>
   <div class="stats" id="stats"></div>
@@ -130,6 +150,49 @@ fetch("./data.json").then(r => r.json()).then(d => {
     (d.vault_status ? " · " + gen(d.vault_status.held) + " GEN held · " +
       d.vault_status.withdrawals_blocked + " withdrawals blocked" : "") + "</span></div>";
 
+  const co = d.coordination;
+  if (co) {
+    document.getElementById("coordline").textContent = (co.guard && co.guard.red_line) || "";
+
+    const rows = (co.status.recent || []).slice().reverse().map(e =>
+      "  " + e.at.slice(11, 19) + "  " + e.kind.padEnd(9) +
+      String(e.who).slice(0, 10) + "…  " + gen(e.amount).padStart(6) + " GEN");
+    const pos = (co.status.positions || []).map(p =>
+      "  " + String(p.who).slice(0, 10) + "…  put in " + gen(p.deposited) +
+      "   took out " + gen(p.withdrawn) +
+      "   = " + Math.round(Number(p.withdrawn) / Number(p.deposited) * 100) + "% of its own deposit");
+    document.getElementById("coordledger").textContent =
+      "what the vault reported\n" + pos.join("\n") + "\n\n" + rows.join("\n");
+
+    const upheld = (co.alarms || []).filter(a => a.outcome === "UPHELD").pop();
+    const rule = co.threshold && co.threshold.rule;
+    document.getElementById("coordpair").innerHTML =
+      '<div class="note blind"><b>What the threshold watcher saw</b>' +
+      "<p>Nothing. The same agent that catches the simple case was pointed at an " +
+      "identical vault and left running. It raised " +
+      ((co.threshold && co.threshold.alarms_raised === 0) ? "no alarms" : "nothing") + "." +
+      (rule ? " Its rule is one address against itself: more than " +
+        Math.round(rule.share_that_looks_wrong * 100) + "% of that address's own deposit inside " +
+        (rule.window_seconds / 60) + " minutes. Each of these is at 40%." : "") +
+      "</p><p style='margin-bottom:0'>It is not badly tuned. Lower it and it fires on honest " +
+      "users. The blindness is structural: what is wrong is between two addresses, and " +
+      "arithmetic can only compare one address with itself.</p></div>" +
+      '<div class="note saw"><b>What the validators saw</b>' +
+      (upheld ? "<p>" + esc(upheld.why) + "</p>" : "") +
+      "<p style='margin-bottom:0'>Upheld" + (co.seconds ? " and the protocol halted " +
+      co.seconds + " seconds after the alarm was sent" : "") + ". They did not apply a larger " +
+      "threshold. They decided from the timing that two addresses were one actor, then applied " +
+      "the ordinary number to that actor.</p></div>";
+
+    const first = co.first_attempt;
+    document.getElementById("coordfirst").innerHTML = first ? '<div class="note">' +
+      "<b>The first version of this alarm was refused, and it is kept in the record.</b>" +
+      '<p class="why" style="margin:8px 0 0">' + esc(first.why) + "</p>" +
+      "<p style='margin-bottom:0'>It called forty percent of deposits forty percent of " +
+      "holdings. The claim was true and the figure was loose, and loose was enough to lose " +
+      "the deposit. That is the standard the deposit is buying.</p></div>" : "";
+  }
+
   const b = d.battery && d.battery.summary;
   const cards = [];
   if (b) {
@@ -139,9 +202,13 @@ fetch("./data.json").then(r => r.json()).then(d => {
     if (b.fastest !== null)
       cards.push(['<b>' + b.fastest + "s</b><span>fastest halt measured</span>", ""]);
   }
-  cards.push(['<b>' + (d.size ? d.size.alarms : 0) + "</b><span>alarms on chain</span>", ""]);
+  cards.push(['<b>' + (d.size ? d.size.alarms : 0) + "</b><span>alarms on this deployment</span>", ""]);
   document.getElementById("stats").innerHTML =
-    cards.map(([html, cls]) => '<div class="stat ' + cls + '">' + html + "</div>").join("");
+    cards.map(([html, cls]) => '<div class="stat ' + cls + '">' + html + "</div>").join("") +
+    (d.battery && d.battery.halt && d.battery.halt.toLowerCase() !== String(d.halt).toLowerCase()
+      ? '<p class="provenance">The refusal and timing figures were measured against an earlier ' +
+        'deployment of the same guardian, at ' + esc(String(d.battery.halt)) +
+        '. Every transaction behind them is in results/battery.json.</p>' : "");
 
   document.getElementById("alarms").innerHTML = (d.alarms || []).slice().reverse().map(a => `
     <div class="row">
@@ -151,7 +218,8 @@ fetch("./data.json").then(r => r.json()).then(d => {
         <span>by ${esc(String(a.by).slice(0, 10))}…</span>
         <span>${a.paid ? gen(a.paid) + " GEN to " + String(a.paid_to).slice(0, 10) + "…" : "nothing paid"}</span>
       </div>
-      ${a.why ? '<p class="why">' + esc(a.why) + "</p>" : ""}
+      ${a.why ? '<p class="why">' + (a.appeal_why ? "the round said: " : "") + esc(a.why) + "</p>" : ""}
+      ${a.appeal_why ? '<p class="why">the appeal said: ' + esc(a.appeal_why) + "</p>" : ""}
       <div class="ev">${esc(String(a.evidence).slice(0, 260))}</div>
     </div>`).join("") || '<div class="row"><span class="head">no alarms yet</span></div>';
 
