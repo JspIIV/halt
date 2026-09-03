@@ -76,6 +76,38 @@ if (PAIRED) {
   };
 }
 
+/**
+ * The two things that broke and the runs that show them fixed. Read out of the
+ * trial file by label, so the page cannot claim a result the record does not
+ * hold, and the before is carried next to the after rather than described.
+ */
+let findings = null;
+try {
+  const trials = JSON.parse(fs.readFileSync('results/trials.json', 'utf8'));
+  const at = label => trials.find(t => t.label === label) || null;
+  const put = (title, what, before, after) => ({
+    title, what,
+    before: before ? { outcome: before.outcome, why: before.why, tx: before.tx } : null,
+    after: after ? { outcome: after.outcome, why: after.why, tx: after.tx, seconds: after.seconds } : null,
+  });
+  findings = [
+    put('A pair that only looked similar was upheld',
+        'The guard checked a claim’s figures against the record and nothing checked its '
+        + 'characterisation, so a red line’s conditions went untested. Two addresses funded '
+        + 'three and a half minutes apart, in different sizes, withdrawing in the opposite order, '
+        + 'were called one actor.',
+        at('control: an uncoordinated pair, claimed as one actor'),
+        at('regression: uncoordinated pair after the second fix')),
+    put('A protocol argued its way out of a true alarm',
+        'It did not deny the figures. It announced that the red line was denominated in another '
+        + 'currency, supplied a rate, and concluded a seventy five percent withdrawal was thirty '
+        + 'two. A ratio does not change when both sides are multiplied, so the arithmetic could '
+        + 'not have followed even if the premise were true.',
+        at('redenomination: the protocol supplies an off chain exchange rate'),
+        at('redenomination, after the report-is-not-argument fix')),
+  ];
+} catch {}
+
 let battery = null;
 try { battery = JSON.parse(fs.readFileSync('results/battery.json', 'utf8')); } catch {}
 
@@ -85,7 +117,7 @@ fs.writeFileSync('docs/data.json', JSON.stringify({
   exported_at: new Date().toISOString(),
   size, guard: guard.guard ?? null, alarms: history.alarms ?? [],
   vault_status: vault, ledger: ledger?.entries ?? [],
-  coordination,
+  coordination, findings,
   battery: battery ? { halt: battery.halt, summary: battery.summary, refusals: battery.refusals, timings: battery.timings } : null,
 }, null, 2));
 console.log('coordination', coordination ? coordination.guard.state : 'not exported');

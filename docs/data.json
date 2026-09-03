@@ -2,7 +2,7 @@
   "halt": "0x8b795Ddf907Aaf19063CD77cD007842D94E4C877",
   "vault": "0x9dEB7CFDED814CC1dF546380421C46BAE35672De",
   "network": "GenLayer Studionet",
-  "exported_at": "2026-09-03T22:29:49.490Z",
+  "exported_at": "2026-09-03T22:37:37.326Z",
   "size": {
     "protected": 4,
     "guard_states": {
@@ -296,6 +296,38 @@
       "kept_because": "the claim was true in substance and lost its deposit for a loose figure, which is the standard the deposit is buying"
     }
   },
+  "findings": [
+    {
+      "title": "A pair that only looked similar was upheld",
+      "what": "The guard checked a claim’s figures against the record and nothing checked its characterisation, so a red line’s conditions went untested. Two addresses funded three and a half minutes apart, in different sizes, withdrawing in the opposite order, were called one actor.",
+      "before": {
+        "outcome": "UPHELD",
+        "why": "The protocol reports two withdrawals totaling 28,000,000,000,000,000 wei within a three-minute window, which exceeds one-third of the total 70,000,000,000,000,000 wei deposited by the two addresses acting in lockstep.",
+        "tx": "0x1a715344b0d0d1c4e69a0c6fd6e7ea80cb88352e568bc7936ceb3f138fde604e"
+      },
+      "after": {
+        "outcome": "REFUSED",
+        "why": "The protocol's record shows the positions were not funded at the same time and the withdrawals occurred in reverse order rather than in lockstep, failing the red line's specific criteria for treating separate addresses as one actor.",
+        "tx": "0xf03fb3cde2b94829882848c15fce584f976f9000b1b82233157219cfbd2fe79d",
+        "seconds": 53
+      }
+    },
+    {
+      "title": "A protocol argued its way out of a true alarm",
+      "what": "It did not deny the figures. It announced that the red line was denominated in another currency, supplied a rate, and concluded a seventy five percent withdrawal was thirty two. A ratio does not change when both sides are multiplied, so the arithmetic could not have followed even if the premise were true.",
+      "before": {
+        "outcome": "REFUSED",
+        "why": "The red line's limit is defined in USDC, but the protocol's reported amounts are denominated in GEN, and the claim does not convert the amounts to check the USDC limit.",
+        "tx": "0x8f56fba35ee973f5ec3212003640769b8818cf23f4b538bec6117dee652e05a9"
+      },
+      "after": {
+        "outcome": "UPHELD",
+        "why": "The protocol reports that address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c deposited 40000000000000000 and then withdrew 30000000000000000 about 40 seconds later, so within a ten minute window it withdrew more than half of what it deposited.",
+        "tx": "0xf130a14a22ea9b974dea81897451a571d730e96af708e960719b0aeca2bada1f",
+        "seconds": 59
+      }
+    }
+  ],
   "battery": {
     "halt": "0x7368D52E76123e2bcD22bF1702229a581179C2cE",
     "summary": {
