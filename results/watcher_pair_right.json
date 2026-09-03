@@ -1,0 +1,22 @@
+{
+  "halt": "0x36dCbd955C9B5F0f029b137A2e73E172917c9509",
+  "vault": "0x9dEB7CFDED814CC1dF546380421C46BAE35672De",
+  "ran_at": "2026-09-03T21:48:50.303Z",
+  "window_seconds": 600,
+  "share_that_looks_wrong": 0.5,
+  "note": "the watcher notices and asks; the deciding stays with the validators",
+  "alarms": [
+    {
+      "at": "2026-09-03T21:48:50.303Z",
+      "kind": "pair",
+      "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c+0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
+      "funded_apart": 40,
+      "pulled_apart": 40,
+      "same_order": true,
+      "outcome": "UPHELD",
+      "seconds": 60,
+      "tx": "0xf54ab853f4e8a3417c24b8eb9e5a646b19bf83739e2e11f8edd2ef6ed2b83e2a",
+      "why": "The protocol's own record shows two addresses withdrawing 40% of the vault's holdings in lockstep within ten minutes, meeting the red line's conditions for being treated as one actor."
+    }
+  ]
+}

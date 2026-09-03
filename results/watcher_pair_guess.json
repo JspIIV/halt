@@ -1,0 +1,22 @@
+{
+  "halt": "0x36dCbd955C9B5F0f029b137A2e73E172917c9509",
+  "vault": "0xf712F47089a59c3671EB35AE91Ed1a4428947944",
+  "ran_at": "2026-09-03T21:55:26.574Z",
+  "window_seconds": 600,
+  "share_that_looks_wrong": 0.5,
+  "note": "the watcher notices and asks; the deciding stays with the validators",
+  "alarms": [
+    {
+      "at": "2026-09-03T21:55:26.573Z",
+      "kind": "pair",
+      "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c+0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
+      "funded_apart": 100,
+      "pulled_apart": 100,
+      "same_order": false,
+      "outcome": "REFUSED",
+      "seconds": 55,
+      "tx": "0x530f15d1c0935d0b3f902a7cdfcc1b6da761b753d2fff0d208f6f722820b8e63",
+      "why": "The protocol record supports 0.07 GEN deposited and 0.028 GEN withdrawn within ten minutes, but it does not support the red line’s required single-actor reading because the deposits were 100 seconds apart and the withdrawals were in the opposite order, contradicting 'funded at the same time and with [...]"
+    }
+  ]
+}

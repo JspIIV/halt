@@ -147,6 +147,16 @@
   <div id="coordfirst"></div>
   <details id="coordledger"></details>
 
+  <h2>Nobody was watching either of these</h2>
+  <p>The case above was raised by a person. So the watching agent was given a
+  second look, and it was kept deliberately blunt: two addresses funded near each
+  other, withdrawing near each other, more than a third of the vault between
+  them. That is a coincidence, not a finding. Two strangers using a quiet vault
+  look exactly like it, and the agent says so in the evidence it writes. Then it
+  was pointed at two vaults it had never seen, with nobody in the loop.</p>
+  <div class="pair" id="watched"></div>
+  <p class="reading" id="watchedreading"></p>
+
   <h2>The same guard, running right now</h2>
   <div id="live"></div>
 
@@ -283,9 +293,9 @@ fetch("./data.json").then(r => r.json()).then(d => {
     const upheld = (co.alarms || []).filter(a => a.outcome === "UPHELD").pop();
     const rule = co.threshold && co.threshold.rule;
     document.getElementById("coordpair").innerHTML =
-      '<div class="note blind"><b>What the threshold bot saw</b>'
-      + "<p>Nothing. The same agent that catches the simple case was pointed at an identical "
-      + "vault and left running."
+      '<div class="note blind"><b>What a per address rule saw</b>'
+      + "<p>Nothing, and there was nothing for it to see. The watching agent's arithmetic rule "
+      + "was pointed at an identical vault and left running."
       + (rule ? " Its rule compares one address with itself: more than "
         + Math.round(rule.share_that_looks_wrong * 100)
         + " percent of that address's own deposit inside "
@@ -317,6 +327,29 @@ fetch("./data.json").then(r => r.json()).then(d => {
     document.getElementById("coordledger").innerHTML =
       "<summary>The same thing as the protocol itself reported it</summary><pre>"
       + esc(dump.join(NL)) + "</pre>";
+  }
+
+  /* The two runs with nobody in the loop, kept side by side because the one it
+     got wrong is the one that shows what the network is for. */
+  if (co && (co.watched || []).length) {
+    document.getElementById("watched").innerHTML = co.watched.map(run => {
+      const won = run.outcome === "UPHELD";
+      return '<div class="note ' + (won ? "saw" : "blind") + '"><b>It flagged '
+        + esc(run.note) + "</b><p>Two positions funded " + run.funded_apart
+        + " seconds apart, withdrawn " + run.pulled_apart + " seconds apart, "
+        + (run.same_order ? "in the same order they were funded"
+                          : "in the opposite order to the funding")
+        + ". The agent reported the timings and said the reading was not its to make.</p>"
+        + "<p style='margin-bottom:0'>" + esc(String(run.why || "")) + "</p>"
+        + '<span class="verdict">' + esc(run.outcome) + " · " + run.seconds + "s"
+        + (won ? " · PROTOCOL HALTED" : " · DEPOSIT LOST") + "</span></div>";
+    }).join("");
+    document.getElementById("watchedreading").textContent =
+      "Same agent, same rule, same evidence template, no human in either run. It was right "
+      + "once and wrong once, and it paid for the wrong one. That is the division of labour "
+      + "rather than a hole in it: the agent is allowed to be cheap and fallible because "
+      + "deciding is not its job, and an agent that decided by itself would be a pause button "
+      + "owned by whoever wrote the fastest bot.";
   }
 
   /* The economics, taken from the alarm above rather than described. Studionet
@@ -355,7 +388,12 @@ fetch("./data.json").then(r => r.json()).then(d => {
     if (b.fastest !== null)
       cards.push(["<b>" + b.fastest + "s</b><span>fastest halt measured</span>", "", elsewhere]);
   }
-  if (co && co.seconds)
+  const autonomous = co && (co.watched || []).find(run => run.outcome === "UPHELD");
+  if (autonomous)
+    cards.push(["<b>" + autonomous.seconds + "s</b><span>from an agent noticing to halted</span>",
+                "stop", "Nobody in the loop: the agent read the ledger, asked, and the network "
+                + "answered."]);
+  else if (co && co.seconds)
     cards.push(["<b>" + co.seconds + "s</b><span>to halt the coordinated pair</span>", "stop",
                 "The case above, on this deployment."]);
   document.getElementById("stats").innerHTML = cards.map(function (card) {

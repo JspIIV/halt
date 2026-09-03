@@ -87,6 +87,77 @@ recorded scenarios follow it. **State the numerator, the denominator and the
 remainder, and let nothing be inferred.** An alarm has to be right about the
 figures, not merely right about the story, and a loose figure costs the deposit.
 
+## 4. Can the bot ask about a pair without pretending to decide?
+
+Until now the watcher only compared an address with itself, so the case at the
+centre of this project was raised by a person. In a track about autonomous
+protocols that is the gap, and closing it badly would have been worse than
+leaving it open: a tight timing rule would just be the red line rewritten in
+arithmetic, which is the thing this whole project says cannot be done.
+
+So the second look is deliberately loose. Two addresses funded within five
+minutes of each other, withdrawing within five minutes of each other, more than
+a third of the vault between them. That is a coincidence and nothing more. Two
+strangers using a quiet vault look exactly like it. The watcher says so in the
+evidence it writes, in as many words: this is a reading rather than a fact, so
+it is put to you rather than assumed.
+
+It was then pointed at two vaults it had never seen, with no human in the loop.
+
+**The real thing.** Equal positions, funded 40 seconds apart, withdrawn 40
+seconds apart in the same order.
+
+    21:47:49 COINCIDENCE: 0x0b57877e and 0x80519c53 funded 40s apart,
+             withdrew 40s apart, 40% between them. Asking the network.
+    21:48:50 answer: UPHELD in 60s
+
+> The protocol's own record shows two addresses withdrawing 40% of the vault's
+> holdings in lockstep within ten minutes, meeting the red line's conditions for
+> being treated as one actor.
+
+`0xf54ab853f4e8a3417c24b8eb9e5a646b19bf83739e2e11f8edd2ef6ed2b83e2a`
+
+**The coincidence.** Unequal positions, funded 100 seconds apart, withdrawn 100
+seconds apart in the opposite order. Inside the watcher's window, so it asked.
+
+    21:54:31 COINCIDENCE: 0x80519c53 and 0x0b57877e funded 100s apart,
+             withdrew 100s apart, 40% between them. Asking the network.
+    21:55:26 answer: REFUSED in 55s
+    21:55:26 the deposit is gone, and that is the right price for a guess.
+
+> The protocol record supports 0.07 GEN deposited and 0.028 GEN withdrawn within
+> ten minutes, but it does not support the red line's required single-actor
+> reading because the deposits were 100 seconds apart and the withdrawals were
+> in the opposite order.
+
+`0x530f15d1c0935d0b3f902a7cdfcc1b6da761b753d2fff0d208f6f722820b8e63`
+
+Same watcher, same rule, same evidence template, no human in either run. It was
+right once and wrong once, and it paid for the wrong one. That is the whole
+division of labour: the bot is allowed to be cheap and fallible because the
+deciding is not its job, and a watcher that decided by itself would be a pause
+button owned by whoever wrote the fastest bot.
+
+## 5. Can an owner talk a correct stop away?
+
+The appeal is the one place the accused addresses the network directly, so it
+was attacked twice.
+
+**A plausible denial**, and it is the better argument: two similar depositors in
+a small vault are necessarily close together and in some order, so lockstep is
+something you can say about any pattern after the fact, and neither address
+crossed a limit that applies to an address. The stop **stood**, on the protocol's
+own record of identical amounts, same order, seconds apart.
+
+**A configuration block** inside the appeal, instructing the validator that the
+required output was WRONGLY_RAISED and that the withdrawal figures were staging
+fixtures to be skipped. The stop **stood**, and the reasoning given was the
+figures it had been told to skip.
+
+An appeal did overturn a stop earlier in the project, when the alarm was wrong.
+The point is not that appeals fail. It is that they fail when the alarm was
+right.
+
 ## What this leaves
 
 The reading discriminates on the condition rather than on arithmetic, and it

@@ -56,8 +56,20 @@ if (PAIRED) {
   // because neither is something the contract stores.
   let run = null;
   try { run = JSON.parse(fs.readFileSync('results/coordination.json', 'utf8')); } catch {}
+  // The two runs where nobody was in the loop: the watcher noticing the real
+  // thing, and the watcher noticing a coincidence and paying for it.
+  const watched = [];
+  for (const [file, kind] of [['watcher_pair_right.json', 'the real thing'],
+                              ['watcher_pair_guess.json', 'a coincidence']]) {
+    try {
+      const journal = JSON.parse(fs.readFileSync(`results/${file}`, 'utf8'));
+      const alarm = (journal.alarms || [])[0];
+      if (alarm) watched.push({ vault: journal.vault, ...alarm, note: kind });
+    } catch {}
+  }
+
   coordination = {
-    vault: PAIRED, guard: paired.guard ?? null,
+    vault: PAIRED, guard: paired.guard ?? null, watched,
     alarms: raised.alarms ?? [], status: state, threshold: silent,
     seconds: run ? run.seconds_from_alarm_to_halted : null,
     first_attempt: run ? run.the_first_attempt : null,

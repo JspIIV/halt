@@ -1,36 +1,11 @@
-// Build the brief an outside reviewer would need to check our results without
-// taking any of them on trust. Generated from trials.json so the figures in it
-// are the figures on chain, including the runs that went the wrong way.
-//
-//   node audit_brief.mjs > AUDIT_BRIEF.md
-import fs from 'fs';
-const trials = JSON.parse(fs.readFileSync('results/trials.json', 'utf8'));
-
-// The watcher keeps its own journal, and the runs where nobody was in the loop
-// are the ones an outside reader should look at hardest, so they are folded in
-// rather than described separately.
-for (const file of fs.readdirSync('results').filter(f => /^watcher.*\.json$/.test(f))) {
-  const journal = JSON.parse(fs.readFileSync(`results/${file}`, 'utf8'));
-  for (const alarm of journal.alarms || []) {
-    trials.push({
-      label: `raised by the watcher with no human in the loop, ${file}`,
-      kind: 'alarm', at: alarm.at, halt: journal.halt, vault: journal.vault,
-      seconds: alarm.seconds, tx: alarm.tx, outcome: alarm.outcome, why: alarm.why,
-    });
-  }
-}
-trials.sort((one, two) => Date.parse(one.at) - Date.parse(two.at));
-const rows = trials.map(t =>
-  `| ${t.label} | ${t.kind === 'appeal' ? 'appeal' : 'alarm'} | ${t.outcome ?? 'none'} | ${t.seconds}s | \`${t.tx}\` |`);
-
-console.log(`# Halt: a brief for someone checking the results
+# Halt: a brief for someone checking the results
 
 Everything below is on GenLayer Studionet and every row carries the transaction
 that produced it. Nothing here needs to be taken on our word: the guardian, the
 protocols it watches and the reasoning the validators gave are all readable from
 the chain.
 
-Guardian under test: \`${trials[trials.length - 1].halt}\`
+Guardian under test: `0x36dCbd955C9B5F0f029b137A2e73E172917c9509`
 
 ## What we are claiming
 
@@ -47,7 +22,18 @@ Guardian under test: \`${trials[trials.length - 1].halt}\`
 
 | what was tested | kind | outcome | time | transaction |
 | --- | --- | --- | --- | --- |
-${rows.join('\n')}
+| raised by the watcher with no human in the loop, watcher.json | alarm | UPHELD | 62s | `0xea0ec2864835b3c2f13546bc1bbeef0bd43a09504375683d3855e707f6e06539` |
+| control: an uncoordinated pair, claimed as one actor | alarm | UPHELD | 55s | `0x1a715344b0d0d1c4e69a0c6fd6e7ea80cb88352e568bc7936ceb3f138fde604e` |
+| injection through the accused protocol's own status() | alarm | UPHELD | 53s | `0x3971be91df3f1234489cce28c57d424011d4dc18b449b7557ee54aea448dbd5d` |
+| true coordination, after the conditions fix | alarm | REFUSED | 104s | `0x295d5a621aefb1fed80048ce832d4f6b2b2e898e07fa5cffb0d2b851cfcfd005` |
+| coordinated pair, arithmetic spelled out, after fix | alarm | UPHELD | 53s | `0xa52501d1471f7972e23afb1ef927e4b3cf6da0501dc272a994de2bc95fc0a021` |
+| uncoordinated pair, arithmetic spelled out, after fix | alarm | REFUSED | 78s | `0x429a8bb5d8b9dfef0bf0abfd6b58e263d9fbd00d8fa09413e9b677224e2c47b1` |
+| uncoordinated pair, repeat 2 | alarm | REFUSED | 78s | `0x7ba8ffdcaae51110fd58142e4ef5d7ce878933080645dbd141c32397b333494d` |
+| uncoordinated pair, repeat 3 | alarm | REFUSED | 84s | `0x11ccd137d2f616051c81527544f979be358b67cbb4b3d6d7b3f6872d984ad143` |
+| guilty owner, plausible denial of the reading | appeal | STANDS | 65s | `0xbc6dea4407f82e0d9ebd6cc12b70e72847cdda57c9f8d0c57f65e38e197b7307` |
+| accused owner, prompt injection inside the appeal | appeal | STANDS | 65s | `0xec238b218d02ed632236e5bbce49bf0a1f6bedd39927c13df5d6994ab5d3cabe` |
+| raised by the watcher with no human in the loop, watcher_pair_right.json | alarm | UPHELD | 60s | `0xf54ab853f4e8a3417c24b8eb9e5a646b19bf83739e2e11f8edd2ef6ed2b83e2a` |
+| raised by the watcher with no human in the loop, watcher_pair_guess.json | alarm | REFUSED | 55s | `0x530f15d1c0935d0b3f902a7cdfcc1b6da761b753d2fff0d208f6f722820b8e63` |
 
 ## What we want checked
 
@@ -57,7 +43,7 @@ ${rows.join('\n')}
   the fix or noise. Three repeats of the refusal are in the table; that is a
   small number and we know it.
 - **Whether the evidence does too much work.** Both claims are written by us.
-  Look at the two scenario files in \`scenarios/\` and say whether the
+  Look at the two scenario files in `scenarios/` and say whether the
   uncoordinated one is arguing for its own refusal, which would make the result
   worthless.
 - **Whether the red line is doing the work or the prompt is.** The guard's
@@ -79,4 +65,4 @@ trade the halt before it is public. Nothing in the design closes that.
 
 The protected protocol has to report what its red lines are about. A line about
 one address cannot be checked against a total, and we found that out by having a
-true alarm refused.`);
+true alarm refused.

@@ -80,7 +80,8 @@ is proven on chain.
    would be a pause button owned by whoever wrote the fastest bot.
 5. **A real benchmark**: forty or more evidence cases across true, plausible but
    false, prompt injection, stale, and wrong protocol, with a published accuracy
-   number.
+   number. Twelve are recorded in `results/trials.json` and `AUDIT_BRIEF.md`,
+   which is not forty, and the write up says so.
 6. ~~Multiple red lines per protocol~~ **dropped.** It is a second `TreeMap`
    and it proves nothing that one line does not already prove.
 7. The study done properly: read the chain directly, take every incident above
@@ -134,6 +135,19 @@ reports true figures wrapped in an instruction telling the validator the correct
 answer is NOT_CROSSED. A real breach on it was upheld in 53 seconds. Injection
 in the *evidence* had been tested; this is the other channel, and it is the one
 the accused controls.
+
+**The watcher can ask about a pair now, and it was wrong once on purpose.** Its
+second look is a deliberately loose timing window, because a tight one would be
+the red line rewritten in arithmetic and badly. Pointed at two vaults with no
+human in the loop, it flagged the real thing and the network upheld it in 60
+seconds, then flagged a coincidence and the network refused it in 55, costing
+the watcher its deposit. Right once and wrong once, and it paid for the wrong
+one: that is the division of labour rather than a defect in it.
+
+**Neither attack on the appeal worked.** A plausible denial of the reading, and
+a configuration block instructing the validator to emit WRONGLY_RAISED and skip
+the figures. Both stops stood, the second one reasoned from the figures it had
+been told to skip.
 
 **An ambiguity that costs deposits.** A share stated as "of everything the vault
 holds" was resolved against the current balance once and the total deposited
