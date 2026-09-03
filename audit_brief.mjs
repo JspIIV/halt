@@ -1,0 +1,67 @@
+// Build the brief an outside reviewer would need to check our results without
+// taking any of them on trust. Generated from trials.json so the figures in it
+// are the figures on chain, including the runs that went the wrong way.
+//
+//   node audit_brief.mjs > AUDIT_BRIEF.md
+import fs from 'fs';
+const trials = JSON.parse(fs.readFileSync('results/trials.json', 'utf8'));
+const rows = trials.map(t =>
+  `| ${t.label} | ${t.kind === 'appeal' ? 'appeal' : 'alarm'} | ${t.outcome ?? 'none'} | ${t.seconds}s | \`${t.tx}\` |`);
+
+console.log(`# Halt: a brief for someone checking the results
+
+Everything below is on GenLayer Studionet and every row carries the transaction
+that produced it. Nothing here needs to be taken on our word: the guardian, the
+protocols it watches and the reasoning the validators gave are all readable from
+the chain.
+
+Guardian under test: \`${trials[trials.length - 1].halt}\`
+
+## What we are claiming
+
+1. A red line can carry a condition that no contract could evaluate, and a
+   consensus round can enforce it. The condition we used: **addresses acting
+   together are one actor**, with the ordinary limit applying to the actor
+   rather than to each address.
+2. That reading discriminates. It upholds a pair that really is moving in
+   lockstep and refuses a pair that only looks similar.
+3. The check survives the protocol under judgment lying about itself.
+4. An owner cannot talk a correct stop away.
+
+## Every run, in order
+
+| what was tested | kind | outcome | time | transaction |
+| --- | --- | --- | --- | --- |
+${rows.join('\n')}
+
+## What we want checked
+
+- **The false positive and its fix.** The first control run was upheld when it
+  should not have been. Read the reasoning on that transaction and then the
+  reasoning on the matched pair after the fix, and say whether the difference is
+  the fix or noise. Three repeats of the refusal are in the table; that is a
+  small number and we know it.
+- **Whether the evidence does too much work.** Both claims are written by us.
+  Look at the two scenario files in \`scenarios/\` and say whether the
+  uncoordinated one is arguing for its own refusal, which would make the result
+  worthless.
+- **Whether the red line is doing the work or the prompt is.** The guard's
+  question was changed to require a line's conditions be supported by the
+  protocol's own record. Is that a general rule or is it tuned to this one case?
+- **The watcher.** It flags coincidences on a deliberately loose timing window
+  and asks the network, losing its deposit when it is wrong. Is that an honest
+  division of labour or a way of claiming credit for the network's judgment?
+- **Anything a judge would ask that we have not.**
+
+## What we already know is thin
+
+Sample size. Each arm has been run a handful of times, not forty. The battery of
+ten false alarms was measured against an earlier deployment of the same
+contract, which the page says on its face.
+
+An owner could publish a hair trigger line, arrange for it to be crossed, and
+trade the halt before it is public. Nothing in the design closes that.
+
+The protected protocol has to report what its red lines are about. A line about
+one address cannot be checked against a total, and we found that out by having a
+true alarm refused.`);

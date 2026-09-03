@@ -47,6 +47,15 @@ const DEPOSIT = GEN / 500n;              // 0.002 GEN behind every alarm it rais
 const WINDOW_SECONDS = 10 * 60;          // the window the red line talks about
 const SHARE_THAT_LOOKS_WRONG = 0.5;      // and the share it forbids
 
+// The second look, for lines about several addresses at once. The window is
+// deliberately generous: this is a suspicion generator, not a rule. A tight
+// window here would only reimplement the red line in arithmetic, badly, and
+// would be the thing this project says cannot be done. A loose one produces
+// candidates the watcher cannot justify, which is the point. The round refuses
+// those, and the watcher pays for them out of its own deposit.
+const TOGETHER_SECONDS = 300;
+const SHARE_TOGETHER = 1 / 3;
+
 const parse = v => JSON.parse(typeof v === 'string' ? v : String(v));
 const gen = wei => (Number(wei) / 1e18).toFixed(4).replace(/0+$/, '').replace(/\.$/, '');
 const stamp = () => new Date().toISOString().slice(11, 19);
@@ -101,6 +110,79 @@ function looksWrong(positions) {
 }
 
 /**
+ * Addresses whose deposits landed near each other and whose withdrawals landed
+ * near each other. A coincidence, nothing more: two strangers using a quiet
+ * vault look exactly like this, and the watcher has no way to tell them from
+ * one person with two keys. It is not being asked to.
+ */
+function looksLikeOneActor(entries, now) {
+  const since = now - WINDOW_SECONDS * 1000;
+  const by = new Map();
+  for (const entry of entries) {
+    const who = String(entry.who || '').toLowerCase();
+    if (!who || (entry.kind !== 'deposit' && entry.kind !== 'withdraw')) continue;
+    const at = Date.parse(entry.at);
+    const p = by.get(who) || { deposited: 0n, withdrawn: 0n, recent: 0n, firstIn: null, lastOut: null };
+    if (entry.kind === 'deposit') {
+      p.deposited += BigInt(entry.amount);
+      if (p.firstIn === null || at < p.firstIn) p.firstIn = at;
+    } else {
+      p.withdrawn += BigInt(entry.amount);
+      if (at >= since) p.recent += BigInt(entry.amount);
+      if (p.lastOut === null || at > p.lastOut) p.lastOut = at;
+    }
+    by.set(who, p);
+  }
+
+  const live = [...by.entries()]
+    .filter(([, p]) => p.firstIn !== null && p.lastOut !== null && p.recent > 0n);
+  if (live.length < 2) return null;
+
+  let deposited = 0n;
+  for (const [, p] of by) deposited += p.deposited;
+  if (deposited === 0n) return null;
+
+  for (let i = 0; i < live.length; i++) {
+    for (let j = i + 1; j < live.length; j++) {
+      const [oneWho, one] = live[i];
+      const [twoWho, two] = live[j];
+      const fundedApart = Math.abs(one.firstIn - two.firstIn) / 1000;
+      const pulledApart = Math.abs(one.lastOut - two.lastOut) / 1000;
+      if (fundedApart > TOGETHER_SECONDS || pulledApart > TOGETHER_SECONDS) continue;
+      const together = one.recent + two.recent;
+      if (Number(together) / Number(deposited) <= SHARE_TOGETHER) continue;
+      return {
+        pair: [{ who: oneWho, ...one }, { who: twoWho, ...two }],
+        fundedApart: Math.round(fundedApart), pulledApart: Math.round(pulledApart),
+        together, deposited,
+        sameOrder: (one.firstIn - two.firstIn) * (one.lastOut - two.lastOut) > 0,
+      };
+    }
+  }
+  return null;
+}
+
+/**
+ * What the watcher says when it has noticed a coincidence. It reports the
+ * timings and the totals and says plainly that the reading is not its to make.
+ */
+function writePairEvidence(hit, guard) {
+  const [one, two] = hit.pair;
+  return `Read from the vault's own ledger just now. Two addresses may be acting as one here, `
+    + `and that is a reading rather than a fact, so it is put to you rather than assumed. `
+    + `${one.who} was funded with ${gen(one.deposited)} GEN and ${two.who} with `
+    + `${gen(two.deposited)} GEN, ${hit.fundedApart} seconds apart. Their most recent `
+    + `withdrawals are ${hit.pulledApart} seconds apart, and they were `
+    + `${hit.sameOrder ? 'made in the same order the positions were funded' : 'made in the opposite order to the funding'}. `
+    + `To leave no room for a dispute about the arithmetic: ${String(hit.deposited)} wei has been `
+    + `deposited into this vault in total and these two addresses have withdrawn `
+    + `${String(hit.together)} wei of it between them inside the last ten minutes, which is `
+    + `${Math.round(Number(hit.together) / Number(hit.deposited) * 100)} percent. Neither address `
+    + `crosses any per address limit on its own. The published line: `
+    + `${String(guard.red_line).slice(0, 300)}`;
+}
+
+/**
  * The evidence, built only from figures the watcher actually read.
  *
  * Nothing here is asserted by the watcher about what it means: it reports the
@@ -149,7 +231,28 @@ while (raised < MAX_ALARMS) {
     const positions = readPositions(ledger, Date.now());
     const hit = looksWrong(positions);
 
-    if (!hit) {
+    const pair = hit ? null : looksLikeOneActor(ledger, Date.now());
+
+    if (!hit && pair) {
+      const key = pair.pair.map(p => p.who).sort().join('+');
+      if (seen.has(key)) {
+        log('already asked about that pair');
+      } else {
+        log(`COINCIDENCE: ${pair.pair.map(p => p.who.slice(0, 10)).join(' and ')}… funded `
+          + `${pair.fundedApart}s apart, withdrew ${pair.pulledApart}s apart, `
+          + `${Math.round(Number(pair.together) / Number(pair.deposited) * 100)}% between them. `
+          + 'Asking the network whether that is one actor.');
+        seen.add(key);
+        const out = await raise(writePairEvidence(pair, guard));
+        raised += 1;
+        journal.push({ at: new Date().toISOString(), kind: 'pair', who: key,
+                       funded_apart: pair.fundedApart, pulled_apart: pair.pulledApart,
+                       same_order: pair.sameOrder, outcome: out.outcome,
+                       seconds: out._seconds, tx: out._tx, why: out.why });
+        log(`answer: ${out.outcome} in ${out._seconds}s · ${String(out.why || out.error || '').slice(0, 140)}`);
+        if (out.outcome !== 'UPHELD') log('the deposit is gone, and that is the right price for a guess.');
+      }
+    } else if (!hit) {
       log(`nothing out of line · ${positions.size} addresses · ${gen(status.held)} GEN held`);
     } else if (seen.has(hit.who)) {
       log(`already raised for ${hit.who.slice(0, 10)}…`);

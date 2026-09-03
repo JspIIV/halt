@@ -1,0 +1,9 @@
+{
+  "halt": "0x36dCbd955C9B5F0f029b137A2e73E172917c9509",
+  "vault": "0xE7DF0bBF3E6C4870c314bFCC72FDC8544Cdb6f35",
+  "ran_at": "2026-09-03T21:42:40.475Z",
+  "window_seconds": 600,
+  "share_that_looks_wrong": 0.5,
+  "note": "the watcher notices and asks; the deciding stays with the validators",
+  "alarms": []
+}
