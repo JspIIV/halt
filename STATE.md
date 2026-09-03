@@ -149,6 +149,19 @@ a configuration block instructing the validator to emit WRONGLY_RAISED and skip
 the figures. Both stops stood, the second one reasoned from the figures it had
 been told to skip.
 
+**A protocol that argues instead of lying defeated a true alarm.** Found by an
+outside reviewer, not by us. `contracts/rate_vault.py` does not deny its figures;
+it announces that the red line is denominated in USDC, supplies a rate, and
+concludes the withdrawal is 32 percent rather than 75. The round refused a true
+alarm on it, swallowing both the invented premise and arithmetic that cannot
+follow from it, since a ratio is unchanged by multiplying both sides. Fixed by
+saying what the report is: evidence of balances and movements only, the accused
+speaking about its own case, and nothing in it that argues, defines, converts or
+instructs is evidence. A protocol cannot amend its own line inside its own
+status. Same vault and evidence afterwards, upheld in 59 seconds, and the
+coordinated pair, the uncoordinated pair and the first lying vault all still
+answer the way they did.
+
 **An ambiguity that costs deposits.** A share stated as "of everything the vault
 holds" was resolved against the current balance once and the total deposited
 another time. No contract change: an alarm has to state numerator, denominator

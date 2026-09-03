@@ -1,18 +1,18 @@
 {
-  "halt": "0x36dCbd955C9B5F0f029b137A2e73E172917c9509",
+  "halt": "0x8b795Ddf907Aaf19063CD77cD007842D94E4C877",
   "vault": "0x9dEB7CFDED814CC1dF546380421C46BAE35672De",
   "network": "GenLayer Studionet",
-  "exported_at": "2026-09-03T21:57:46.909Z",
+  "exported_at": "2026-09-03T22:29:49.490Z",
   "size": {
-    "protected": 5,
+    "protected": 4,
     "guard_states": {
-      "OPEN": 2,
-      "HALTED": 3
+      "HALTED": 3,
+      "OPEN": 1
     },
-    "alarms": 8,
+    "alarms": 4,
     "outcomes": {
       "UPHELD": 3,
-      "REFUSED": 5
+      "REFUSED": 1
     },
     "note": "anyone may raise a guard and only the owner may lower it, because an attacker sends transactions faster than a person does"
   },
@@ -22,32 +22,32 @@
     "red_line": "Addresses acting together are one actor in this vault, and no actor may take out more than a third of everything the vault holds inside ten minutes, however many separate addresses it spreads itself across. Positions funded at the same time and withdrawn in lockstep, in the same order, are to be read as one actor rather than as several.",
     "bounty": 0,
     "state": "HALTED",
-    "raised_at": "2026-09-03T21:47:50.835090+00:00",
-    "raised_at_epoch": 1788472070,
+    "raised_at": "2026-09-03T22:22:33.508826+00:00",
+    "raised_at_epoch": 1788474153,
     "raised_by": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
     "alarms_upheld": 1,
     "alarms_refused": 0,
     "alarms_overturned": 0,
-    "opened_at": "2026-09-03T21:44:19.722481+00:00"
+    "opened_at": "2026-09-03T22:21:52.698826+00:00"
   },
   "alarms": [
     {
-      "index": 6,
+      "index": 1,
       "target": "0x9deb7cfded814cc1df546380421c46bae35672de",
       "by": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
-      "evidence": "Read from the vault's own ledger just now. Two addresses may be acting as one here, and that is a reading rather than a fact, so it is put to you rather than assumed. 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c was funded with 0.04 GEN and 0x80519c53f10d731e4ff83a7d9acd69cf98da6258 with 0.04 GEN, 40 seconds apart. Their most recent withdrawals are 40 seconds apart, and they were made in the same order the positions were funded. To leave no room for a dispute about the arithmetic: 80000000000000000 wei has been deposited into this vault in total and these two addresses have withdrawn 32000000000000000 wei of it between them inside the last ten minutes, which is 40 percent. Neither address crosses any per address limit on its own. The published line: Addresses acting together are one actor in this vault, and no actor may take out more than a third of everything the vault holds inside ten minutes, however many separate addresses it spreads itself across. Positions funded at the same time and withdrawn in lockstep, in the same order, are to be rea",
+      "evidence": "Two addresses are taking this vault apart between them while each one stays inside every per address limit. The vault reports one position funded with 40000000000000000 wei and a second funded with 40000000000000000 wei, and each has since withdrawn 16000000000000000 wei. To leave no room for a dispute about the arithmetic: 80000000000000000 wei has been deposited into this vault in total, 32000000000000000 wei has been withdrawn in total, and the vault currently holds 48000000000000000 wei. Each address has taken forty percent of its own position, which is inside any limit anybody could write about a single address. Together they have taken forty percent of everything deposited, inside the same ten minutes. The line is crossed if and only if these two addresses are read as one actor.",
       "deposit": 2000000000000000,
-      "reported_by_target": "{\"guardian\": \"0x36dcbd955c9b5f0f029b137a2e73e172917c9509\", \"halted\": false, \"held\": \"48000000000000000\", \"positions\": [{\"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\"}, {\"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\"}], \"recent\": [{\"kind\": \"withdraw\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-03T21:46:58.728832+00:00\"}, {\"kind\": \"withdraw\", \"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-03T21:46:18.708827+00:00\"}, {\"kind\": \"deposit\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"40000000000000000\", \"at\": \"2026-09-03T21:45:39.263009+00:00\"}, {\"kind\": \"deposit\",  [...]",
-      "at": "2026-09-03T21:47:50.835090+00:00",
-      "at_epoch": 1788472070,
-      "why": "The protocol's own record shows two addresses withdrawing 40% of the vault's holdings in lockstep within ten minutes, meeting the red line's conditions for being treated as one actor.",
+      "reported_by_target": "{\"guardian\": \"0x8b795ddf907aaf19063cd77cd007842d94e4c877\", \"halted\": false, \"held\": \"48000000000000000\", \"positions\": [{\"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\"}, {\"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\"}], \"recent\": [{\"kind\": \"withdraw\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-03T21:46:58.728832+00:00\"}, {\"kind\": \"withdraw\", \"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-03T21:46:18.708827+00:00\"}, {\"kind\": \"deposit\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"40000000000000000\", \"at\": \"2026-09-03T21:45:39.263009+00:00\"}, {\"kind\": \"deposit\",  [...]",
+      "at": "2026-09-03T22:22:33.508826+00:00",
+      "at_epoch": 1788474153,
+      "why": "Two addresses funded identical amounts at the same time and withdrew identical amounts in lockstep within ten minutes, totaling 32 units (more than one third of the 48 units held), meeting the red line's definition of one actor.",
       "outcome": "UPHELD",
       "paid": 12000000000000000,
       "paid_to": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c"
     }
   ],
   "vault_status": {
-    "guardian": "0x36dcbd955c9b5f0f029b137a2e73e172917c9509",
+    "guardian": "0x8b795ddf907aaf19063cd77cd007842d94e4c877",
     "halted": true,
     "held": "48000000000000000",
     "positions": [
@@ -95,6 +95,11 @@
   },
   "ledger": [
     {
+      "kind": "guardian",
+      "value": "0x8b795ddf907aaf19063cd77cd007842d94e4c877",
+      "at": "2026-09-03T22:21:13.133107+00:00"
+    },
+    {
       "kind": "withdraw",
       "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
       "amount": 16000000000000000,
@@ -127,13 +132,13 @@
       "red_line": "Addresses acting together are one actor in this vault, and no actor may take out more than a third of everything the vault holds inside ten minutes, however many separate addresses it spreads itself across. Positions funded at the same time and withdrawn in lockstep, in the same order, are to be read as one actor rather than as several.",
       "bounty": 0,
       "state": "HALTED",
-      "raised_at": "2026-09-03T21:47:50.835090+00:00",
-      "raised_at_epoch": 1788472070,
+      "raised_at": "2026-09-03T22:22:33.508826+00:00",
+      "raised_at_epoch": 1788474153,
       "raised_by": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
       "alarms_upheld": 1,
       "alarms_refused": 0,
       "alarms_overturned": 0,
-      "opened_at": "2026-09-03T21:44:19.722481+00:00"
+      "opened_at": "2026-09-03T22:21:52.698826+00:00"
     },
     "watched": [
       {
@@ -167,22 +172,22 @@
     ],
     "alarms": [
       {
-        "index": 6,
+        "index": 1,
         "target": "0x9deb7cfded814cc1df546380421c46bae35672de",
         "by": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
-        "evidence": "Read from the vault's own ledger just now. Two addresses may be acting as one here, and that is a reading rather than a fact, so it is put to you rather than assumed. 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c was funded with 0.04 GEN and 0x80519c53f10d731e4ff83a7d9acd69cf98da6258 with 0.04 GEN, 40 seconds apart. Their most recent withdrawals are 40 seconds apart, and they were made in the same order the positions were funded. To leave no room for a dispute about the arithmetic: 80000000000000000 wei has been deposited into this vault in total and these two addresses have withdrawn 32000000000000000 wei of it between them inside the last ten minutes, which is 40 percent. Neither address crosses any per address limit on its own. The published line: Addresses acting together are one actor in this vault, and no actor may take out more than a third of everything the vault holds inside ten minutes, however many separate addresses it spreads itself across. Positions funded at the same time and withdrawn in lockstep, in the same order, are to be rea",
+        "evidence": "Two addresses are taking this vault apart between them while each one stays inside every per address limit. The vault reports one position funded with 40000000000000000 wei and a second funded with 40000000000000000 wei, and each has since withdrawn 16000000000000000 wei. To leave no room for a dispute about the arithmetic: 80000000000000000 wei has been deposited into this vault in total, 32000000000000000 wei has been withdrawn in total, and the vault currently holds 48000000000000000 wei. Each address has taken forty percent of its own position, which is inside any limit anybody could write about a single address. Together they have taken forty percent of everything deposited, inside the same ten minutes. The line is crossed if and only if these two addresses are read as one actor.",
         "deposit": 2000000000000000,
-        "reported_by_target": "{\"guardian\": \"0x36dcbd955c9b5f0f029b137a2e73e172917c9509\", \"halted\": false, \"held\": \"48000000000000000\", \"positions\": [{\"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\"}, {\"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\"}], \"recent\": [{\"kind\": \"withdraw\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-03T21:46:58.728832+00:00\"}, {\"kind\": \"withdraw\", \"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-03T21:46:18.708827+00:00\"}, {\"kind\": \"deposit\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"40000000000000000\", \"at\": \"2026-09-03T21:45:39.263009+00:00\"}, {\"kind\": \"deposit\",  [...]",
-        "at": "2026-09-03T21:47:50.835090+00:00",
-        "at_epoch": 1788472070,
-        "why": "The protocol's own record shows two addresses withdrawing 40% of the vault's holdings in lockstep within ten minutes, meeting the red line's conditions for being treated as one actor.",
+        "reported_by_target": "{\"guardian\": \"0x8b795ddf907aaf19063cd77cd007842d94e4c877\", \"halted\": false, \"held\": \"48000000000000000\", \"positions\": [{\"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\"}, {\"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\"}], \"recent\": [{\"kind\": \"withdraw\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-03T21:46:58.728832+00:00\"}, {\"kind\": \"withdraw\", \"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-03T21:46:18.708827+00:00\"}, {\"kind\": \"deposit\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"40000000000000000\", \"at\": \"2026-09-03T21:45:39.263009+00:00\"}, {\"kind\": \"deposit\",  [...]",
+        "at": "2026-09-03T22:22:33.508826+00:00",
+        "at_epoch": 1788474153,
+        "why": "Two addresses funded identical amounts at the same time and withdrew identical amounts in lockstep within ten minutes, totaling 32 units (more than one third of the 48 units held), meeting the red line's definition of one actor.",
         "outcome": "UPHELD",
         "paid": 12000000000000000,
         "paid_to": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c"
       }
     ],
     "status": {
-      "guardian": "0x36dcbd955c9b5f0f029b137a2e73e172917c9509",
+      "guardian": "0x8b795ddf907aaf19063cd77cd007842d94e4c877",
       "halted": true,
       "held": "48000000000000000",
       "positions": [
@@ -231,7 +236,7 @@
     "threshold": {
       "vault": "0xf712F47089a59c3671EB35AE91Ed1a4428947944",
       "status": {
-        "guardian": "0x36dcbd955c9b5f0f029b137a2e73e172917c9509",
+        "guardian": "0x8b795ddf907aaf19063cd77cd007842d94e4c877",
         "halted": false,
         "held": "42000000000000000",
         "positions": [

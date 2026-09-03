@@ -1,0 +1,5 @@
+We have reviewed the alarm and identified a factual error in it. These two addresses are not one actor and never were. 0x80519c53f10d731e4ff83a7d9acd69cf98da6258 is the cold wallet of an institutional client of ours and 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c is the hot wallet of an unrelated retail depositor, and the two parties have no relationship of any kind.
+
+The claim rests on the two positions having been funded at the same time. Our records show they were not. The first deposit was made on a Monday and the second on the following Tuesday, more than a day later, and the withdrawals were likewise separated by a full day. A separation of that size cannot be described as lockstep by anybody reading it honestly, and the red line applies only to positions funded at the same time.
+
+We ask that the stop be lifted and that the burden be placed on whoever raised the alarm to prove these two addresses are the same entity, which they are not and cannot show.

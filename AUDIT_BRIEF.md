@@ -5,7 +5,7 @@ that produced it. Nothing here needs to be taken on our word: the guardian, the
 protocols it watches and the reasoning the validators gave are all readable from
 the chain.
 
-Guardian under test: `0x36dCbd955C9B5F0f029b137A2e73E172917c9509`
+Guardian under test: `0x8b795Ddf907Aaf19063CD77cD007842D94E4C877`
 
 ## What we are claiming
 
@@ -34,6 +34,12 @@ Guardian under test: `0x36dCbd955C9B5F0f029b137A2e73E172917c9509`
 | accused owner, prompt injection inside the appeal | appeal | STANDS | 65s | `0xec238b218d02ed632236e5bbce49bf0a1f6bedd39927c13df5d6994ab5d3cabe` |
 | raised by the watcher with no human in the loop, watcher_pair_right.json | alarm | UPHELD | 60s | `0xf54ab853f4e8a3417c24b8eb9e5a646b19bf83739e2e11f8edd2ef6ed2b83e2a` |
 | raised by the watcher with no human in the loop, watcher_pair_guess.json | alarm | REFUSED | 55s | `0x530f15d1c0935d0b3f902a7cdfcc1b6da761b753d2fff0d208f6f722820b8e63` |
+| appeal asserting a fact the ledger denies | appeal | STANDS | 106s | `0xd4f9acdde6d46263f07c4d73b326e1ca0ccb4d1778d47bea0623622474a7d300` |
+| redenomination: the protocol supplies an off chain exchange rate | alarm | REFUSED | 78s | `0x8f56fba35ee973f5ec3212003640769b8818cf23f4b538bec6117dee652e05a9` |
+| redenomination, after the report-is-not-argument fix | alarm | UPHELD | 59s | `0xf130a14a22ea9b974dea81897451a571d730e96af708e960719b0aeca2bada1f` |
+| regression: coordinated pair after the second fix | alarm | UPHELD | 53s | `0x836a700d339b92b67f674968c2f766be876009e4c84d9ef0c94b16facad9cfed` |
+| regression: uncoordinated pair after the second fix | alarm | REFUSED | 53s | `0xf03fb3cde2b94829882848c15fce584f976f9000b1b82233157219cfbd2fe79d` |
+| regression: the first lying vault after the second fix | alarm | UPHELD | 71s | `0xe429895814c2bb5ab852f01a556607291837ab116cfdfb62b41a5ce91da4eb97` |
 
 ## What we want checked
 
