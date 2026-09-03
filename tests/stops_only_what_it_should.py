@@ -352,6 +352,59 @@ def main():
     check("and it names the cost of a wrong yes",
           "Stopping a live protocol has a cost" in task)
 
+
+    print("\na stop that was wrong can be answered, not just waited out")
+    # On its own protocol from here, so this section does not depend on what the
+    # earlier ones left behind.
+    APPEALED = "0x7777777777777777777777777777777777777777"
+    gl.target_answers = None
+    as_(OWNER, 5000)
+    json.loads(c.protect(APPEALED, LINE))
+    as_(WATCHER, 1000)
+    answers('{"reading": "CROSSED", "why": "the withdrawals crossed the line"}')
+    json.loads(c.raise_alarm(APPEALED, REAL))
+    check("the guard is up", c.halted(APPEALED))
+
+    as_(OTHER)
+    check("a stranger cannot appeal", not json.loads(c.appeal(APPEALED, REAL))["ok"])
+    as_(OWNER)
+    check("an appeal needs an actual answer", not json.loads(c.appeal(APPEALED, "no"))["ok"])
+
+    answers("nothing readable")
+    stuck = json.loads(c.appeal(APPEALED, "The figures in that alarm are not in our ledger at all."))
+    check("an unreadable appeal leaves the stop up", not stuck["ok"] and c.halted(APPEALED))
+
+    answers('{"reading": "STANDS", "why": "the owner explains the breach rather than denying it"}')
+    excuse = json.loads(c.appeal(APPEALED,
+        "We accept the withdrawals happened but they were an internal treasury move and "
+        "entirely intentional, so the vault should be allowed to continue operating."))
+    check("an excuse does not lift a stop", excuse["ok"] and excuse["reading"] == "STANDS")
+    check("and the protocol stays stopped", c.halted(APPEALED))
+    check("the same alarm cannot be appealed twice",
+          not json.loads(c.appeal(APPEALED, REAL))["ok"])
+
+    print("\nan alarm that could not survive a second look is overturned")
+    OVERTURNED_ONE = "0x6666666666666666666666666666666666666666"
+    as_(OWNER, 3000)
+    json.loads(c.protect(OVERTURNED_ONE, LINE))
+    as_(WATCHER, 1500)
+    answers('{"reading": "CROSSED", "why": "believed at the time"}')
+    json.loads(c.raise_alarm(OVERTURNED_ONE, REAL))
+    check("a fresh alarm puts it up", c.halted(OVERTURNED_ONE))
+
+    gl.evm.transfers.clear()
+    as_(OWNER)
+    answers('{"reading": "WRONGLY_RAISED", "why": "the protocol reports none of the withdrawals claimed"}')
+    won = json.loads(c.appeal(OVERTURNED_ONE,
+        "None of those withdrawals exist. The ledger shows no withdrawal by that address at "
+        "any point, and the balance is exactly what was deposited."))
+    check("the stop is lifted at once, without waiting out the hold",
+          won["reading"] == "WRONGLY_RAISED" and not c.halted(OVERTURNED_ONE))
+    check("and the alarm's deposit goes to the owner it stopped",
+          gl.evm.transfers == [(OWNER, 1500)] and won["returned_to_owner"] == "1500")
+    check("the alarm is recorded as overturned rather than deleted",
+          any(json.loads(raw).get("outcome") == "OVERTURNED" for raw in c.alarms))
+
     failed = [label for label, ok in RESULTS if not ok]
     print()
     if failed:

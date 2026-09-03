@@ -39,6 +39,17 @@ is proven on chain.
   this does not stop the first transaction, it stops the second through the
   nth. `results/how_long_the_money_leaves.md`, with sources.
 
+* **A wrong stop can be answered, and the second look is sharper than the
+  first.** An alarm was upheld on figures the vault confirmed. The owner
+  appealed, and the second round found what the first had missed: the line
+  forbids a *pattern of repeated withdrawals*, and the protocol reported exactly
+  one. The stop came off in that transaction and the alarm deposit went to the
+  protocol it froze. `appeal.log`.
+* **Verification cut both ways, and that is the integration lesson.** With only
+  totals in its status, the vault made the guard refuse a *true* alarm: the
+  claim named per address figures the protocol did not report. A protocol has to
+  report what its red lines are about, and the vault now does.
+
 ## What is done
 
 * `contracts/halt.py` the guardian: red lines, bounties, alarms, deposits, the

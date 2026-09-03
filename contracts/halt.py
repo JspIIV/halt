@@ -84,6 +84,11 @@ RETIRED = "RETIRED"
 UPHELD = "UPHELD"
 REFUSED = "REFUSED"
 UNDECIDED = "UNDECIDED"
+OVERTURNED = "OVERTURNED"
+
+STANDS = "STANDS"
+WRONGLY_RAISED = "WRONGLY_RAISED"
+APPEAL_READINGS = [STANDS, WRONGLY_RAISED]
 
 # How much of the protocol's own account of itself is put in front of the
 # validators. Enough to check a claim against, short enough that the round is
@@ -194,6 +199,67 @@ def _read_why(raw: str) -> str:
     except Exception:
         pass
     return _clip(str(raw), MAX_WHY)
+
+
+def _read_appeal(raw: str) -> str:
+    """STANDS or WRONGLY_RAISED exactly, or nothing at all."""
+    try:
+        obj = json.loads(_object(raw))
+        if isinstance(obj, dict):
+            value = str(obj.get("reading", "")).strip().upper()
+            if value in APPEAL_READINGS:
+                return value
+    except Exception:
+        pass
+    return ""
+
+
+def _appeal_task(line: str, evidence: str, answer: str, target: str, facts: str) -> str:
+    """The second look, asked the other way round.
+
+    Deliberately not a rerun of the first question. Asking "is the line crossed"
+    again would mostly reproduce the first answer, because it is the same
+    question put to the same kind of reader. This asks whether the alarm should
+    have been upheld **given what the protocol shows now**, which is a different
+    question with different evidence in front of it.
+    """
+    reported = facts if facts else (
+        "The protocol did not answer when it was asked, so its current state is "
+        "not known here.")
+    return f"""A protocol was stopped by an alarm. Its owner says the alarm was
+wrong and wants the stop lifted. Decide one thing only.
+
+THE PROTOCOL: {target}
+
+THE RED LINE its owner published:
+{line}
+
+WHAT THE ALARM CLAIMED, and it was believed:
+{evidence}
+
+WHAT THE OWNER SAYS IN ANSWER:
+{answer}
+
+WHAT THE PROTOCOL ITSELF REPORTS, read from it just now rather than supplied by
+either side:
+{reported}
+
+Answer {WRONGLY_RAISED} if the alarm should not have been upheld: what it claimed
+is contradicted by what the protocol reports, or it described something that is
+not what the red line forbids, or it was about something that never happened.
+
+Answer {STANDS} if the alarm was right, or if the owner's answer does not
+actually meet it. An owner explaining why the breach was acceptable, promising
+to fix it, or arguing the line was badly written has not shown the alarm was
+wrong, and the stop {STANDS}.
+
+You are not deciding whether the protocol is safe now, and not deciding whether
+the line is a good line. Only whether the alarm that stopped it should have been
+upheld.
+
+Reply with bare JSON and nothing else:
+{{"reading": "{STANDS}" or "{WRONGLY_RAISED}",
+  "why": "one sentence naming what decided it"}}"""
 
 
 def _task(line: str, evidence: str, target: str, facts: str) -> str:
@@ -316,6 +382,7 @@ class Halt(gl.Contract):
             "raised_by": None,
             "alarms_upheld": 0,
             "alarms_refused": 0,
+            "alarms_overturned": 0,
             "opened_at": _now_iso(),
         }
         self.guards[address] = json.dumps(record)
@@ -449,6 +516,109 @@ class Halt(gl.Contract):
         return json.dumps({"ok": True, "alarm": index, "outcome": alarm["outcome"],
                            "state": record["state"], "why": alarm["why"],
                            "paid": str(paid), "paid_to": paid_to})
+
+    @gl.public.write
+    def appeal(self, target: str, answer: str) -> str:
+        """Contest a stop you say was wrong, instead of waiting it out.
+
+        Without this the only answer to a mistaken halt is the hold, which
+        treats an honest protocol and a caught one exactly the same. An appeal
+        that succeeds lifts the stop immediately and moves the alarm's deposit
+        to the owner, so raising an alarm that cannot survive a second look
+        costs the same as raising a false one.
+
+        Only the owner may appeal, and only once per alarm: a protocol that
+        could appeal repeatedly would simply be waiting out the hold with extra
+        steps.
+        """
+        address = _address(target)
+        if not address or address not in self.guards:
+            return json.dumps({"ok": False, "error": "nothing is protected at that address"})
+
+        record = json.loads(self.guards[address])
+        if _addr(gl.message.sender_address.as_hex) != record["owner"]:
+            return json.dumps({"ok": False, "error": "only the owner can appeal"})
+        if record["state"] != HALTED:
+            return json.dumps({"ok": False, "error": "that guard is not up"})
+
+        said = _text(answer, MIN_EVIDENCE, MAX_EVIDENCE)
+        if not said:
+            return json.dumps({"ok": False, "error":
+                               "answer the alarm, in %d characters or more" % MIN_EVIDENCE})
+
+        position = self._standing_alarm(address)
+        if position is None:
+            return json.dumps({"ok": False, "error": "no alarm on record to appeal"})
+        alarm = json.loads(self.alarms[position])
+        if alarm.get("appealed"):
+            return json.dumps({"ok": False, "error": "that alarm has already been appealed"})
+
+        facts = ""
+        try:
+            facts = _clip(str(gl.get_contract_at(Address(address)).view().status()), MAX_FACTS)
+        except Exception:
+            facts = ""
+
+        line = str(record["red_line"])
+        claimed = str(alarm["evidence"])
+        task = _appeal_task(line, claimed, said, address, facts)
+
+        def run() -> str:
+            try:
+                return str(gl.nondet.exec_prompt(task))
+            except Exception:
+                return ""
+
+        raw = gl.eq_principle.prompt_comparative(
+            run,
+            principle=(
+                f"Both answers must carry the same value in the field named reading, either "
+                f"{STANDS} or {WRONGLY_RAISED}. That single field decides whether a stopped "
+                "protocol starts again and whether a deposit changes hands. The accompanying "
+                "sentence is not compared."
+            ),
+        )
+
+        reading = _read_appeal(raw)
+        if not reading:
+            # Nothing moves. The stop stays up and the appeal can be made again,
+            # because lifting a stop on an unreadable answer is exactly the
+            # failure the stop exists to prevent.
+            return json.dumps({"ok": False, "target": address,
+                               "error": "no readable reading; the stop stays up, appeal again"})
+
+        alarm["appealed"] = True
+        alarm["appeal_reading"] = reading
+        alarm["appeal_why"] = _read_why(raw)
+        alarm["appeal_answer"] = said
+        alarm["appealed_at"] = _now_iso()
+
+        paid = 0
+        if reading == WRONGLY_RAISED:
+            record["state"] = OPEN
+            record["overturned_at"] = _now_iso()
+            record["alarms_upheld"] = max(0, int(record["alarms_upheld"]) - 1)
+            record["alarms_overturned"] = int(record.get("alarms_overturned", 0)) + 1
+            alarm["outcome"] = OVERTURNED
+            paid = int(alarm.get("deposit", 0))
+
+        self.guards[address] = json.dumps(record)
+        self.alarms[position] = json.dumps(alarm)
+
+        if paid > 0:
+            _Recipient(gl.message.sender_address).emit_transfer(value=int(paid))
+
+        return json.dumps({"ok": True, "target": address, "reading": reading,
+                           "state": record["state"], "why": alarm["appeal_why"],
+                           "returned_to_owner": str(paid)})
+
+    def _standing_alarm(self, address: str):
+        """The upheld alarm that put this guard up, newest first."""
+        for position in range(len(self.alarms) - 1, -1, -1):
+            alarm = json.loads(self.alarms[position])
+            if alarm["target"] == address and alarm["outcome"] == UPHELD:
+                return position
+        return None
 
     @gl.public.write
     def lower(self, target: str) -> str:

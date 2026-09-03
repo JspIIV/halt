@@ -80,6 +80,10 @@ class Vault(gl.Contract):
     owner: str
     guardian: str
     balances: TreeMap[str, u256]
+    # Kept apart from the balance because a red line usually talks about what an
+    # address has done, not about what it has left.
+    deposited: TreeMap[str, u256]
+    taken: TreeMap[str, u256]
     holders: DynArray[str]
     ledger: DynArray[str]
     blocked: u256
@@ -121,7 +125,9 @@ class Vault(gl.Contract):
             return json.dumps({"ok": False, "error": "send something to deposit"})
 
         held = int(self.balances[who]) if who in self.balances else 0
+        put_in = int(self.deposited[who]) if who in self.deposited else 0
         self.balances[who] = u256(held + value)
+        self.deposited[who] = u256(put_in + value)
         if who not in self.holders:
             self.holders.append(who)
         self._note({"kind": "deposit", "who": who, "amount": value})
@@ -147,7 +153,9 @@ class Vault(gl.Contract):
         if taking <= 0:
             return json.dumps({"ok": False, "error": "nothing to withdraw"})
 
+        taken_before = int(self.taken[who]) if who in self.taken else 0
         self.balances[who] = u256(held - taking)
+        self.taken[who] = u256(taken_before + taking)
         self._note({"kind": "withdraw", "who": who, "amount": taking})
         _Recipient(gl.message.sender_address).emit_transfer(value=int(taking))
         return json.dumps({"ok": True, "withdrew": str(taking), "left": str(held - taking)})
@@ -173,14 +181,42 @@ class Vault(gl.Contract):
 
     @gl.public.view
     def status(self) -> str:
+        """What this protocol will say about itself when a guard asks.
+
+        This started as a summary for people, and a measurement changed it. With
+        only totals here, a guard that checks a claim against the protocol
+        refused a **true** alarm: the claim named a per address deposit and
+        withdrawal, the protocol reported neither, and the validators quite
+        correctly said the account did not support the figures.
+
+        So the rule a protected protocol has to follow is the one that fell out
+        of that: **report what your red lines are about.** A line about one
+        address withdrawing too much cannot be checked against a total. What is
+        published here is the same shape as the line: who put in what, who has
+        taken out what, and when they last did it.
+        """
         total = 0
+        positions = []
         for who in self.holders:
-            total += int(self.balances[who])
+            held = int(self.balances[who])
+            total += held
+            positions.append({"who": who, "holds": str(held),
+                              "deposited": str(int(self.deposited[who]) if who in self.deposited else 0),
+                              "withdrawn": str(int(self.taken[who]) if who in self.taken else 0)})
+
+        recent = []
+        for position in range(len(self.ledger) - 1, max(-1, len(self.ledger) - 9), -1):
+            entry = json.loads(self.ledger[position])
+            if entry.get("kind") in ("deposit", "withdraw"):
+                recent.append({"kind": entry["kind"], "who": entry.get("who"),
+                               "amount": str(entry.get("amount")), "at": entry.get("at")})
+
         return json.dumps({
             "guardian": self.guardian,
             "halted": self._guard_is_up(),
-            "holders": len(self.holders),
             "held": str(total),
+            "positions": positions,
+            "recent": recent,
             "withdrawals_blocked": int(self.blocked),
             "note": ("the halted flag is read from the guardian in this call; the vault "
                      "stores no copy of it, so nothing here can go stale"),
