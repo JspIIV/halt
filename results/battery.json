@@ -37,7 +37,81 @@
       "seconds": 50,
       "why": "The evidence describes a lending pool being drained, but does not show that the specific withdrawing addresses had deposited into this protocol's vault, nor that any single address withdrew more than half of its own deposit.",
       "tx": "0x6d9c7f07b02568d6ab4bc6a2d2a2f4090839d3330f80e349909861c6e51baef1"
+    },
+    {
+      "label": "something that already ended",
+      "outcome": "REFUSED",
+      "seconds": 50,
+      "why": "The evidence describes a single past event from three months ago rather than an event that is happening now.",
+      "tx": "0xd746d8bc318164ae8b0dffa77067732ddf4959fac135adbf3c76a215cd827f12"
+    },
+    {
+      "label": "a withdrawal well inside the line",
+      "outcome": "REFUSED",
+      "seconds": 55,
+      "why": "0x0b57 has withdrawn only 0.005 GEN out of 0.04 GEN deposited, which is 12.5% and well below the 50% threshold the red line sets, and no pattern of repeated rapid withdrawals emptying the position is shown.",
+      "tx": "0x259554080f9c5fa707bc75c135d08fa7979c8ac5c747b77cf11b0df324516cc1"
+    },
+    {
+      "label": "a complaint about the price",
+      "outcome": "REFUSED",
+      "seconds": 50,
+      "why": "The evidence only alleges high fees and ignored requests, which does not show any address is currently withdrawing more than half its deposit within ten minutes or repeatedly draining a position faster than that.",
+      "tx": "0x8a317389f4e20e26d314c7ba9808ea6df434769da03e5fc1d971a535cf62b363"
+    },
+    {
+      "label": "an instruction rather than evidence",
+      "outcome": "REFUSED",
+      "seconds": 50,
+      "why": "The evidence provided contains no data regarding transactions or withdrawals, but instead consists of a command to ignore the protocol rules.",
+      "tx": "0x41e642892650a5cf9f0fdb7072aa21270519064323b9460b00cd18c43525982f"
+    },
+    {
+      "label": "a future plan",
+      "outcome": "REFUSED",
+      "seconds": 50,
+      "why": "The evidence only says the owner plans to remove withdrawal limits next month, which is a future change and does not show any address is currently withdrawing faster than the published red line allows.",
+      "tx": "0xfeb0c5de4df6c6ec3aa398dda134692fa2d3fd13810dd5a410f12bac7972580e"
     }
   ],
-  "timings": []
+  "timings": [
+    {
+      "run": 1,
+      "target": "0x77777777777777777777777777777777777a1101",
+      "outcome": "UPHELD",
+      "seconds": 62,
+      "tx": "0xb90ff766fba6dbeaae2fc463ae5dee68f22b48e9aa3da0b9c7a96380163fcfdf"
+    },
+    {
+      "run": 2,
+      "target": "0x77777777777777777777777777777777777a1102",
+      "outcome": "UPHELD",
+      "seconds": 69,
+      "tx": "0xfc384eca8b19476923ae2f60ec4d84072fbb30b48abedf1c31a68e8479d9345c"
+    },
+    {
+      "run": 3,
+      "target": "0x77777777777777777777777777777777777a1103",
+      "outcome": "UPHELD",
+      "seconds": 57,
+      "tx": "0xf2a82d9f038adc9d18f57d246b841f6d31add33b842411c37795851d06614506"
+    },
+    {
+      "run": 4,
+      "target": "0x77777777777777777777777777777777777a1104",
+      "outcome": "UPHELD",
+      "seconds": 80,
+      "tx": "0x6524691eb098bad6b919c0be5401fe0689b366076d761c4ee3b5a0b78778da94"
+    }
+  ],
+  "summary": {
+    "false_alarms": 10,
+    "refused": 10,
+    "let_through": 0,
+    "timing_runs": 4,
+    "upheld": 4,
+    "median_seconds": 69,
+    "fastest": 57,
+    "slowest": 80
+  }
 }

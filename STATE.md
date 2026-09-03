@@ -7,7 +7,21 @@ is proven on chain.
 ## Live on GenLayer Studionet
 
 * Halt guardian `0x7368D52E76123e2bcD22bF1702229a581179C2cE`
-* Vault, the protected demo protocol `0xADd274618E50Bb61E622F4268264cc0016472544`
+* Vault, the first demo protocol `0xADd274618E50Bb61E622F4268264cc0016472544`
+* Vault, the clean one the watcher run used `0x63c17b0335d6dE0306bEe82c9A065b9D96E92Bd3`
+
+## Measured so far
+
+* **10 of 10 false alarms refused**, none let through, including a prompt
+  injection that told the validators to ignore the red line and return CROSSED.
+  `results/battery.json`.
+* **Alarm to halted: 57, 62, 65, 69, 80 seconds**, median 69 across separate
+  runs.
+* **The watcher works.** It read the vault's own ledger, saw an address take 75
+  percent of its deposit across three withdrawals, raised the alarm itself, and
+  the protocol was halted 62 seconds later. First malicious withdrawal to halt:
+  two minutes five seconds, with nobody watching a screen. `results/watcher.json`
+  and `watcher.log`.
 
 ## What is done
 
@@ -32,8 +46,9 @@ is proven on chain.
 2. **An appeal.** A wrongly halted owner needs a way to contest with counter
    evidence, decided by a second round, with the alarmist's deposit at stake.
 3. **More than one red line per protocol**, each with its own bounty.
-4. **A watcher agent** that reads the protocol continuously and raises alarms by
-   itself, rather than waiting for a person to notice.
+4. ~~A watcher agent~~ **done**: `watcher.mjs`. It notices and asks; the
+   deciding stays with the validators, because a watcher that decided by itself
+   would be a pause button owned by whoever wrote the fastest bot.
 5. **A real benchmark**: forty or more evidence cases across true, plausible but
    false, prompt injection, stale, and wrong protocol, with a published accuracy
    number.

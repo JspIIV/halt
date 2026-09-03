@@ -1,0 +1,19 @@
+{
+  "halt": "0x7368D52E76123e2bcD22bF1702229a581179C2cE",
+  "vault": "0x63c17b0335d6dE0306bEe82c9A065b9D96E92Bd3",
+  "ran_at": "2026-09-03T17:22:45.985Z",
+  "window_seconds": 600,
+  "share_that_looks_wrong": 0.5,
+  "note": "the watcher notices and asks; the deciding stays with the validators",
+  "alarms": [
+    {
+      "at": "2026-09-03T17:22:45.985Z",
+      "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
+      "share": 0.75,
+      "outcome": "UPHELD",
+      "seconds": 62,
+      "tx": "0xea0ec2864835b3c2f13546bc1bbeef0bd43a09504375683d3855e707f6e06539",
+      "why": "The evidence says address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c deposited 0.04 GEN and withdrew 0.03 GEN within the last ten minutes across 3 withdrawals, which is 75% and therefore more than half within the forbidden window."
+    }
+  ]
+}
