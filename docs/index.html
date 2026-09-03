@@ -18,6 +18,8 @@
   h1 { font-weight: 800; font-size: clamp(32px, 5.5vw, 48px); line-height: 1.08;
        margin: 0 0 16px; letter-spacing: -0.025em; }
   @media (max-width: 720px) { h1 { font-size: clamp(26px, 8vw, 38px); } }
+  .tagline { color: var(--text); font-size: 20px; margin: 0 0 22px; max-width: 56ch;
+             font-weight: 600; letter-spacing: -0.01em; }
   .sub { color: var(--dim); font-size: 19px; margin: 0 0 14px; max-width: 60ch; }
   .answer { color: var(--text); font-size: 17px; max-width: 62ch; margin: 0 0 44px;
             border-left: 3px solid var(--stop); padding-left: 18px; }
@@ -113,6 +115,10 @@
   .step:last-child { border-color: #5c2b2b; }
   .step:last-child b { color: var(--stop); }
 
+  .shapes { max-width: 74ch; padding-left: 20px; color: var(--dim); }
+  .shapes li { margin-bottom: 10px; }
+  .shapes b { color: var(--text); font-weight: 500; }
+
   details { margin-top: 4px; }
   details > summary { cursor: pointer; color: var(--dim); font-size: 15px; padding: 12px 0; }
   details > summary:hover { color: var(--text); }
@@ -124,6 +130,7 @@
 <div class="wrap">
 
   <h1>The pause button nobody has to press.</h1>
+  <p class="tagline">A rule that cannot be written in code, held by a network that reads it.</p>
   <p class="sub">A protocol publishes a red line in plain language and funds a
   bounty. Anyone who finds it being crossed says so, with evidence and a deposit.
   The validators read the evidence themselves, and if the line is being crossed
@@ -159,6 +166,21 @@
     <div class="step"><b>5 &middot; STOP</b>Withdrawals stop in that same
     transaction. A false alarm loses its deposit.</div>
   </div>
+
+  <h2>Lines of the same shape</h2>
+  <p>The line above was run on chain. These are the same kind of sentence:
+  everybody understands them, none of them compiles, and every one of them is
+  enforced today by somebody watching a dashboard who then has to reach a
+  multisig.</p>
+  <ul class="shapes">
+    <li>A lending pool: <b>no single actor may take more than a tenth of the
+    pool in an hour, however many addresses it borrows through.</b></li>
+    <li>A grant treasury: <b>no recipient may be paid twice for the same piece
+    of work under two names.</b></li>
+    <li>A market maker: <b>liquidity may not be pulled in concert by the
+    providers who added it together.</b></li>
+  </ul>
+  <p id="economics"></p>
 
   <h2>What a protocol has to add</h2>
   <p>Four lines. No inheritance, no proxy, no upgrade, and no key handed to
@@ -296,6 +318,17 @@ fetch("./data.json").then(r => r.json()).then(d => {
       "<summary>The same thing as the protocol itself reported it</summary><pre>"
       + esc(dump.join(NL)) + "</pre>";
   }
+
+  /* The economics, taken from the alarm above rather than described. Studionet
+     does not price gas, so there is no fee to quote; what makes a pause button
+     anyone may press survivable is the deposit, and that is on chain. */
+  const paidFor = co && (co.alarms || []).filter(a => a.outcome === "UPHELD").pop();
+  document.getElementById("economics").textContent = paidFor
+    ? "Raising that alarm cost a deposit of " + gen(paidFor.deposit) + " GEN. Being right paid "
+      + gen(paidFor.paid) + " GEN out of the bounty the protocol had funded behind its own line. "
+      + "Being wrong loses the deposit, which is the only reason a pause button anyone may press "
+      + "is not a denial of service."
+    : "";
 
   const guard = d.guard || {};
   const up = guard.state === "HALTED";

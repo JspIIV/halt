@@ -129,6 +129,29 @@ pause and does not need permission. What the guard changes is the other
 direction: it makes stopping possible for a protocol that has *no* admin key,
 and it makes every stop carry a published reason, a deposit, and an appeal.
 
+## Claims we were advised to make and will not
+
+A review round suggested four lines for the page. Each one would have been
+caught by a judge who opened the repository, so they are recorded here as
+refused rather than forgotten.
+
+**"Audit ready, contract under 2KB."** It has not been audited and it is not
+2KB. Neither half is true.
+
+**"Each alarm costs about a cent."** Not measured, and not measurable here:
+`cost.mjs` reads a real alarm receipt and Studionet returns a `gaslimit` with no
+price against it. What the page says instead is the part that is on chain, the
+deposit behind an alarm and the bounty a correct one collects.
+
+**"It inherits GenLayer's liveness guarantees, so a halt survives an outage."**
+The opposite is true and deliberately so. `_guard_is_up` fails open: a guardian
+that cannot be reached does not stop the vault, because failing closed would
+make this the single point of failure for everything trusting it.
+
+**"No protocol modification required."** It requires four lines. The four lines
+are the selling point; pretending they are zero trades a real argument for one
+that can be checked and disproved in a minute.
+
 ## Notes for whoever picks this up
 
 `gl.evm.contract_interface` is only for paying a plain address. Using it against
