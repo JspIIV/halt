@@ -13,28 +13,40 @@
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--text);
-    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+    font: 16px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
   .wrap { max-width: 960px; margin: 0 auto; padding: 56px 20px 96px; }
-  h1 { font-size: clamp(30px, 5.5vw, 46px); line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.02em; }
-  .sub { color: var(--dim); font-size: 18px; margin: 0 0 40px; max-width: 60ch; }
-  h2 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.12em;
-       color: var(--faint); margin: 52px 0 16px; font-weight: 600; }
+  h1 { font-weight: 800; font-size: clamp(32px, 5.5vw, 48px); line-height: 1.08;
+       margin: 0 0 16px; letter-spacing: -0.025em; }
+  @media (max-width: 720px) { h1 { font-size: clamp(26px, 8vw, 38px); } }
+  .sub { color: var(--dim); font-size: 19px; margin: 0 0 14px; max-width: 60ch; }
+  .answer { color: var(--text); font-size: 17px; max-width: 62ch; margin: 0 0 44px;
+            border-left: 3px solid var(--stop); padding-left: 18px; }
+  h2 { font-size: 18px; text-transform: uppercase; letter-spacing: 0.08em;
+       color: var(--dim); margin: 64px 0 18px; font-weight: 700; }
   p { max-width: 68ch; }
-  code { font-family: var(--mono); font-size: 0.92em; }
   a { color: #58a6ff; }
 
   .live { display: flex; align-items: center; gap: 14px; background: var(--panel);
-          border: 1px solid var(--line); border-radius: 12px; padding: 22px 24px; margin-bottom: 14px; }
+          border: 1px solid var(--line); border-radius: 12px; padding: 22px 24px; }
   .live.up { background: var(--raised); border-color: #5c2b2b; }
-  .lamp { width: 14px; height: 14px; border-radius: 50%; background: var(--go); flex: none; }
-  .live.up .lamp { background: var(--stop); }
+  .lamp { width: 14px; height: 14px; border-radius: 50%; background: var(--go); flex: none;
+          animation: pulse 2.4s ease-in-out infinite; }
+  .live.up .lamp { background: var(--stop); animation-duration: 1.1s; }
+  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); }
+                     50% { opacity: .45; transform: scale(.82); } }
+  @media (prefers-reduced-motion: reduce) { .lamp { animation: none; } }
   .live b { font-size: 20px; display: block; }
   .live span { color: var(--dim); font-family: var(--mono); font-size: 13px; }
 
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
-  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; }
-  .stat b { display: block; font: 600 32px/1.1 var(--mono); letter-spacing: -0.02em; }
-  .stat span { color: var(--dim); font-size: 14px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+  @media (max-width: 720px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+          padding: 22px 24px; }
+  .stat b { display: block; font-family: var(--mono); font-weight: 600; font-size: 32px;
+            line-height: 1.1; letter-spacing: -0.02em; }
+  .stat span { color: var(--dim); font-size: 14px; display: block; }
+  .stat i { color: var(--faint); font-size: 12px; display: block; margin-top: 10px;
+            line-height: 1.45; font-style: italic; }
   .stat.stop b { color: var(--stop); } .stat.go b { color: var(--go); }
 
   .row { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
@@ -43,28 +55,68 @@
                font-family: var(--mono); font-size: 13px; color: var(--faint); }
   .tag { font-weight: 600; letter-spacing: 0.06em; border: 1px solid currentColor;
          border-radius: 999px; padding: 1px 9px; font-size: 12px; }
-  .UPHELD { color: var(--stop); } .REFUSED { color: var(--go); } .UNDECIDED { color: var(--hold); }
+  .UPHELD { color: var(--stop); } .REFUSED { color: var(--go); }
+  .OVERTURNED { color: var(--hold); } .UNDECIDED { color: var(--hold); }
   .why { color: var(--dim); font-size: 15px; margin: 8px 0 0; }
   .ev { font-family: var(--mono); font-size: 12px; color: var(--faint); margin-top: 8px;
         white-space: pre-wrap; }
   .line { background: #0d1117; border: 1px solid var(--line); border-radius: 8px;
-          padding: 14px 16px; color: var(--dim); font-size: 15px; }
+          padding: 16px 18px; color: var(--text); font-size: 16px; max-width: 74ch; }
   pre { background: #0d1117; border: 1px solid var(--line); border-radius: 8px;
         padding: 14px 16px; overflow-x: auto; font-size: 13px; }
-  .note { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--hold);
-          border-radius: 8px; padding: 18px 22px; color: var(--dim); font-size: 15px; }
-  .note strong { color: var(--text); }
+  .note { background: var(--panel); border: 1px solid var(--line);
+          border-left: 3px solid var(--hold); border-radius: 8px; padding: 20px 24px;
+          color: var(--dim); font-size: 15px; }
+  .note strong, .note b { color: var(--text); }
+
+  /* The timing is the evidence, so it is drawn rather than listed: one lane per
+     address, every deposit and withdrawal placed where it actually happened. */
+  .strip { background: #0d1117; border: 1px solid var(--line); border-radius: 10px;
+           padding: 28px 28px 18px; margin: 18px 0; }
+  .lane { display: grid; grid-template-columns: 112px 1fr; align-items: center;
+          gap: 16px; margin-bottom: 30px; }
+  .lane:last-of-type { margin-bottom: 8px; }
+  .lane .who { font-family: var(--mono); font-size: 12px; color: var(--faint);
+               text-align: right; line-height: 1.5; }
+  .track { position: relative; height: 2px; background: var(--line); border-radius: 2px; }
+  .mark { position: absolute; top: 50%; transform: translate(-50%, -50%); }
+  .mark .dot { display: block; width: 13px; height: 13px; border-radius: 50%; }
+  .mark.in .dot { border: 2px solid var(--faint); background: var(--bg); }
+  .mark.out .dot { background: var(--stop); box-shadow: 0 0 0 4px rgba(248, 81, 73, .14); }
+  .mark .cap { position: absolute; left: 50%; transform: translateX(-50%); top: 16px;
+               font-family: var(--mono); font-size: 11px; color: var(--faint); white-space: nowrap; }
+  .axis { display: flex; justify-content: space-between; margin: 26px 0 0 128px;
+          font-family: var(--mono); font-size: 11px; color: var(--faint);
+          border-top: 1px solid var(--line); padding-top: 8px; }
+  .reading { margin: 16px 0 0; color: var(--text); font-size: 15px; max-width: 74ch; }
+
   .pair { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; margin: 18px 0; }
-  @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } }
+  @media (max-width: 720px) {
+    .pair { grid-template-columns: 1fr; }
+    .lane { grid-template-columns: 78px 1fr; gap: 10px; }
+    .axis { margin-left: 88px; }
+  }
   .pair .note { margin: 0; }
-  .pair .note b { display: block; color: var(--text); margin-bottom: 8px; }
-  .blind { border-color: var(--line); }
-  .saw { border-color: #2f6b46; }
-  .ledger { font: 13px ui-monospace, Menlo, Consolas, monospace; color: var(--dim);
-            background: #0e0f11; border: 1px solid var(--line); border-radius: 8px;
-            padding: 14px 16px; overflow-x: auto; white-space: pre; }
-  .provenance { color: var(--faint); font-size: 13px; margin-top: 10px; }
-  footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--line);
+  .pair .note b { display: block; margin-bottom: 8px; font-size: 16px; }
+  .blind { border-left-color: var(--faint); }
+  .saw { border-left-color: var(--stop); }
+  .verdict { display: block; margin-top: 14px; font-family: var(--mono); font-weight: 600;
+             font-size: 13px; letter-spacing: .06em; }
+  .blind .verdict { color: var(--faint); } .saw .verdict { color: var(--stop); }
+
+  .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 18px 0; }
+  @media (max-width: 720px) { .flow { grid-template-columns: 1fr; } }
+  .step { background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+          padding: 14px 16px; font-size: 14px; color: var(--dim); }
+  .step b { display: block; color: var(--faint); font-family: var(--mono); font-weight: 600;
+            font-size: 11px; letter-spacing: .1em; margin-bottom: 6px; }
+  .step:last-child { border-color: #5c2b2b; }
+  .step:last-child b { color: var(--stop); }
+
+  details { margin-top: 4px; }
+  details > summary { cursor: pointer; color: var(--dim); font-size: 15px; padding: 12px 0; }
+  details > summary:hover { color: var(--text); }
+  footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--line);
            color: var(--faint); font-size: 14px; }
 </style>
 </head>
@@ -76,27 +128,37 @@
   bounty. Anyone who finds it being crossed says so, with evidence and a deposit.
   The validators read the evidence themselves, and if the line is being crossed
   the protocol stops in that same transaction.</p>
-
-  <div id="live"></div>
+  <p class="answer"><b>So why is this not five lines of Solidity?</b> Because the
+  line below is about the relationship between several addresses rather than a
+  number in one account, and a relationship is not a state variable. Our own
+  threshold bot was pointed straight at it and saw nothing wrong.</p>
 
   <h2>A red line with no implementation</h2>
-  <p>The obvious version of this project is a threshold, and a threshold belongs
-  in Solidity. So the line below is the other kind. There is still a number in
-  it. What no contract can work out is <b>who the number applies to</b>, because
-  an actor is not a field in any ledger.</p>
   <div class="line" id="coordline"></div>
-  <div class="ledger" id="coordledger"></div>
+  <div class="strip" id="coordstrip"></div>
   <div class="pair" id="coordpair"></div>
   <div id="coordfirst"></div>
+  <details id="coordledger"></details>
+
+  <h2>The same guard, running right now</h2>
+  <div id="live"></div>
 
   <h2>Measured, not asserted</h2>
   <div class="stats" id="stats"></div>
 
-  <h2>Every alarm ever raised against it</h2>
-  <div id="alarms"></div>
-
-  <h2>The red line it is being judged against</h2>
-  <div class="line" id="redline"></div>
+  <h2>How it works</h2>
+  <div class="flow">
+    <div class="step"><b>1 &middot; PUBLISH</b>The protocol writes a red line in
+    plain language and funds a bounty behind it.</div>
+    <div class="step"><b>2 &middot; NOTICE</b>Anyone, or a bot, sees the line
+    being crossed and raises an alarm with a deposit.</div>
+    <div class="step"><b>3 &middot; READ</b>The validators read the evidence, and
+    read the protocol's own state to check it against.</div>
+    <div class="step"><b>4 &middot; AGREE</b>They have to reach the same verdict,
+    or nothing happens and nothing moves.</div>
+    <div class="step"><b>5 &middot; STOP</b>Withdrawals stop in that same
+    transaction. A false alarm loses its deposit.</div>
+  </div>
 
   <h2>What a protocol has to add</h2>
   <p>Four lines. No inheritance, no proxy, no upgrade, and no key handed to
@@ -120,103 +182,170 @@
     transactions, and an attacker sends transactions faster than a person does.</p>
   </div>
 
+  <h2>Every alarm ever raised against it</h2>
+  <p id="alarmsummary"></p>
+  <details>
+    <summary>Open the full record, including every refusal and the one an appeal reversed</summary>
+    <div id="alarms"></div>
+    <div class="line" style="margin-top:16px" id="redline"></div>
+  </details>
+
   <h2>What it will not do</h2>
   <div class="note">
     <p><strong>It does not find exploits.</strong> Somebody has to see it and say
     so. What this removes is the wait between the seeing and the stopping, which
     is where the money usually goes.</p>
-    <p style="margin-bottom:0"><strong>It judges what is happening, never what
-    might.</strong> A theoretical bug, a design somebody dislikes, a risk with no
-    event behind it: all refused, and refused at the cost of the deposit. A pause
-    button anyone can press with a paragraph is a denial of service with extra
-    steps.</p>
+    <p><strong>It judges what is happening, never what might.</strong> A
+    theoretical bug, a design somebody dislikes, a risk with no event behind it:
+    all refused, and refused at the cost of the deposit. A pause button anyone
+    can press with a paragraph is a denial of service with extra steps.</p>
+    <p style="margin-bottom:0"><strong>It does not stop an atomic exploit.</strong>
+    Nothing outside the transaction can. This is built for the drains that take
+    minutes and hours, which is most of them by value.</p>
   </div>
 
-  <footer><span id="stamp"></span> · <a href="https://github.com/JspIIV/halt">Contracts, tests and every dataset</a></footer>
+  <footer><span id="stamp"></span> &middot; <a href="https://github.com/JspIIV/halt">Contracts, tests and every dataset</a></footer>
 </div>
 
 <script>
 const gen = wei => (Number(wei) / 1e18).toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
 const esc = s => String(s).replace(/[<>&]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]));
+const short = a => String(a).slice(0, 10) + "…";
+const clock = t => new Date(t).toISOString().slice(11, 19);
+const NL = String.fromCharCode(10);
 
 fetch("./data.json").then(r => r.json()).then(d => {
-  const guard = d.guard || {};
-  const up = guard.state === "HALTED";
-  document.getElementById("live").className = "live" + (up ? " up" : "");
-  document.getElementById("live").innerHTML =
-    '<div class="lamp"></div><div><b>' +
-    (up ? "This protocol is halted right now." : "This protocol is running.") +
-    '</b><span>' + esc(d.vault) + " · guard " + esc(guard.state || "none") +
-    (d.vault_status ? " · " + gen(d.vault_status.held) + " GEN held · " +
-      d.vault_status.withdrawals_blocked + " withdrawals blocked" : "") + "</span></div>";
-
   const co = d.coordination;
+
   if (co) {
     document.getElementById("coordline").textContent = (co.guard && co.guard.red_line) || "";
 
-    const rows = (co.status.recent || []).slice().reverse().map(e =>
-      "  " + e.at.slice(11, 19) + "  " + e.kind.padEnd(9) +
-      String(e.who).slice(0, 10) + "…  " + gen(e.amount).padStart(6) + " GEN");
-    const pos = (co.status.positions || []).map(p =>
-      "  " + String(p.who).slice(0, 10) + "…  put in " + gen(p.deposited) +
-      "   took out " + gen(p.withdrawn) +
-      "   = " + Math.round(Number(p.withdrawn) / Number(p.deposited) * 100) + "% of its own deposit");
-    document.getElementById("coordledger").textContent =
-      "what the vault reported\n" + pos.join("\n") + "\n\n" + rows.join("\n");
+    const events = (co.status.recent || []).map(e => ({
+      kind: e.kind, who: String(e.who).toLowerCase(), amount: e.amount, t: Date.parse(e.at),
+    })).sort((a, b) => a.t - b.t);
+    const holders = (co.status.positions || []).map(p => String(p.who).toLowerCase());
+    const t0 = events.length ? events[0].t : 0;
+    const span = events.length ? Math.max(1, events[events.length - 1].t - t0) : 1;
+    const at = t => (4 + ((t - t0) / span) * 92).toFixed(2) + "%";
+
+    const lanes = holders.map((address, index) => {
+      const marks = events.filter(e => e.who === address).map(e =>
+        '<span class="mark ' + (e.kind === "deposit" ? "in" : "out") + '" style="left:' + at(e.t) + '">'
+        + '<span class="dot"></span><span class="cap">'
+        + (e.kind === "deposit" ? "in " : "out ") + gen(e.amount) + "</span></span>").join("");
+      return '<div class="lane"><span class="who">address ' + (index === 0 ? "A" : "B")
+        + "<br>" + short(address) + '</span><div class="track">' + marks + "</div></div>";
+    }).join("");
+
+    const gapOf = kind => {
+      const both = events.filter(e => e.kind === kind);
+      return both.length === 2 ? Math.round(Math.abs(both[1].t - both[0].t) / 1000) : null;
+    };
+    const funded = gapOf("deposit");
+    const pulled = gapOf("withdraw");
+    const share = (co.status.positions || []).map(p =>
+      Math.round(Number(p.withdrawn) / Number(p.deposited) * 100));
+
+    document.getElementById("coordstrip").innerHTML = lanes
+      + '<div class="axis"><span>' + (events.length ? clock(t0) : "") + "</span><span>"
+      + Math.round(span / 1000) + " seconds</span><span>"
+      + (events.length ? clock(events[events.length - 1].t) : "") + "</span></div>"
+      + '<p class="reading">Funded ' + (funded !== null ? funded + " seconds" : "moments")
+      + " apart. Withdrawn " + (pulled !== null ? pulled + " seconds" : "moments")
+      + " apart, in the same order they were funded. Each took "
+      + (share.length && share.every(s => s === share[0]) ? share[0] + " percent"
+         : share.length ? share.join(" and ") + " percent" : "well under half")
+      + " of its own deposit, so each one sits inside every rule anybody could write about "
+      + "an address.</p>";
 
     const upheld = (co.alarms || []).filter(a => a.outcome === "UPHELD").pop();
     const rule = co.threshold && co.threshold.rule;
     document.getElementById("coordpair").innerHTML =
-      '<div class="note blind"><b>What the threshold watcher saw</b>' +
-      "<p>Nothing. The same agent that catches the simple case was pointed at an " +
-      "identical vault and left running. It raised " +
-      ((co.threshold && co.threshold.alarms_raised === 0) ? "no alarms" : "nothing") + "." +
-      (rule ? " Its rule is one address against itself: more than " +
-        Math.round(rule.share_that_looks_wrong * 100) + "% of that address's own deposit inside " +
-        (rule.window_seconds / 60) + " minutes. Each of these is at 40%." : "") +
-      "</p><p style='margin-bottom:0'>It is not badly tuned. Lower it and it fires on honest " +
-      "users. The blindness is structural: what is wrong is between two addresses, and " +
-      "arithmetic can only compare one address with itself.</p></div>" +
-      '<div class="note saw"><b>What the validators saw</b>' +
-      (upheld ? "<p>" + esc(upheld.why) + "</p>" : "") +
-      "<p style='margin-bottom:0'>Upheld" + (co.seconds ? " and the protocol halted " +
-      co.seconds + " seconds after the alarm was sent" : "") + ". They did not apply a larger " +
-      "threshold. They decided from the timing that two addresses were one actor, then applied " +
-      "the ordinary number to that actor.</p></div>";
+      '<div class="note blind"><b>What the threshold bot saw</b>'
+      + "<p>Nothing. The same agent that catches the simple case was pointed at an identical "
+      + "vault and left running."
+      + (rule ? " Its rule compares one address with itself: more than "
+        + Math.round(rule.share_that_looks_wrong * 100)
+        + " percent of that address's own deposit inside "
+        + (rule.window_seconds / 60) + " minutes. Each of these is at 40." : "")
+      + "</p><p style='margin-bottom:0'>It is not badly tuned. Lower it and it fires on honest "
+      + "users. The blindness is structural: what is wrong is between two addresses, and "
+      + "arithmetic can only compare an address with itself.</p>"
+      + '<span class="verdict">NO ALARM RAISED</span></div>'
+      + '<div class="note saw"><b>What the validators saw</b>'
+      + (upheld ? "<p>" + esc(upheld.why) + "</p>" : "")
+      + "<p style='margin-bottom:0'>They did not apply a larger threshold. They decided from "
+      + "the timing that two addresses were one actor, then applied the ordinary number to "
+      + "that actor.</p>"
+      + '<span class="verdict">UPHELD'
+      + (co.seconds ? " · HALTED IN " + co.seconds + "s" : "") + "</span></div>";
 
     const first = co.first_attempt;
-    document.getElementById("coordfirst").innerHTML = first ? '<div class="note">' +
-      "<b>The first version of this alarm was refused, and it is kept in the record.</b>" +
-      '<p class="why" style="margin:8px 0 0">' + esc(first.why) + "</p>" +
-      "<p style='margin-bottom:0'>It called forty percent of deposits forty percent of " +
-      "holdings. The claim was true and the figure was loose, and loose was enough to lose " +
-      "the deposit. That is the standard the deposit is buying.</p></div>" : "";
+    document.getElementById("coordfirst").innerHTML = first ? '<div class="note">'
+      + "<b>The first version of this alarm was refused, and it is kept in the record.</b>"
+      + '<p class="why" style="margin:8px 0 0">' + esc(first.why) + "</p>"
+      + "<p style='margin-bottom:0'>It called forty percent of deposits forty percent of "
+      + "holdings. The claim was true and the figure was loose, and loose was enough to lose "
+      + "the deposit. That is the standard the deposit is buying.</p></div>" : "";
+
+    const dump = (co.status.positions || []).map(p =>
+        "  " + short(p.who) + "  put in " + gen(p.deposited) + "   took out " + gen(p.withdrawn))
+      .concat([""], events.slice().reverse().map(e =>
+        "  " + clock(e.t) + "  " + e.kind.padEnd(9) + short(e.who) + "  " + gen(e.amount) + " GEN"));
+    document.getElementById("coordledger").innerHTML =
+      "<summary>The same thing as the protocol itself reported it</summary><pre>"
+      + esc(dump.join(NL)) + "</pre>";
   }
+
+  const guard = d.guard || {};
+  const up = guard.state === "HALTED";
+  const live = document.getElementById("live");
+  live.className = "live" + (up ? " up" : "");
+  live.innerHTML = '<div class="lamp"></div><div><b>'
+    + (up ? "This protocol is halted right now." : "This protocol is running.")
+    + "</b><span>" + esc(d.vault) + " · guard " + esc(guard.state || "none")
+    + (d.vault_status ? " · " + gen(d.vault_status.held) + " GEN held · "
+      + d.vault_status.withdrawals_blocked + " withdrawals blocked" : "") + "</span></div>";
 
   const b = d.battery && d.battery.summary;
+  const elsewhere = d.battery && d.battery.halt
+    && d.battery.halt.toLowerCase() !== String(d.halt).toLowerCase()
+    ? "Measured against an earlier deployment of the same guardian, at "
+      + short(d.battery.halt) + ". Every transaction behind it is in results/battery.json." : "";
   const cards = [];
   if (b) {
-    cards.push(['<b>' + b.refused + " of " + b.false_alarms + "</b><span>false alarms refused</span>", "go"]);
+    cards.push(["<b>" + b.refused + " of " + b.false_alarms + "</b><span>false alarms refused</span>",
+                "go", elsewhere]);
     if (b.median_seconds !== null)
-      cards.push(['<b>' + b.median_seconds + "s</b><span>median from alarm to halted</span>", "stop"]);
+      cards.push(["<b>" + b.median_seconds + "s</b><span>median from alarm to halted</span>",
+                  "stop", elsewhere]);
     if (b.fastest !== null)
-      cards.push(['<b>' + b.fastest + "s</b><span>fastest halt measured</span>", ""]);
+      cards.push(["<b>" + b.fastest + "s</b><span>fastest halt measured</span>", "", elsewhere]);
   }
-  cards.push(['<b>' + (d.size ? d.size.alarms : 0) + "</b><span>alarms on this deployment</span>", ""]);
-  document.getElementById("stats").innerHTML =
-    cards.map(([html, cls]) => '<div class="stat ' + cls + '">' + html + "</div>").join("") +
-    (d.battery && d.battery.halt && d.battery.halt.toLowerCase() !== String(d.halt).toLowerCase()
-      ? '<p class="provenance">The refusal and timing figures were measured against an earlier ' +
-        'deployment of the same guardian, at ' + esc(String(d.battery.halt)) +
-        '. Every transaction behind them is in results/battery.json.</p>' : "");
+  if (co && co.seconds)
+    cards.push(["<b>" + co.seconds + "s</b><span>to halt the coordinated pair</span>", "stop",
+                "The case above, on this deployment."]);
+  document.getElementById("stats").innerHTML = cards.map(function (card) {
+    return '<div class="stat ' + card[1] + '">' + card[0]
+      + (card[2] ? "<i>" + esc(card[2]) + "</i>" : "") + "</div>";
+  }).join("");
 
-  document.getElementById("alarms").innerHTML = (d.alarms || []).slice().reverse().map(a => `
+  const alarms = d.alarms || [];
+  const counts = {};
+  alarms.forEach(a => { counts[a.outcome] = (counts[a.outcome] || 0) + 1; });
+  document.getElementById("alarmsummary").textContent =
+    "This guardian has heard " + (d.size ? d.size.alarms : alarms.length)
+    + " alarms in all. Against the protocol above: "
+    + Object.keys(counts).map(k => counts[k] + " " + k.toLowerCase()).join(", ")
+    + ". Nothing is left out, including the one an appeal reversed.";
+
+  document.getElementById("alarms").innerHTML = alarms.slice().reverse().map(a => `
     <div class="row">
       <div class="head">
         <span class="tag ${a.outcome}">${a.outcome}</span>
         <span>#${a.index}</span>
-        <span>by ${esc(String(a.by).slice(0, 10))}…</span>
-        <span>${a.paid ? gen(a.paid) + " GEN to " + String(a.paid_to).slice(0, 10) + "…" : "nothing paid"}</span>
+        <span>by ${esc(short(a.by))}</span>
+        <span>${a.paid ? gen(a.paid) + " GEN to " + esc(short(a.paid_to)) : "nothing paid"}</span>
       </div>
       ${a.why ? '<p class="why">' + (a.appeal_why ? "the round said: " : "") + esc(a.why) + "</p>" : ""}
       ${a.appeal_why ? '<p class="why">the appeal said: ' + esc(a.appeal_why) + "</p>" : ""}
@@ -225,9 +354,9 @@ fetch("./data.json").then(r => r.json()).then(d => {
 
   document.getElementById("redline").textContent = guard.red_line || "no guard on this address";
   document.getElementById("stamp").innerHTML =
-    'Read from <a href="https://explorer-studio.genlayer.com/address/' + d.halt + '">' +
-    String(d.halt).slice(0, 10) + '…</a> on ' + d.network + ", " +
-    new Date(d.exported_at).toISOString().slice(0, 16).replace("T", " ") + " UTC";
+    'Read from <a href="https://explorer-studio.genlayer.com/address/' + d.halt + '">'
+    + short(d.halt) + "</a> on " + d.network + ", "
+    + new Date(d.exported_at).toISOString().slice(0, 16).replace("T", " ") + " UTC";
 }).catch(() => {
   document.getElementById("live").textContent = "Nothing exported yet.";
 });
