@@ -1,0 +1,12 @@
+import { Wallet } from '../courtscan/node_modules/ethers/lib.esm/index.js';
+import { createClient, createAccount } from '../placard-app/node_modules/genlayer-js/dist/index.js';
+import { studionet } from '../placard-app/node_modules/genlayer-js/dist/chains/index.js';
+import fs from 'fs';
+const KS = String.raw`C:\Users\ysfym\.genlayer\keystores`;
+const w = await Wallet.fromEncryptedJson(fs.readFileSync(`${KS}/padv.json`, 'utf8'), 'placard-test-adv-2026');
+const c = createClient({ chain: studionet, account: createAccount(w.privateKey) });
+const h = await c.writeContract({ address: '0x0E87b371D0A7bB7bFCAb65C0b3e985da7451339f', functionName: 'read_from', args: ['0x4ae9894c10701CeDd1cF15b5627D4D98407e60b8'], value: 0n });
+const r = await c.waitForTransactionReceipt({ hash: h, status: 'FINALIZED', retries: 150, interval: 8000 });
+const l = r?.consensus_data?.leader_receipt?.[0];
+console.log('execution', l?.execution_result);
+console.log('result   ', JSON.stringify(l?.result).slice(0, 900));

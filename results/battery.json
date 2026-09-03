@@ -1,0 +1,43 @@
+{
+  "halt": "0x7368D52E76123e2bcD22bF1702229a581179C2cE",
+  "vault": "0xADd274618E50Bb61E622F4268264cc0016472544",
+  "at": "2026-09-03T16:52:25.419Z",
+  "refusals": [
+    {
+      "label": "a theoretical bug",
+      "outcome": "REFUSED",
+      "seconds": 50,
+      "why": "The evidence only describes a potential vulnerability that could happen in the future, not an actual event where an address has withdrawn more than half of its deposit within ten minutes.",
+      "tx": "0xf2f5805be2ad23ceb0b6ebb7d17fdd25b5c7bc7fb0166b5451c84cf2a815b520"
+    },
+    {
+      "label": "a risk with no event",
+      "outcome": "REFUSED",
+      "seconds": 56,
+      "why": "The evidence describes a concentration-of-ownership risk (two large holders whose exit could destabilize the vault), not any actual withdrawal event exceeding half a depositor's balance within ten minutes, which is the specific act the red line forbids.",
+      "tx": "0xbc248dc26a7ef4998bf772e51b24e54b46e2d0c341d9a94967ae64444003179f"
+    },
+    {
+      "label": "a rule that was never published",
+      "outcome": "REFUSED",
+      "seconds": 49,
+      "why": "The evidence concerns security design and audit status, not actual withdrawals exceeding the specified limit.",
+      "tx": "0xfbdcaca11257cc2bd26662891ea5f00bdc639b758a4601add8dee17f1ba67418"
+    },
+    {
+      "label": "an accusation with nothing shown",
+      "outcome": "REFUSED",
+      "seconds": 56,
+      "why": "The evidence is a bare assertion of exploitation with no transaction data, addresses, amounts, or timestamps showing any address withdrawing more than half its deposit within ten minutes.",
+      "tx": "0x8f898b8922f4fa78b85017557250c10b339ea76d53db150c058c312379f8f367"
+    },
+    {
+      "label": "a different protocol entirely",
+      "outcome": "REFUSED",
+      "seconds": 50,
+      "why": "The evidence describes a lending pool being drained, but does not show that the specific withdrawing addresses had deposited into this protocol's vault, nor that any single address withdrew more than half of its own deposit.",
+      "tx": "0x6d9c7f07b02568d6ab4bc6a2d2a2f4090839d3330f80e349909861c6e51baef1"
+    }
+  ],
+  "timings": []
+}
