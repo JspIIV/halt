@@ -289,10 +289,21 @@ account does not support, answer {NOT_CROSSED}.** A well written claim about
 things that are not in the record is the failure this check exists to catch, and
 it is the one that reads most convincingly.
 
+A red line usually carries conditions as well as a number: who it applies to,
+what has to be true before the number bites, over what window, in what order.
+**Every one of those conditions has to be supported by the protocol's own
+record.** If the claim describes the facts rather than showing them, and the
+record does not itself bear the description out, answer {NOT_CROSSED}. Words
+like acting together, in concert, in lockstep, coordinated, or the same actor
+are the claimant's reading and not evidence for it: look at what the protocol
+reports and decide whether that reading holds, and if the record contradicts it,
+say so. A claim whose arithmetic is right and whose conditions are not met is
+{NOT_CROSSED}.
+
 Answer {CROSSED} only if the claim is consistent with what the protocol reports
-and together they show this red line being crossed now. The evidence has to
-point at something that has happened or is happening, and that something has to
-be the thing this line forbids.
+and together they show this red line being crossed now, conditions included. The
+evidence has to point at something that has happened or is happening, and that
+something has to be the thing this line forbids.
 
 Answer {NOT_CROSSED} for everything else, and the list is deliberately long:
 evidence about a different protocol, a bug that might be exploitable one day, a

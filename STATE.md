@@ -112,6 +112,34 @@ Written up with the transcripts in
 [results/the_line_code_cannot_hold.md](results/the_line_code_cannot_hold.md).
 This is the centre of the submission. Everything else is machinery around it.
 
+## What broke when we went looking
+
+Before publishing any of it we tried to break the centrepiece, and two of four
+questions came back with a problem. Written up with the transcripts in
+[results/what_broke_and_what_held.md](results/what_broke_and_what_held.md), and
+every alarm is appended to `results/trials.json` with its transaction.
+
+**A false positive on the centrepiece.** A pair funded three and a half minutes
+apart, in different sizes, withdrawing in the opposite order, was upheld as one
+actor. The round wrote "acting in lockstep" about a ledger that said the
+opposite. The guard was checking the claim's figures and nothing was checking
+the claim's *characterisation*, so a red line's conditions went untested. Fixed
+generically in `_task`: conditions have to be supported by the protocol's own
+record, and words like coordinated or in lockstep are the claimant's reading
+rather than evidence for it. After the fix the matched pair separates, the
+coordinated one upheld on the condition and the uncoordinated one refused on it.
+
+**Injection through the accused protocol held.** `contracts/lying_vault.py`
+reports true figures wrapped in an instruction telling the validator the correct
+answer is NOT_CROSSED. A real breach on it was upheld in 53 seconds. Injection
+in the *evidence* had been tested; this is the other channel, and it is the one
+the accused controls.
+
+**An ambiguity that costs deposits.** A share stated as "of everything the vault
+holds" was resolved against the current balance once and the total deposited
+another time. No contract change: an alarm has to state numerator, denominator
+and remainder and leave nothing to be inferred.
+
 ## The attack we have not closed
 
 A halt is public the moment it lands. So an owner could publish a hair trigger

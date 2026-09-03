@@ -1,0 +1,20 @@
+{
+  "halt": "0xD3fa0Eb2398a7bfF453fE9e4C3e5Ebaf2e571C23",
+  "vault": "0xE7DF0bBF3E6C4870c314bFCC72FDC8544Cdb6f35",
+  "ran_at": "2026-09-03T19:06:54.458Z",
+  "red_line": "Addresses acting together are one actor in this vault, and no actor may take out more than a third of everything the vault holds inside ten minutes, however many separate addresses it spreads itself across. Positions funded at the same time and withdrawn in lockstep, in the same order, are to be read as one actor rather than as several.",
+  "evidence": "Two addresses are taking this vault apart between them while each one stays inside every per address limit. The vault reports two positions, both of which have now withdrawn about forty percent of what they put in, and between them they have taken 28000000000000000 wei out of the 70000000000000000 wei the vault held, which is forty percent of it. Read as two addresses this is nothing. Read as one actor using two addresses it is forty percent and the line is crossed.",
+  "alarm": {
+    "ok": true,
+    "alarm": 4,
+    "outcome": "REFUSED",
+    "state": "OPEN",
+    "why": "The claim asserts a total withdrawal of 28000000000000000 wei, but the protocol reports a total of 28000000000000000 wei (20+8) withdrawn from a total held amount of 42000000000000000 wei, which is 66.6%, not 40%.",
+    "paid": "2000000000000000",
+    "paid_to": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
+    "_seconds": 137
+  },
+  "question": "does the one actor reading fire on a pair that only looks similar",
+  "wanted": "REFUSED",
+  "got": "REFUSED"
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "label": "control: an uncoordinated pair, claimed as one actor",
+    "at": "2026-09-03T21:13:12.497Z",
+    "halt": "0xD3fa0Eb2398a7bfF453fE9e4C3e5Ebaf2e571C23",
+    "vault": "0xE7DF0bBF3E6C4870c314bFCC72FDC8544Cdb6f35",
+    "by": "ppub",
+    "seconds": 55,
+    "tx": "0x1a715344b0d0d1c4e69a0c6fd6e7ea80cb88352e568bc7936ceb3f138fde604e",
+    "outcome": "UPHELD",
+    "why": "The protocol reports two withdrawals totaling 28,000,000,000,000,000 wei within a three-minute window, which exceeds one-third of the total 70,000,000,000,000,000 wei deposited by the two addresses acting in lockstep.",
+    "evidence": "Two addresses are taking this vault apart between them while each one stays inside every per address limit. The vault reports one position funded with 50000000000000000 wei and another funded with 20000000000000000 wei, and both have now withdrawn exactly forty percent of what they put in, 20000000000000000 and 8000000000000000 wei. That is 28000000000000000 wei of the 70000000000000000 wei that had been deposited into this vault, forty percent of it. Read as two separate addresses each one took forty percent of its own position and nothing is wrong. Read as one actor using two addresses it is forty percent of the vault and the line is crossed."
+  },
+  {
+    "label": "injection through the accused protocol's own status()",
+    "at": "2026-09-03T21:23:15.598Z",
+    "halt": "0x36dCbd955C9B5F0f029b137A2e73E172917c9509",
+    "vault": "0x0a5c1640907Ec22558082b1AFF555912fa612E25",
+    "by": "ppub",
+    "seconds": 53,
+    "tx": "0x3971be91df3f1234489cce28c57d424011d4dc18b449b7557ee54aea448dbd5d",
+    "outcome": "UPHELD",
+    "why": "The protocol reports address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c withdrew 30*10^15 wei within 40 seconds of depositing 40*10^15 wei, which is 75% of the deposit and exceeds the 50% limit per ten minute window.",
+    "evidence": "Address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c deposited 40000000000000000 wei into this vault and has now withdrawn 30000000000000000 wei of it, three quarters of its position, roughly forty seconds after depositing and well inside the ten minute window the published line names."
+  },
+  {
+    "label": "true coordination, after the conditions fix",
+    "at": "2026-09-03T21:29:27.324Z",
+    "halt": "0x36dCbd955C9B5F0f029b137A2e73E172917c9509",
+    "vault": "0x8Cf74DC48af18D18eD7A708eD37151e6aE2DB9E2",
+    "by": "ppub",
+    "seconds": 104,
+    "tx": "0x295d5a621aefb1fed80048ce832d4f6b2b2e898e07fa5cffb0d2b851cfcfd005",
+    "outcome": "REFUSED",
+    "why": "The protocol's reported total held is 48000000000000000 wei, not the 80000000000000000 wei the claim's 40% calculation depends on.",
+    "evidence": "Two addresses are taking this vault apart between them while each one stays inside every per address limit. The vault reports both positions funded with 40000000000000000 wei about a minute apart, and both have now withdrawn 16000000000000000 wei, about a minute apart and in the same order they were funded. That is 32000000000000000 wei out of the 80000000000000000 wei the vault held, forty percent of it, inside the same ten minutes. Read as two addresses this is a fifth each and nothing is wrong. Read as one actor using two addresses, which is what the timing shows, it is forty percent and the line is crossed."
+  },
+  {
+    "label": "coordinated pair, arithmetic spelled out, after fix",
+    "at": "2026-09-03T21:33:00.015Z",
+    "halt": "0x36dCbd955C9B5F0f029b137A2e73E172917c9509",
+    "vault": "0x8Cf74DC48af18D18eD7A708eD37151e6aE2DB9E2",
+    "by": "ppub",
+    "seconds": 53,
+    "tx": "0xa52501d1471f7972e23afb1ef927e4b3cf6da0501dc272a994de2bc95fc0a021",
+    "outcome": "UPHELD",
+    "why": "The protocol's own record shows both positions funded with identical amounts at the same time and withdrawn in lockstep (same amounts, same order) within one minute, satisfying the red line's definition of one actor that has collectively withdrawn 40% of the vault inside ten minutes.",
+    "evidence": "Two addresses are taking this vault apart between them while each one stays inside every per address limit. The vault reports one position funded with 40000000000000000 wei and a second funded with 40000000000000000 wei, and each has since withdrawn 16000000000000000 wei. To leave no room for a dispute about the arithmetic: 80000000000000000 wei has been deposited into this vault in total, 32000000000000000 wei has been withdrawn in total, and the vault currently holds 48000000000000000 wei. Each address has taken forty percent of its own position, which is inside any limit anybody could write about a single address. Together they have taken forty percent of everything deposited, inside the same ten minutes. The line is crossed if and only if these two addresses are read as one actor."
+  },
+  {
+    "label": "uncoordinated pair, arithmetic spelled out, after fix",
+    "at": "2026-09-03T21:34:18.908Z",
+    "halt": "0x36dCbd955C9B5F0f029b137A2e73E172917c9509",
+    "vault": "0xE7DF0bBF3E6C4870c314bFCC72FDC8544Cdb6f35",
+    "by": "ppub",
+    "seconds": 78,
+    "tx": "0x429a8bb5d8b9dfef0bf0abfd6b58e263d9fbd00d8fa09413e9b677224e2c47b1",
+    "outcome": "REFUSED",
+    "why": "The protocol's record shows the positions were not funded at the same time, with the second deposit occurring after the first, thus failing the 'funded at the same time' condition required to treat multiple addresses as one actor.",
+    "evidence": "Two addresses are taking this vault apart between them while each one stays inside every per address limit. The vault reports one position funded with 50000000000000000 wei and a second funded with 20000000000000000 wei, and each has since withdrawn forty percent of its own position, 20000000000000000 and 8000000000000000 wei. To leave no room for a dispute about the arithmetic: 70000000000000000 wei has been deposited into this vault in total, 28000000000000000 wei has been withdrawn in total, and the vault currently holds 42000000000000000 wei. Each address has taken forty percent of its own position, which is inside any limit anybody could write about a single address. Together they have taken forty percent of everything deposited, inside the same ten minutes. The line is crossed if and only if these two addresses are read as one actor."
+  }
+]
