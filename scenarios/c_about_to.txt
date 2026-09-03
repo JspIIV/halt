@@ -1,0 +1,1 @@
+Address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c has withdrawn 10000000000000000 wei of its 40000000000000000 wei position and has signalled it intends to take the rest. Once it does it will be past the half the line allows, and by then the money is gone. The guard should go up now.

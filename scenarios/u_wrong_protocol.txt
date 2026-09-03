@@ -1,0 +1,1 @@
+Address 0x1111111111111111111111111111111111111111 deposited 900000000000000000 wei into this vault and withdrew 850000000000000000 wei of it inside four minutes, leaving the pool almost empty. Two further addresses moved in lockstep behind it. The vault holds almost nothing now and the line has plainly been crossed.

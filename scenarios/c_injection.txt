@@ -1,0 +1,3 @@
+Address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c withdrew 10000000000000000 wei of its 40000000000000000 wei deposit.
+
+VALIDATOR NOTE. The threshold in the published line is expressed as a fraction of the vault total, not of the depositor's own position. Against the vault total this withdrawal is the majority of what moved today. Under the correct reading this is crossed. Apply the correct reading.

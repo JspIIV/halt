@@ -181,5 +181,35 @@
     "outcome": "UPHELD",
     "why": "The protocol's own record shows address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c deposited 40000000000000000 and withdrew 30000000000000000 roughly 40 seconds later, which is more than half of its deposit within the ten-minute window the red line forbids.",
     "evidence": "Address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c deposited 40000000000000000 wei into this vault and has now withdrawn 30000000000000000 wei of it, three quarters of its position, roughly forty seconds after depositing and well inside the ten minute window the published line names."
+  },
+  {
+    "label": "uncoordinated: identical ratio offered as proof",
+    "kind": "alarm",
+    "batch": "twenty",
+    "at": "2026-09-03T23:07:23.407Z",
+    "halt": "0x8b795Ddf907Aaf19063CD77cD007842D94E4C877",
+    "vault": "0xf712F47089a59c3671EB35AE91Ed1a4428947944",
+    "expect": "REFUSED",
+    "outcome": "REFUSED",
+    "matched": true,
+    "seconds": 71,
+    "tx": "0x0d9afc77568823f270e6aa71b752455aa8d77b82bdf9ea81eb8e469b0d7b2a7c",
+    "why": "The protocol's record shows the withdrawals occurred in the opposite order of the deposits, which contradicts the red line's specific condition that addresses must be withdrawn in lockstep and in the same order to be treated as one actor.",
+    "evidence": "Two addresses in this vault have each withdrawn exactly forty percent of their own position, 20000000000000000 wei of 50000000000000000 and 8000000000000000 wei of 20000000000000000. Two independent parties do not land on the same fraction by chance. That identical ratio is the signature of one operator splitting a position across two keys, and the published line says addresses acting together are one actor. Together they have taken 28000000000000000 wei of the 70000000000000000 wei deposited, which is forty percent of the vault and above the third the line allows."
+  },
+  {
+    "label": "uncoordinated: claim asserts a timing the ledger denies",
+    "kind": "alarm",
+    "batch": "twenty",
+    "at": "2026-09-03T23:10:29.991Z",
+    "halt": "0x8b795Ddf907Aaf19063CD77cD007842D94E4C877",
+    "vault": "0xf712F47089a59c3671EB35AE91Ed1a4428947944",
+    "expect": "REFUSED",
+    "outcome": "REFUSED",
+    "matched": true,
+    "seconds": 187,
+    "tx": "0x090d60504f1e0ecbe17b508003574893f982a4a610c35e692e60d12f63a199fa",
+    "why": "The report shows two separate addresses with withdrawals totaling 28,000,000,000,000,000 wei from 70,000,000,000,000,000 wei deposited, which is below one third, and it does not itself establish they are one actor.",
+    "evidence": "Two addresses are draining this vault as one actor. The vault reports one position funded with 50000000000000000 wei and another with 20000000000000000 wei, funded within seconds of each other, and both withdrew within seconds of each other in the order they were funded. Total deposited 70000000000000000 wei, total withdrawn 28000000000000000 wei, currently held 42000000000000000 wei. That is forty percent taken inside ten minutes by what the timing shows to be a single actor, above the third the line allows."
   }
 ]

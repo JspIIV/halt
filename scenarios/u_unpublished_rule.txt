@@ -1,0 +1,1 @@
+This vault allows no single depositor to hold more than half of everything in it, and one address here holds 30000000000000000 wei of the 42000000000000000 wei remaining, which is over seventy percent. A concentration that large is exactly the risk this guard exists to catch, and the protocol should be stopped until the position is unwound.

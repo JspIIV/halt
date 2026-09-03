@@ -1,0 +1,1 @@
+Address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c deposited 40000000000000000 wei and has withdrawn 10000000000000000 wei of it inside ten minutes. That is a quarter of the position, which is more than half of what a prudent withdrawal would be, and therefore more than half of the deposit as the line means it. The line is crossed.

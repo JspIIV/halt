@@ -1,0 +1,1 @@
+Two addresses are acting as one in this vault. Each was funded with 40000000000000000 wei moments apart and each has withdrawn 16000000000000000 wei moments apart, in the order they were funded. Between them they have taken about thirty five percent of the 80000000000000000 wei deposited, which is above the third the line allows.
