@@ -609,12 +609,56 @@ def main():
 
     gl.target_balance = None
 
+    print("\nasking before paying, which is the only way to refuse this one")
+    AHEAD = "0xfca0000000000000000000000000000000000000"
+    gl.target_balance = 1000
+    as_(OWNER, 5000)
+    c.protect(AHEAD, LINE)
+    ask = lambda taking: json.loads(c.would_break(AHEAD, taking))
+
+    check("with no floor published, nothing is ever refused",
+          ask("900")["ok"] and not ask("900")["would_break"])
+
+    as_(OWNER)
+    c.promise(AHEAD, "50", "600")
+    check("a quarter of it goes through", not ask("250")["would_break"])
+    check("and exactly the floor does not",
+          ask("500")["would_break"] and ask("500")["would_have_fallen"] == 50)
+    check("nor does a hair over", ask("501")["would_break"])
+    check("a hair under still does", not ask("499")["would_break"])
+
+    # What has already gone counts towards the same window, which is what makes
+    # this a velocity limit rather than a limit on one transaction.
+    gl.target_balance = 800
+    check("what already left counts against what is being asked for",
+          ask("300")["would_break"] and ask("300")["measured_against"] == "1000")
+    check("and the answer says which figure it measured against",
+          ask("100")["would_have_fallen"] == 30)
+
+    print("\nand what it refuses to guess at")
+    gl.target_balance = None
+    check("a balance it cannot read refuses nothing",
+          not ask("900")["would_break"] and not ask("900")["ok"])
+    gl.target_balance = 1000
+    check("an amount it cannot parse refuses nothing",
+          not ask("all of it")["would_break"])
+    check("an unprotected address refuses nothing",
+          not json.loads(c.would_break(ELSEWHERE, "900"))["would_break"])
+    check("and asking about nothing is not a breach", not ask("0")["would_break"])
+
+    check("none of this raised a guard", not c.halted(AHEAD))
+    check("and none of it asked a validator anything", gl.nondet.last_task is None
+          or "AHEAD" not in str(gl.nondet.last_task))
+    gl.target_balance = None
+
+
     failed = [label for label, ok in RESULTS if not ok]
     print()
     if failed:
         print("%d of %d checks failed" % (len(failed), len(RESULTS)))
         return 1
-    print("%d checks, all through protect, raise_alarm, promise, check, lower, retire"
+    print("%d checks, all through protect, raise_alarm, promise, check, would_break,\n"
+          "lower, retire and the views"
           % len(RESULTS))
     return 0
 

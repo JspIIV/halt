@@ -43,5 +43,23 @@
     "protocol_refusing": 23.8,
     "finalized": 53,
     "round_on_chain": 19
+  },
+  {
+    "run": 6,
+    "vault": "0x88e5a526F8B1ADC9F6f2d08700dc4CBA31Ccd2fF",
+    "tx": "0x1dab4fca7be633626c4ddbcbd28856b7562fc9be0baaca651c6320fa1efe2bc6",
+    "guard_up": 26.1,
+    "protocol_refusing": 28.1,
+    "finalized": 55.5,
+    "round_on_chain": 24
+  },
+  {
+    "run": 7,
+    "vault": "0xb9d8484e00A2820d6cAd9C119eA9B6B73fDf03f6",
+    "tx": "0xe7a134e5297b187b1a83806f4dac3542c09cc917a89a0652b60eeef59ee158d0",
+    "guard_up": 31.6,
+    "protocol_refusing": 33.7,
+    "finalized": 59.6,
+    "round_on_chain": 29
   }
 ]

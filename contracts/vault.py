@@ -95,6 +95,29 @@ class Vault(gl.Contract):
 
     # ----------------------------------------------------------------- guard
 
+    def _would_break_the_floor(self, taking: str) -> bool:
+        """Ask the guard whether paying this out would cross the published floor.
+
+        The second question, and a different one from whether a guard is up.
+        A guard being down means nothing has been noticed yet. It does not mean
+        that what is about to happen is allowed.
+
+        This is a view call, so it costs this transaction rather than another
+        one, and there is no model anywhere in it. That is why it can sit in the
+        payment path at all: what it enforces is a number this contract's own
+        owner published, and the answer is subtraction.
+
+        Fails open like everything else here. A guard that cannot be reached
+        does not refuse your payments.
+        """
+        try:
+            answer = json.loads(str(
+                gl.get_contract_at(Address(self.guardian)).view()
+                .would_break(gl.message.contract_address.as_hex, str(taking))))
+            return bool(answer.get("would_break"))
+        except Exception:
+            return False
+
     def _guard_is_up(self) -> bool:
         """The whole integration, and the only thing a protocol has to add.
 
@@ -147,6 +170,14 @@ class Vault(gl.Contract):
             self._note({"kind": "blocked", "who": who, "wanted": str(amount)})
             return json.dumps({"ok": False, "halted": True, "blocked_so_far": int(self.blocked),
                                "error": "a guard is up on this contract; withdrawals are stopped"})
+
+        # Asked before the money moves, which is what makes the difference
+        # between stopping the next withdrawal and stopping this one.
+        if self._would_break_the_floor(amount):
+            self.blocked = u256(int(self.blocked) + 1)
+            self._note({"kind": "refused", "who": who, "wanted": str(amount)})
+            return json.dumps({"ok": False, "halted": False, "blocked_so_far": int(self.blocked),
+                               "error": "this would cross the floor this contract published"})
 
         held = int(self.balances[who]) if who in self.balances else 0
         taking = _amount(amount, held)

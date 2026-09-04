@@ -241,29 +241,65 @@ contracts/lying_vault.py   the same, reporting an instruction to the validator
 contracts/rate_vault.py    the same, reporting a currency and a rate instead
 contracts/quiet_vault.py   the same, reporting figures that are simply false
 contracts/silent_vault.py  the same, false and consistent with its own balance
-tests/                     103 checks, through the real methods
+tests/                     116 checks, through the real methods
+scripts/setup.mjs          makes the two accounts, needs no account
+scripts/verify.mjs         checks every claim here, needs no account
 scripts/watcher.mjs        the agent that notices and asks
 scripts/howfast.mjs        how long a protocol keeps paying after an alarm
+scripts/firsttransaction.mjs   the floor refusing a payment before it happens
 scripts/                   everything else that talks to the chain
+integrate/guarded.py       the four lines, on their own, to paste into yours
+spike/                     the two contracts that answered whether a GenLayer
+                           contract can read another one at all, before any of
+                           this was designed around the answer
 scenarios/                 every claim and appeal used, one per file
 results/                   every run, every log, and the write ups
 docs/                      the page, and the export it reads
 ```
 
-Install once:
+## Checking this yourself
+
+Two ways in, and the first one needs nothing.
+
+### Without an account, in about thirty seconds
 
 ```bash
 npm install
+node scripts/verify.mjs
 ```
 
-The scripts open two throwaway Studionet keystores. Point them at yours:
+It reads Studionet and asks the chain the questions this page's claims rest on:
+is that protocol really halted, did somebody other than its owner stop it, does
+the protocol itself agree, is it turning withdrawals away, and what exactly did
+the validators say. Then it prints what came back, whether or not that suits us.
+
+Reads are free and need no key, so this costs nothing and touches nothing. It
+checks everything here except our ability to send a transaction, which is the
+next part.
+
+### Running it yourself, which needs testnet GEN
+
+```bash
+node scripts/setup.mjs
+```
+
+That makes the two accounts every script here uses, in `.halt/keystores`, which
+is gitignored. It prints their addresses and their balances and stops there,
+because a fresh account has nothing and nothing here will run without it: a
+deploy, a bounty and an alarm deposit all move value, and one pass through the
+four commands below costs about 0.1 GEN.
+
+**We do not run a faucet and have not found a public one for Studionet.** If you
+need the two addresses funded to check this, say so and we will send to them.
+Accounts you already have work too, and then `setup.mjs` is not needed at all:
 
 ```bash
 export HALT_KEYSTORES=~/.genlayer/keystores
 export HALT_KS_PADV=... HALT_KS_PPUB=...
 ```
 
-Reproducing a single run:
+With balance in both, the shortest run that proves the path works, about four
+minutes:
 
 ```bash
 node scripts/deploy.mjs contracts/halt.py
@@ -272,26 +308,36 @@ node scripts/breach.mjs <guardian> <vault>
 node scripts/raise.mjs <guardian> <vault> scenarios/b_plain.txt "a true breach"
 ```
 
-Run them from the repository root; they read `contracts/`, `scenarios/` and
-`results/` by relative path.
+`breach.mjs` publishes the red line, funds the bounty, deposits and then takes
+three quarters of the position back out inside the window. `raise.mjs` reports
+it and waits for the round. What should come back is **UPHELD**, in something
+between twenty five and eighty seconds, and after it `halted(vault)` is true and
+a further withdrawal is refused by the vault itself.
 
-`scripts/batch20.mjs` through `batch28.mjs` are the measurement runs, in order.
-Each writes to `results/trials.json` as it goes, so an interrupted batch keeps
-what it had, and each reads an outcome back off the guardian when a reply does
-not carry one. That last part is not a nicety: three runs were filed as network
-errors by a script that retried a send which had already gone through, and one of
-them was hiding a live protocol halted on a false claim. A false positive that
-files itself as an error is worse than a false positive.
+Send a false one at the same vault and it should be **REFUSED**, and the deposit
+is gone:
 
-`scripts/audit_brief.mjs` generates the reviewer document out of `trials.json`
-rather than out of a summary of it, which is the only way a summary can be
-trusted not to have quietly improved itself.
+```bash
+node scripts/raise.mjs <guardian> <vault> scenarios/u_future_risk.txt "a risk, not an event"
+```
 
-Tests need no network:
+Run everything from the repository root; the scripts read `contracts/`,
+`scenarios/` and `results/` by relative path.
+
+**Studionet rate limits, and it will interrupt you.** Thirty requests a minute
+and five hundred an hour, shared across everything you run. A batch will trip it.
+`verify.mjs` waits and tries again rather than printing a stack trace; the older
+scripts mostly retry and some do not.
+
+Tests need no network and no account:
 
 ```bash
 python tests/stops_only_what_it_should.py
 ```
+
+116 checks, through the real methods rather than the helpers, against a stub of
+the runtime. Testing the parser alone would prove nothing: it can be right while
+`raise_alarm` still halts a healthy protocol or pays the wrong party.
 
 ## Built for
 

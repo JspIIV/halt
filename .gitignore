@@ -3,3 +3,4 @@ node_modules/
 gendocs.txt
 # except the run logs, which are the evidence
 !results/*.log
+.halt/

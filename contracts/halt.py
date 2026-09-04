@@ -1047,6 +1047,76 @@ class Halt(gl.Contract):
                            "seconds": now - peak_at, "why": why,
                            "paid": str(paid), "state": HALTED})
 
+    @gl.public.view
+    def would_break(self, target: str, taking: str) -> str:
+        """Would paying this out, right now, cross the floor its owner published?
+
+        A view, so a protected protocol can ask inside its own transaction
+        rather than in a later one. That is the whole point of it. `check` stops
+        a protocol after money has left; this one answers before it leaves, and
+        a protocol that asks before it pays refuses the **first** withdrawal
+        rather than the next.
+
+        Nothing in here needs a round. No prompt, no validator, no deposit, no
+        state written. It is subtraction against a number the owner published
+        and a balance this contract reads off the chain.
+
+        Which is exactly the boundary of it, and worth saying plainly: this
+        stops a breach that can be stated as a number. It cannot stop one that
+        needs reading, because reading takes a round and a round in the path of
+        every payment is not a protection anybody would keep.
+
+        Answers False for anything it does not know: no guard, no floor, a
+        balance it cannot read, an amount it cannot parse. A protocol asking
+        this question is already choosing to be stopped, and a guard that
+        refused payments on its own confusion would be worse than no guard.
+        """
+        address = _address(target)
+        if not address or address not in self.guards:
+            return json.dumps({"ok": False, "would_break": False,
+                               "error": "nothing is protected at that address"})
+        record = json.loads(self.guards[address])
+        floor = record.get("floor")
+        if not floor:
+            return json.dumps({"ok": True, "would_break": False, "floor": None})
+
+        try:
+            amount = int(str(taking).strip())
+        except Exception:
+            return json.dumps({"ok": False, "would_break": False,
+                               "error": "the amount has to be a whole number of wei"})
+        if amount <= 0:
+            return json.dumps({"ok": True, "would_break": False, "taking": str(amount)})
+
+        held = _balance_of(address)
+        if held < 0:
+            return json.dumps({"ok": False, "would_break": False,
+                               "error": "could not read that protocol's balance"})
+
+        # The reference is the high point if it is still inside the window, and
+        # otherwise what the protocol holds now. Falling back to the balance is
+        # the conservative half: it means the question can be answered without
+        # anybody having called `check` first, and it reads as the plainest
+        # version of the owner's own sentence, which is that this much of what
+        # is there may not leave at once.
+        now = _now_epoch()
+        window = int(floor["window"])
+        peak = int(record.get("peak_balance", -1))
+        peak_at = int(record.get("peak_at", 0))
+        reference = held
+        if peak > held and peak_at > 0 and now - peak_at <= window:
+            reference = peak
+        if reference <= 0:
+            return json.dumps({"ok": True, "would_break": False, "held": str(held)})
+
+        gone = reference - held + amount
+        percent = (gone * 100) // reference
+        limit = int(floor["fall"])
+        return json.dumps({"ok": True, "would_break": percent >= limit,
+                           "held": str(held), "taking": str(amount),
+                           "measured_against": str(reference),
+                           "would_have_fallen": percent, "floor_percent": limit})
+
     # ------------------------------------------------------------------ reads
 
     @gl.public.view
