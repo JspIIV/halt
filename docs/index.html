@@ -36,10 +36,24 @@
   .runner pre, .rule { overflow-x: auto; }
 
   /* ---------------------------------------------------------------- top bar */
+  .topbar { position: sticky; top: 0; z-index: 50; background: rgba(8, 9, 12, .72);
+            backdrop-filter: blur(14px) saturate(140%);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            border-bottom: 1px solid transparent; transition: border-color .2s ease; }
+  .topbar.stuck { border-bottom-color: var(--line-soft); }
   .bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-         padding: 26px 0; }
-  .bar nav { display: flex; gap: 34px; font: 500 14px/1 var(--sans); color: var(--dim); }
+         padding: 18px 0; }
+  .bar nav { display: flex; gap: 30px; font: 500 14px/1 var(--sans); color: var(--dim); }
   .bar nav a:hover { color: var(--text); }
+  .actions { justify-self: end; display: flex; gap: 10px; align-items: center; }
+  .btn { border-radius: 999px; padding: 11px 18px; font: 500 12px/1 var(--mono);
+         letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap;
+         border: 1px solid var(--line); color: var(--dim); transition: all .18s ease; }
+  .btn:hover { color: var(--text); border-color: var(--red); }
+  .btn.solid { background: var(--red); border-color: var(--red); color: #140605;
+               box-shadow: 0 0 0 rgba(240, 90, 82, 0); }
+  .btn.solid:hover { color: #140605; box-shadow: 0 0 26px rgba(240, 90, 82, .45); }
+  @media (max-width: 900px) { .bar nav, .btn.wide { display: none; } }
   /* The A is a pyramid with an eye in it, and the eye's upper lid does the work
      of the letter's crossbar. Egyptian, because the whole contract is one
      open eye that anybody may look through. */
@@ -56,8 +70,12 @@
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 
   /* ------------------------------------------------------------------- hero */
-  .hero { display: grid; grid-template-columns: 1.18fr 1fr; gap: 54px;
+  .hero { position: relative; display: grid; grid-template-columns: 1.18fr 1fr; gap: 54px;
           align-items: start; padding: 54px 0 84px; }
+  .hero::before { content: ""; position: absolute; inset: -160px -10% auto -20%; height: 620px;
+                  background: radial-gradient(60% 60% at 22% 40%, rgba(240, 90, 82, .16), transparent 70%),
+                              radial-gradient(50% 50% at 78% 30%, rgba(61, 155, 250, .12), transparent 70%);
+                  filter: blur(20px); pointer-events: none; z-index: -1; }
   .eyebrow { font: 400 13px/1 var(--mono); letter-spacing: 0.18em; text-transform: uppercase;
              color: var(--faint); margin: 0 0 26px; }
   h1 { font: 700 clamp(40px, 5.4vw, 76px)/1.02 var(--sans); letter-spacing: -0.04em;
@@ -68,13 +86,25 @@
   /* the dark card that carries the thing you would actually run */
   .runner { background: var(--ink); border: 1px solid var(--line); border-radius: 14px;
             overflow: hidden; box-shadow: var(--lift); }
-  .runner > header { display: flex; justify-content: space-between; align-items: center;
-                     padding: 15px 22px; font: 400 12px/1 var(--mono); letter-spacing: 0.16em;
-                     text-transform: uppercase; color: var(--faint); }
+  .runner > header { display: flex; align-items: center; gap: 14px;
+                     padding: 13px 16px 13px 20px; font: 400 12px/1 var(--mono);
+                     letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); }
   .runner > header a { color: var(--red); }
+  .runner > header .lights { display: flex; gap: 7px; }
+  .runner > header .lights i { width: 10px; height: 10px; border-radius: 50%;
+                               background: var(--line); display: block; }
+  .runner > header .name { flex: 1; }
+  .copy { background: none; border: 1px solid var(--line); border-radius: 7px; cursor: pointer;
+          color: var(--faint); font: 400 11px/1 var(--mono); letter-spacing: 0.1em;
+          text-transform: uppercase; padding: 8px 12px; transition: all .16s ease; }
+  .copy:hover { color: var(--text); border-color: var(--red); }
+  .copy.done { color: var(--go); border-color: var(--go); }
+  /* Hand marked rather than highlighted by a library: the snippet never changes,
+     and a highlighter is a lot of bytes for six lines of Python. */
+  .k { color: #ff7b72; } .fn { color: #d2a8ff; } .id { color: #79c0ff; } .at { color: #7ee787; }
   .runner .body { padding: 4px 22px 20px; border-top: 1px solid var(--line);
                   border-bottom: 1px solid var(--line); }
-  .runner pre { margin: 16px 0 8px; font: 400 13.5px/1.75 var(--mono); color: var(--text);
+  .runner pre { margin: 16px 0 8px; font: 400 12px/1.8 var(--mono); color: var(--text);
                 overflow-x: auto; }
   .runner .sub { font: 400 12px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase;
                  color: var(--faint); padding-bottom: 4px; }
@@ -113,19 +143,30 @@
   .middle h2 em { font-style: normal; color: var(--red); }
   .middle p { color: var(--dim); font-size: 17px; margin: 0 auto; max-width: 60ch; }
 
-  /* the numbered rows with the rail beside them */
-  .stack { display: grid; grid-template-columns: 1fr 78px; gap: 0 22px; align-items: stretch; }
-  .steps { display: grid; gap: 12px; }
-  .step { display: grid; grid-template-columns: 58px 1fr auto; align-items: center; gap: 22px;
-          background: var(--card); border: 1px solid var(--line); border-radius: 12px;
-          padding: 22px 26px; }
-  .step .n { font: 400 12px/1 var(--mono); color: var(--faint); border: 1px solid var(--line);
-             border-radius: 8px; padding: 8px 0; text-align: center; }
-  .step h3 { font: 500 19px/1.3 var(--sans); letter-spacing: -0.015em; margin: 0; }
-  .step .tag { font: 400 12.5px/1.5 var(--mono); color: var(--faint); text-align: right; }
-  .rail { background: var(--red); border-radius: 12px; display: grid; place-items: center; }
-  .rail span { writing-mode: vertical-rl; font: 500 12px/1 var(--mono); letter-spacing: 0.34em;
-               text-transform: uppercase; color: #170807; }
+  /* the mechanism as a flow, because the order is the whole point */
+  .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; }
+  .node { position: relative; padding: 0 14px; text-align: center; }
+  .node .dot { width: 15px; height: 15px; border-radius: 50%; margin: 0 auto 22px;
+               background: var(--bg); border: 2px solid var(--line); position: relative; z-index: 2; }
+  .node::before { content: ""; position: absolute; top: 6px; left: 0; right: 50%;
+                  height: 2px; background: var(--line-soft); }
+  .node::after { content: ""; position: absolute; top: 6px; left: 50%; right: 0;
+                 height: 2px; background: var(--line-soft); }
+  .node:first-child::before, .node:last-child::after { display: none; }
+  .node .n { display: block; font: 400 11px/1 var(--mono); letter-spacing: 0.16em;
+             color: var(--faint); margin-bottom: 12px; }
+  .node h3 { font: 500 17px/1.35 var(--sans); letter-spacing: -0.015em; margin: 0 0 10px; }
+  .node p { font: 400 13.5px/1.6 var(--mono); color: var(--faint); margin: 0 auto; max-width: 22ch; }
+  .node.stop .dot { background: var(--red); border-color: var(--red);
+                    box-shadow: 0 0 0 6px rgba(240, 90, 82, .16); }
+  .node.stop .n, .node.stop h3 { color: var(--red); }
+  @media (max-width: 900px) {
+    .flow { grid-template-columns: 1fr; gap: 30px; }
+    .node { text-align: left; padding: 0 0 0 34px; }
+    .node .dot { position: absolute; left: 0; top: 2px; margin: 0; }
+    .node::before { top: 0; bottom: auto; left: 6px; right: auto; width: 2px; height: 100%; }
+    .node::after { display: none; }
+  }
 
   /* ------------------------------------------------------------------- cards */
   .head-row { display: flex; justify-content: space-between; align-items: flex-end;
@@ -233,8 +274,40 @@
 
   /* Every run, with the prediction beside the verdict. A project that grades its
      own homework has to show the marking. */
-  .ledger { background: var(--card); border: 1px solid var(--line-soft); box-shadow: var(--lift); border-radius: 14px;
-            overflow: hidden; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 18px; }
+  .kpi { background: var(--card); border: 1px solid var(--line-soft); box-shadow: var(--lift);
+         border-radius: 14px; padding: 26px 28px; }
+  .kpi b { display: block; font: 500 40px/1 var(--mono); letter-spacing: -0.03em; color: var(--text); }
+  .kpi b i { font-style: normal; font-size: 20px; color: var(--faint); }
+  .kpi span { display: block; margin-top: 12px; font: 400 11.5px/1 var(--mono);
+              letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); }
+  .kpi em { display: block; margin-top: 14px; font-style: normal; font-size: 13.5px;
+            color: var(--dim); line-height: 1.5; }
+  @media (max-width: 900px) { .kpis { grid-template-columns: 1fr; } }
+
+  .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+             padding: 16px 20px; border-bottom: 1px solid var(--line-soft); }
+  .toolbar input { flex: 1; min-width: 180px; background: var(--ink); color: var(--text);
+                   border: 1px solid var(--line); border-radius: 9px; padding: 11px 14px;
+                   font: 400 13.5px/1 var(--mono); }
+  .toolbar input::placeholder { color: var(--faint); }
+  .toolbar input:focus { outline: none; border-color: var(--red); }
+  .chipbtn { background: none; border: 1px solid var(--line); border-radius: 999px;
+             color: var(--faint); cursor: pointer; padding: 10px 15px;
+             font: 500 11px/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; }
+  .chipbtn:hover { color: var(--text); }
+  .chipbtn.on { color: var(--text); border-color: var(--red); background: rgba(240, 90, 82, .1); }
+
+  .tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+  .tab { background: none; border: 1px solid var(--line); border-radius: 999px; cursor: pointer;
+         color: var(--faint); padding: 12px 20px; font: 500 11.5px/1 var(--mono);
+         letter-spacing: 0.1em; text-transform: uppercase; }
+  .tab:hover { color: var(--text); }
+  .tab.on { color: var(--text); border-color: var(--red); background: rgba(240, 90, 82, .1); }
+  .panelbox[hidden] { display: none; }
+
+  .ledger { background: var(--card); border: 1px solid var(--line-soft); box-shadow: var(--lift);
+            border-radius: 14px; overflow: hidden; }
   .ledger .scroll { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 720px; }
   thead th { text-align: left; font: 400 11px/1 var(--mono); letter-spacing: 0.14em;
@@ -257,11 +330,20 @@
           letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
   .more:hover { color: var(--text); border-color: var(--red); }
 
-  .limits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .limit { background: var(--card); border: 1px solid var(--line-soft); box-shadow: var(--lift); border-radius: 14px;
-           padding: 30px 32px; }
-  .limit b { display: block; font: 500 17px/1.35 var(--sans); margin-bottom: 12px; }
-  .limit p { color: var(--dim); font-size: 15px; margin: 0; }
+  .does { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  .col { background: var(--card); border: 1px solid var(--line-soft); box-shadow: var(--lift);
+         border-radius: 14px; overflow: hidden; }
+  .col > header { display: flex; align-items: center; gap: 10px; padding: 20px 28px;
+                  border-bottom: 1px solid var(--line-soft); font: 500 12px/1 var(--mono);
+                  letter-spacing: 0.14em; text-transform: uppercase; }
+  .col.yes > header { color: var(--go); } .col.no > header { color: var(--red); }
+  .col > header i { width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+  .col ul { list-style: none; margin: 0; padding: 8px 28px 26px; }
+  .col li { padding: 20px 0; border-bottom: 1px solid var(--line-soft); }
+  .col li:last-child { border-bottom: 0; }
+  .col b { display: block; font: 500 16px/1.4 var(--sans); margin-bottom: 8px; }
+  .col p { color: var(--dim); font-size: 14.5px; margin: 0; }
+  @media (max-width: 900px) { .does { grid-template-columns: 1fr; } }
 
   /* ---------------------------------------------------------------- the close */
   .close { background: var(--ink); border: 1px solid var(--line); border-radius: 18px;
@@ -298,20 +380,23 @@
 </head>
 <body>
 
-<div class="wrap">
+<div class="topbar" id="topbar"><div class="wrap">
   <div class="bar">
     <nav>
       <a href="#broke">What broke</a>
+      <a href="#trials">The trials</a>
       <a href="#record">The record</a>
       <a href="#limits">Limits</a>
     </nav>
     <a class="wordmark" href="https://github.com/JspIIV/halt" aria-label="Halt">H<svg class="eyeA" viewBox="0 0 100 112" aria-hidden="true"><path d="M6 106 L50 6 L94 106" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 81 Q50 59 77 81 Q50 103 23 81 Z" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/><circle cx="50" cy="81" r="9.5" fill="currentColor"/></svg>LT</a>
-    <div class="right">
-      <a class="round" id="explorerlink" href="https://explorer-studio.genlayer.com/" title="On chain">⛓</a>
-      <a class="round" href="https://github.com/JspIIV/halt" title="GitHub">GH</a>
+    <div class="actions">
+      <a class="btn wide" id="explorerlink" href="https://explorer-studio.genlayer.com/">Watch it live</a>
+      <a class="btn solid" href="https://github.com/JspIIV/halt">View the contract</a>
     </div>
   </div>
+</div></div>
 
+<div class="wrap">
   <div class="hero">
     <div>
       <p class="eyebrow">Halt · GenLayer Guardian</p>
@@ -320,11 +405,14 @@
       Anyone who finds it being crossed says so, with evidence and a deposit. The validators
       read the evidence themselves, and the protocol stops in that same transaction.</p>
       <div class="runner">
-        <header><span>guard.py</span><a href="https://github.com/JspIIV/halt">View on GitHub ↗</a></header>
+        <header><span class="lights"><i></i><i></i><i></i></span><span class="name">guard.py · python</span><button class="copy" type="button" data-copy>Copy</button><a href="https://github.com/JspIIV/halt">GitHub ↗</a></header>
         <div class="body">
-          <pre>def _guard_is_up(self) -&gt; bool:
-    return bool(gl.get_contract_at(Address(self.guardian))
-                .view().halted(gl.message.contract_address.as_hex))</pre>
+          <pre><span class="k">def</span> <span class="fn">_guard_is_up</span>(<span class="id">self</span>) -&gt; <span class="k">bool</span>:
+    <span class="k">try</span>:
+        <span class="k">return</span> <span class="k">bool</span>(<span class="id">gl</span>.<span class="at">get_contract_at</span>(<span class="fn">Address</span>(<span class="id">self</span>.guardian))
+                    .<span class="at">view</span>().<span class="at">halted</span>(<span class="id">gl</span>.message.contract_address.as_hex))
+    <span class="k">except</span> <span class="fn">Exception</span>:
+        <span class="k">return</span> <span class="k">False</span></pre>
           <div class="sub">The whole integration</div>
         </div>
         <footer><span>No key handed over</span>
@@ -396,14 +484,21 @@
   </div>
 </section>
 
-<section>
+<section id="trials">
   <div class="wrap">
     <div class="middle">
       <p class="eyebrow">The trials</p>
       <h2>Every run, beside what we <em>predicted</em>.</h2>
       <p id="trialnote"></p>
     </div>
+    <div class="kpis" id="kpis"></div>
     <div class="ledger">
+      <div class="toolbar">
+        <input id="trialsearch" type="search" placeholder="Search the runs" aria-label="Search the runs" />
+        <button class="chipbtn on" type="button" data-filter="all">All</button>
+        <button class="chipbtn" type="button" data-filter="yes">As predicted</button>
+        <button class="chipbtn" type="button" data-filter="no">Surprises</button>
+      </div>
       <div class="scroll">
         <table>
           <thead><tr>
@@ -425,20 +520,17 @@
       <p class="eyebrow">How it works</p>
       <h2>Five steps, and the last one is <em>a transaction</em>.</h2>
     </div>
-    <div class="stack">
-      <div class="steps">
-        <div class="step"><span class="n">01</span><h3>Publish a red line</h3>
-          <span class="tag">plain language, funded bounty</span></div>
-        <div class="step"><span class="n">02</span><h3>Anyone raises an alarm</h3>
-          <span class="tag">evidence, deposit at stake</span></div>
-        <div class="step"><span class="n">03</span><h3>Validators read the evidence</h3>
-          <span class="tag">and the protocol's own state</span></div>
-        <div class="step"><span class="n">04</span><h3>They have to agree</h3>
-          <span class="tag">or nothing moves at all</span></div>
-        <div class="step"><span class="n">05</span><h3>Withdrawals stop</h3>
-          <span class="tag">same transaction, no key</span></div>
-      </div>
-      <div class="rail"><span>Halt</span></div>
+    <div class="flow">
+      <div class="node"><span class="dot"></span><span class="n">01</span>
+        <h3>Publish a red line</h3><p>plain language, funded bounty</p></div>
+      <div class="node"><span class="dot"></span><span class="n">02</span>
+        <h3>Anyone raises an alarm</h3><p>evidence, deposit at stake</p></div>
+      <div class="node"><span class="dot"></span><span class="n">03</span>
+        <h3>Validators read it</h3><p>against the protocol's own state</p></div>
+      <div class="node"><span class="dot"></span><span class="n">04</span>
+        <h3>They have to agree</h3><p>or nothing moves at all</p></div>
+      <div class="node stop"><span class="dot"></span><span class="n">05</span>
+        <h3>Withdrawals stop</h3><p>same transaction, no key</p></div>
     </div>
   </div>
 </section>
@@ -488,11 +580,14 @@
       <h2>Every alarm <em>ever raised</em> against it.</h2>
       <p id="alarmsummary"></p>
     </div>
-    <details>
-      <summary>Open the full record, refusals and reversals included</summary>
-      <div class="rows" id="alarms"></div>
-      <p class="rule" id="redline" style="margin-top:16px;font-size:15px"></p>
-    </details>
+    <div class="tabs">
+      <button class="tab on" type="button" data-tab="alarms">Every alarm</button>
+      <button class="tab" type="button" data-tab="line">The line it was judged against</button>
+    </div>
+    <div class="panelbox" id="tab-alarms"><div class="rows" id="alarms"></div></div>
+    <div class="panelbox" id="tab-line" hidden>
+      <p class="rule" id="redline" style="font-size:15px"></p>
+    </div>
     <p class="under" id="economics" style="max-width:80ch;margin:26px auto 0;border:0"></p>
   </div>
 </section>
@@ -503,16 +598,33 @@
       <p class="eyebrow">Limits</p>
       <h2>What it <em>will not</em> do.</h2>
     </div>
-    <div class="limits">
-      <div class="limit"><b>It does not find exploits.</b><p>Somebody has to see it and say
-      so. What this removes is the wait between the seeing and the stopping, which is where
-      the money usually goes.</p></div>
-      <div class="limit"><b>It judges what is, never what might be.</b><p>A theoretical bug,
-      a design somebody dislikes, a risk with no event behind it: all refused, and refused
-      at the cost of the deposit.</p></div>
-      <div class="limit"><b>It does not stop an atomic exploit.</b><p>Nothing outside the
-      transaction can. This is built for the drains that take minutes and hours, which is
-      most of them by value.</p></div>
+    <div class="does">
+      <div class="col yes">
+        <header><i></i>What it does</header>
+        <ul>
+          <li><b>Stops a protocol in one transaction.</b><p>The verdict and the enforcement
+          are the same write. There is no key to reach and nobody to wake up.</p></li>
+          <li><b>Enforces a rule no contract could evaluate.</b><p>Addresses acting together
+          as one actor, read from timing the protocol publishes about itself.</p></li>
+          <li><b>Refuses a plausible claim and charges for it.</b><p>Ten false alarms out of
+          ten, including injection in the evidence and a rule nobody published.</p></li>
+          <li><b>Releases a protocol it stopped wrongly.</b><p>An appeal decided by a second
+          round, at once, with the deposit behind the alarm going to the owner.</p></li>
+        </ul>
+      </div>
+      <div class="col no">
+        <header><i></i>What it does not</header>
+        <ul>
+          <li><b>Find exploits.</b><p>Somebody has to see it and say so. What this removes is
+          the wait between the seeing and the stopping, which is where the money goes.</p></li>
+          <li><b>Stop an atomic exploit.</b><p>Nothing outside the transaction can. This is
+          built for the drains that take minutes and hours, which is most by value.</p></li>
+          <li><b>Judge what might happen.</b><p>A theoretical bug, a design somebody dislikes,
+          a risk with no event behind it: refused, at the cost of the deposit.</p></li>
+          <li><b>Get the hard case right every time.</b><p>The coordination reading refuses a
+          determined false claim nine times in ten. The tenth is in the table above.</p></li>
+        </ul>
+      </div>
     </div>
   </div>
 </section>
@@ -522,11 +634,14 @@
     <h2>A rule that cannot be written in code, <em>held by a network that reads it</em>.</h2>
     <p class="eyebrow">Four lines to adopt. No inheritance, no proxy, no upgrade.</p>
     <div class="runner">
-      <header><span>guard.py</span><a href="https://github.com/JspIIV/halt">View on GitHub ↗</a></header>
+      <header><span class="lights"><i></i><i></i><i></i></span><span class="name">guard.py · python</span><button class="copy" type="button" data-copy>Copy</button><a href="https://github.com/JspIIV/halt">GitHub ↗</a></header>
       <div class="body">
-        <pre>def _guard_is_up(self) -&gt; bool:
-    return bool(gl.get_contract_at(Address(self.guardian))
-                .view().halted(gl.message.contract_address.as_hex))</pre>
+        <pre><span class="k">def</span> <span class="fn">_guard_is_up</span>(<span class="id">self</span>) -&gt; <span class="k">bool</span>:
+    <span class="k">try</span>:
+        <span class="k">return</span> <span class="k">bool</span>(<span class="id">gl</span>.<span class="at">get_contract_at</span>(<span class="fn">Address</span>(<span class="id">self</span>.guardian))
+                    .<span class="at">view</span>().<span class="at">halted</span>(<span class="id">gl</span>.message.contract_address.as_hex))
+    <span class="k">except</span> <span class="fn">Exception</span>:
+        <span class="k">return</span> <span class="k">False</span></pre>
         <div class="sub">The whole integration</div>
       </div>
       <footer><span>Fails open on purpose</span>
@@ -559,6 +674,21 @@ const short = a => String(a).slice(0, 10) + "…";
 const clock = t => new Date(t).toISOString().slice(11, 19);
 const NL = String.fromCharCode(10);
 const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+
+/* One handler for both copies of the snippet. */
+document.querySelectorAll("[data-copy]").forEach(button => {
+  button.addEventListener("click", () => {
+    const code = button.closest(".runner").querySelector("pre").innerText;
+    navigator.clipboard.writeText(code).then(() => {
+      button.textContent = "Copied";
+      button.classList.add("done");
+      setTimeout(() => { button.textContent = "Copy"; button.classList.remove("done"); }, 1600);
+    }).catch(() => { button.textContent = "Select it"; });
+  });
+});
+
+const topbar = document.getElementById("topbar");
+addEventListener("scroll", () => topbar.classList.toggle("stuck", scrollY > 8), { passive: true });
 
 fetch("./data.json").then(r => r.json()).then(d => {
   const co = d.coordination;
@@ -736,6 +866,64 @@ fetch("./data.json").then(r => r.json()).then(d => {
     chip("89", "runs, predictions written first"),
     chip("9 / 10", "hardest false claim refused"),
   ].join(""));
+
+  /* Three figures above the table, because a table is a place to check a claim
+     and these are the claim. Every one of them is a count of runs on this page. */
+  if (tr) {
+    const bb = d.battery && d.battery.summary;
+    const auto = co && (co.watched || []).find(r => r.outcome === "UPHELD");
+    const kpi = (n, unit, label, note) =>
+      '<div class="kpi"><b>' + n + (unit ? "<i>" + unit + "</i>" : "") + "</b><span>"
+      + label + "</span><em>" + note + "</em></div>";
+    set("kpis",
+      kpi(tr.total, "", "runs on chain", "Every one with its transaction, and with the outcome "
+        + "we wrote down before sending it.")
+      + kpi(bb ? bb.median_seconds : "-", "s", "median alarm to halted",
+        "From the alarm being sent to the protocol refusing withdrawals."
+        + (auto ? " The agent's own catch took " + auto.seconds + "s." : ""))
+      + kpi(tr.matched + " / " + tr.predicted, "", "came out as predicted",
+        "The rest are in the table, marked, and are why this page has a section about what "
+        + "broke."));
+  }
+
+  const search = document.getElementById("trialsearch");
+  const rowsOf = () => [...document.querySelectorAll("#trialrows tr")];
+  let filter = "all";
+  function applyFilter() {
+    const term = (search.value || "").trim().toLowerCase();
+    let shown = 0;
+    rowsOf().forEach(row => {
+      const agreed = !row.classList.contains("miss");
+      const hit = !term || row.textContent.toLowerCase().includes(term);
+      const kept = hit && (filter === "all" || (filter === "yes") === agreed);
+      row.classList.toggle("off", !kept);
+      if (kept) shown += 1;
+    });
+    const foot = document.getElementById("trialfoot");
+    if (foot) foot.textContent = shown + (shown === 1 ? " run" : " runs")
+      + (term || filter !== "all" ? " matching" : " in all")
+      + ". The ones that did not agree are marked down the left.";
+    const button = document.getElementById("showall");
+    if (button) button.remove();
+  }
+  search.addEventListener("input", applyFilter);
+  document.querySelectorAll("[data-filter]").forEach(button => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll("[data-filter]").forEach(b => b.classList.remove("on"));
+      button.classList.add("on");
+      filter = button.dataset.filter;
+      applyFilter();
+    });
+  });
+
+  document.querySelectorAll("[data-tab]").forEach(button => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll("[data-tab]").forEach(b => b.classList.remove("on"));
+      button.classList.add("on");
+      document.querySelectorAll(".panelbox").forEach(box => { box.hidden = true; });
+      document.getElementById("tab-" + button.dataset.tab).hidden = false;
+    });
+  });
 
   const alarms = d.alarms || [];
   const counts = {};
