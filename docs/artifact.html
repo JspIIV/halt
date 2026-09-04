@@ -50,26 +50,34 @@
 
 <header id="topbar" class="sticky top-0 z-50 border-b border-white/5 bg-black/40 backdrop-blur-md">
   <div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
-    <a href="#" class="flex items-center gap-1 font-mono text-2xl font-bold tracking-[0.18em] text-white">
-      H<svg viewBox="0 0 100 116" class="glow h-[0.95em] w-auto" aria-hidden="true">
-        <path d="M50 6 L92 24 V60 C92 86 72 102 50 110 C28 102 8 86 8 60 V24 Z"
-              fill="none" stroke="#FF5500" stroke-width="9" stroke-linejoin="round"/>
-        <rect x="34" y="40" width="11" height="36" rx="4" fill="#FF5500"/>
-        <rect x="55" y="40" width="11" height="36" rx="4" fill="#FF5500"/>
-      </svg>LT<span class="sr-only">HALT</span>
+    <a href="#" aria-label="HALT">
+    <div class="flex items-center gap-2 font-mono text-2xl font-black tracking-[0.25em] text-white select-none">
+      <span>H</span>
+      <div class="relative mx-0.5 flex items-center justify-center h-7 w-7">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+             class="h-full w-full drop-shadow-[0_0_10px_rgba(255,85,0,0.7)]">
+          <path d="M12 22L3 5C3 5 7 3 12 3C17 3 21 5 21 5L12 22Z" fill="#FF5500"
+                stroke="#FF7722" stroke-width="1.5" stroke-linejoin="round"/>
+          <rect x="9" y="8" width="2" height="6" rx="1" fill="#0A0B0E"/>
+          <rect x="13" y="8" width="2" height="6" rx="1" fill="#0A0B0E"/>
+        </svg>
+      </div>
+      <span>L</span>
+      <span>T</span>
+    </div>
     </a>
 
     <nav class="hidden items-center gap-8 font-mono text-[11px] uppercase tracking-[0.16em] text-mute lg:flex">
       <a href="#broke" class="transition hover:text-white">What broke</a>
       <a href="#record" class="transition hover:text-white">The record</a>
       <a href="#limits" class="transition hover:text-white">Limits</a>
-      <a href="https://github.com/JspIIV/halt" class="transition hover:text-white">Docs</a>
+      <a href="https://github.com/JspIIV/halt" class="transition hover:text-white">GH</a>
     </nav>
 
     <a id="studiolink" href="https://explorer-studio.genlayer.com/"
        class="rounded-full bg-gradient-to-r from-flame to-flame-soft px-5 py-2.5 font-mono text-[11px]
               font-bold uppercase tracking-[0.12em] text-white shadow-[0_0_24px_rgba(255,85,0,.35)]
-              transition hover:shadow-[0_0_34px_rgba(255,85,0,.55)]">Explore Studio</a>
+              transition hover:shadow-[0_0_34px_rgba(255,85,0,.55)]">Explorer Studio</a>
   </div>
 </header>
 
@@ -78,6 +86,23 @@
   <div class="relative z-10 mx-auto grid max-w-7xl gap-14 px-6 pb-24 pt-16 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:pt-24">
 
     <div>
+      <div class="mb-8">
+    <div class="flex items-center gap-3 font-mono text-4xl sm:text-5xl font-black tracking-[0.25em] text-white select-none">
+      <span>H</span>
+      <div class="relative mx-0.5 flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+             class="h-full w-full drop-shadow-[0_0_10px_rgba(255,85,0,0.7)]">
+          <path d="M12 22L3 5C3 5 7 3 12 3C17 3 21 5 21 5L12 22Z" fill="#FF5500"
+                stroke="#FF7722" stroke-width="1.5" stroke-linejoin="round"/>
+          <rect x="9" y="8" width="2" height="6" rx="1" fill="#0A0B0E"/>
+          <rect x="13" y="8" width="2" height="6" rx="1" fill="#0A0B0E"/>
+        </svg>
+      </div>
+      <span>L</span>
+      <span>T</span>
+    </div>
+      </div>
+
       <div class="mb-7 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-4 py-2">
         <span class="lamp h-2 w-2 rounded-full bg-emerald-400"></span>
         <span class="font-mono text-[11px] uppercase tracking-[0.14em] text-mute">Live on GenLayer Studionet</span>
@@ -121,11 +146,8 @@
                        tracking-[0.12em] text-slate-400 transition hover:border-flame hover:text-white">Copy</button>
       </div>
       <pre class="overflow-x-auto px-5 py-5 font-mono text-[12.5px] leading-relaxed text-slate-200"><span class="k">def</span> <span class="fn">_guard_is_up</span>(<span class="id">self</span>) -&gt; <span class="k">bool</span>:
-    <span class="k">try</span>:
-        <span class="k">return</span> <span class="k">bool</span>(<span class="id">gl</span>.<span class="at">get_contract_at</span>(<span class="fn">Address</span>(<span class="id">self</span>.guardian))
-                    .<span class="at">view</span>().<span class="at">halted</span>(<span class="id">gl</span>.message.contract_address.as_hex))
-    <span class="k">except</span> <span class="fn">Exception</span>:
-        <span class="k">return</span> <span class="k">False</span></pre>
+    <span class="k">return</span> <span class="k">bool</span>(<span class="id">gl</span>.<span class="at">get_contract_at</span>(<span class="fn">Address</span>(<span class="id">self</span>.guardian))
+                .<span class="at">view</span>().<span class="at">halted</span>(<span class="id">gl</span>.message.contract_address.as_hex))</pre>
       <div class="flex items-center justify-between gap-4 border-t border-white/10 px-5 py-3.5">
         <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">No key handed over</span>
         <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-flame">Four lines</span>
@@ -217,6 +239,63 @@
       </p>
     </div>
     <div id="findings" class="grid gap-5"></div>
+  </div>
+</section>
+
+<section class="py-24">
+  <div class="mx-auto max-w-7xl px-6">
+    <div class="mx-auto mb-12 max-w-3xl text-center">
+      <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-flame">Measured</p>
+      <h2 class="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+        Numbers, <span class="text-flame">not adjectives</span>.
+      </h2>
+    </div>
+
+    <div class="grid gap-5 lg:grid-cols-4">
+      <a href="https://github.com/JspIIV/halt/blob/main/results/what_broke_and_what_held.md"
+         class="group rounded-2xl border border-white/10 bg-card p-7 transition hover:-translate-y-1 hover:border-flame/40">
+        <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em]">
+          <span class="text-flame">Study</span><span class="text-slate-600">89 runs</span>
+        </div>
+        <h3 class="mt-4 text-lg font-semibold leading-snug text-white">What broke when we tried to break it</h3>
+        <p class="mt-3 text-[14px] leading-relaxed text-mute">Every prediction written down before
+        the run. Two faults found and closed, two published claims contradicted by our own
+        measurements, and the number that still slips named rather than smoothed over.</p>
+      </a>
+
+      <a href="https://github.com/JspIIV/halt/blob/main/results/the_line_code_cannot_hold.md"
+         class="group rounded-2xl border border-white/10 bg-card p-7 transition hover:-translate-y-1 hover:border-flame/40">
+        <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em]">
+          <span class="text-flame">Study</span><span class="text-slate-600">on chain</span>
+        </div>
+        <h3 class="mt-4 text-lg font-semibold leading-snug text-white">The line code cannot hold</h3>
+        <p class="mt-3 text-[14px] leading-relaxed text-mute">Two addresses, a fifth of the vault
+        each, inside every per address rule anybody could write. The threshold agent looked
+        straight at it and reported nothing out of line, three times.</p>
+      </a>
+
+      <a href="https://github.com/JspIIV/halt/blob/main/results/how_long_the_money_leaves.md"
+         class="group rounded-2xl border border-white/10 bg-card p-7 transition hover:-translate-y-1 hover:border-flame/40">
+        <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em]">
+          <span class="text-flame">Sources</span><span class="text-slate-600">Nomad · Curve · Euler</span>
+        </div>
+        <h3 class="mt-4 text-lg font-semibold leading-snug text-white">How long the money leaves</h3>
+        <p class="mt-3 text-[14px] leading-relaxed text-mute">Nomad ran 960 transactions over
+        hours. Curve emptied three pools over two. Why minutes are the unit that matters, and
+        where an atomic exploit puts this out of reach.</p>
+      </a>
+
+      <a href="https://github.com/JspIIV/halt/blob/main/AUDIT_BRIEF.md"
+         class="group rounded-2xl border border-white/10 bg-card p-7 transition hover:-translate-y-1 hover:border-flame/40">
+        <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em]">
+          <span class="text-flame">Brief</span><span class="text-slate-600">for a reviewer</span>
+        </div>
+        <h3 class="mt-4 text-lg font-semibold leading-snug text-white">Check it without trusting us</h3>
+        <p class="mt-3 text-[14px] leading-relaxed text-mute">Every run with its transaction,
+        generated from the trial file rather than from a summary of it, which is the only way a
+        summary can be trusted not to have improved itself.</p>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -318,12 +397,12 @@
       </div>
     </div>
 
-    <div class="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-card">
-      <div class="border-b border-white/5 px-6 py-4 font-mono text-[11px] uppercase tracking-[0.14em] text-slate-500">
-        Every alarm this guardian has heard
-      </div>
-      <div id="alarms" class="divide-y divide-white/5"></div>
-    </div>
+    <details class="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-card">
+      <summary class="cursor-pointer px-6 py-5 font-mono text-[11px] uppercase tracking-[0.14em] text-slate-400 transition hover:text-white">
+        Open the full record, refusals and reversals included
+      </summary>
+      <div id="alarms" class="divide-y divide-white/5 border-t border-white/5"></div>
+    </details>
   </div>
 </section>
 
@@ -332,35 +411,46 @@
     <div class="mx-auto mb-12 max-w-3xl text-center">
       <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-flame">Limits</p>
       <h2 class="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-        What it does, and what it <span class="text-flame">does not</span>.
+        What it <span class="text-flame">will not</span> do.
       </h2>
     </div>
 
-    <div class="grid gap-5 lg:grid-cols-2">
-      <div class="overflow-hidden rounded-2xl border border-white/10 bg-card">
-        <div class="flex items-center gap-2.5 border-b border-white/5 px-7 py-5">
-          <i data-lucide="check-circle-2" class="h-4 w-4 text-emerald-400"></i>
-          <span class="font-mono text-[11px] uppercase tracking-[0.14em] text-emerald-400">What it does</span>
+    <div class="grid gap-5 lg:grid-cols-3">
+      <div class="rounded-2xl border border-white/10 bg-card p-8">
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="search-x" class="h-4 w-4 text-flame"></i>
+          <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-flame">Limit 01</span>
         </div>
-        <ul class="divide-y divide-white/5 px-7">
-          <li class="py-5"><b class="block font-semibold text-white">Stops a protocol in one transaction.</b><p class="mt-2 text-[14.5px] leading-relaxed text-mute">The verdict and the enforcement are the same write. There is no key to reach and nobody to wake up.</p></li>
-          <li class="py-5"><b class="block font-semibold text-white">Enforces a rule no contract could evaluate.</b><p class="mt-2 text-[14.5px] leading-relaxed text-mute">Addresses acting together as one actor, read from timing the protocol publishes about itself.</p></li>
-          <li class="py-5"><b class="block font-semibold text-white">Refuses a plausible claim and charges for it.</b><p class="mt-2 text-[14.5px] leading-relaxed text-mute">Ten false alarms out of ten, including injection in the evidence and a rule nobody published.</p></li>
-          <li class="py-5"><b class="block font-semibold text-white">Releases a protocol it stopped wrongly.</b><p class="mt-2 text-[14.5px] leading-relaxed text-mute">An appeal decided by a second round, at once, with the deposit behind the alarm going to the owner.</p></li>
-        </ul>
+        <h3 class="mt-5 text-xl font-semibold text-white">It does not find exploits.</h3>
+        <p class="mt-3 text-[15px] leading-relaxed text-mute">Somebody has to see it and say so,
+        and that somebody can be a bot. What this removes is the wait between the seeing and the
+        stopping: the alarm, the reading and the halt are one transaction, so there is no key to
+        reach and nobody to wake at four in the morning. The seeing is still yours.</p>
       </div>
 
-      <div class="overflow-hidden rounded-2xl border border-white/10 bg-card">
-        <div class="flex items-center gap-2.5 border-b border-white/5 px-7 py-5">
-          <i data-lucide="x-circle" class="h-4 w-4 text-flame"></i>
-          <span class="font-mono text-[11px] uppercase tracking-[0.14em] text-flame">What it does not</span>
+      <div class="rounded-2xl border border-white/10 bg-card p-8">
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="scale" class="h-4 w-4 text-flame"></i>
+          <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-flame">Limit 02</span>
         </div>
-        <ul class="divide-y divide-white/5 px-7">
-          <li class="py-5"><b class="block font-semibold text-white">Find exploits.</b><p class="mt-2 text-[14.5px] leading-relaxed text-mute">Somebody has to see it and say so. What this removes is the wait between the seeing and the stopping, which is where the money goes.</p></li>
-          <li class="py-5"><b class="block font-semibold text-white">Stop an atomic exploit.</b><p class="mt-2 text-[14.5px] leading-relaxed text-mute">Nothing outside the transaction can. This is built for the drains that take minutes and hours, which is most by value.</p></li>
-          <li class="py-5"><b class="block font-semibold text-white">Judge what might happen.</b><p class="mt-2 text-[14.5px] leading-relaxed text-mute">A theoretical bug, a design somebody dislikes, a risk with no event behind it: refused, at the cost of the deposit.</p></li>
-          <li class="py-5"><b class="block font-semibold text-white">Get the hard case right every time.</b><p class="mt-2 text-[14.5px] leading-relaxed text-mute">The coordination reading refuses a determined false claim nine times in ten. The tenth is in the table above.</p></li>
-        </ul>
+        <h3 class="mt-5 text-xl font-semibold text-white">It judges what is, never what might be.</h3>
+        <p class="mt-3 text-[15px] leading-relaxed text-mute">A theoretical bug, a design somebody
+        dislikes, a risk with no event behind it: all refused, and refused at the cost of the
+        deposit. Ten false alarms out of ten were turned away, including a rule nobody published
+        and an instruction hidden in the evidence. A pause button anyone can press with a
+        paragraph is a denial of service with extra steps.</p>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-card p-8">
+        <div class="flex items-center gap-2.5">
+          <i data-lucide="zap-off" class="h-4 w-4 text-flame"></i>
+          <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-flame">Limit 03</span>
+        </div>
+        <h3 class="mt-5 text-xl font-semibold text-white">It does not stop an atomic exploit.</h3>
+        <p class="mt-3 text-[15px] leading-relaxed text-mute">Nothing outside the transaction can,
+        and pretending otherwise would be the easiest lie on this page. This is built for the
+        drains that take minutes and hours, which is where most of the value has actually gone:
+        Nomad ran 960 transactions, Curve emptied three pools over two hours.</p>
       </div>
     </div>
   </div>
@@ -394,7 +484,20 @@
 
 <footer class="border-t border-white/5 py-12">
   <div class="mx-auto flex max-w-7xl flex-col gap-4 px-6 sm:flex-row sm:items-center sm:justify-between">
-    <span class="font-mono text-lg font-bold tracking-[0.18em] text-white">H<span class="text-flame">▲</span>LT</span>
+    <div class="flex items-center gap-2 font-mono text-lg font-black tracking-[0.25em] text-white select-none">
+      <span>H</span>
+      <div class="relative mx-0.5 flex items-center justify-center h-5 w-5">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+             class="h-full w-full drop-shadow-[0_0_10px_rgba(255,85,0,0.7)]">
+          <path d="M12 22L3 5C3 5 7 3 12 3C17 3 21 5 21 5L12 22Z" fill="#FF5500"
+                stroke="#FF7722" stroke-width="1.5" stroke-linejoin="round"/>
+          <rect x="9" y="8" width="2" height="6" rx="1" fill="#0A0B0E"/>
+          <rect x="13" y="8" width="2" height="6" rx="1" fill="#0A0B0E"/>
+        </svg>
+      </div>
+      <span>L</span>
+      <span>T</span>
+    </div>
     <p id="stamp" class="font-mono text-[11px] leading-relaxed text-slate-500"></p>
   </div>
 </footer>

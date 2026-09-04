@@ -57,13 +57,21 @@
 
 <header id="topbar" class="sticky top-0 z-50 border-b border-white/5 bg-black/40 backdrop-blur-md">
   <div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
-    <a href="#" class="flex items-center gap-1 font-mono text-2xl font-bold tracking-[0.18em] text-white">
-      H<svg viewBox="0 0 100 116" class="glow h-[1.02em] w-auto" aria-hidden="true">
-        <path d="M50 9 L91 104 H9 Z" fill="none" stroke="#FF5500" stroke-width="10"
-              stroke-linejoin="round"/>
-        <rect x="37" y="58" width="9" height="31" rx="3.5" fill="#FF5500"/>
-        <rect x="54" y="58" width="9" height="31" rx="3.5" fill="#FF5500"/>
-      </svg>LT<span class="sr-only">HALT</span>
+    <a href="#" aria-label="HALT">
+    <div class="flex items-center gap-2 font-mono text-2xl font-black tracking-[0.25em] text-white select-none">
+      <span>H</span>
+      <div class="relative mx-0.5 flex items-center justify-center h-7 w-7">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+             class="h-full w-full drop-shadow-[0_0_10px_rgba(255,85,0,0.7)]">
+          <path d="M12 22L3 5C3 5 7 3 12 3C17 3 21 5 21 5L12 22Z" fill="#FF5500"
+                stroke="#FF7722" stroke-width="1.5" stroke-linejoin="round"/>
+          <rect x="9" y="8" width="2" height="6" rx="1" fill="#0A0B0E"/>
+          <rect x="13" y="8" width="2" height="6" rx="1" fill="#0A0B0E"/>
+        </svg>
+      </div>
+      <span>L</span>
+      <span>T</span>
+    </div>
     </a>
 
     <nav class="hidden items-center gap-8 font-mono text-[11px] uppercase tracking-[0.16em] text-mute lg:flex">
@@ -85,6 +93,23 @@
   <div class="relative z-10 mx-auto grid max-w-7xl gap-14 px-6 pb-24 pt-16 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:pt-24">
 
     <div>
+      <div class="mb-8">
+    <div class="flex items-center gap-3 font-mono text-4xl sm:text-5xl font-black tracking-[0.25em] text-white select-none">
+      <span>H</span>
+      <div class="relative mx-0.5 flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+             class="h-full w-full drop-shadow-[0_0_10px_rgba(255,85,0,0.7)]">
+          <path d="M12 22L3 5C3 5 7 3 12 3C17 3 21 5 21 5L12 22Z" fill="#FF5500"
+                stroke="#FF7722" stroke-width="1.5" stroke-linejoin="round"/>
+          <rect x="9" y="8" width="2" height="6" rx="1" fill="#0A0B0E"/>
+          <rect x="13" y="8" width="2" height="6" rx="1" fill="#0A0B0E"/>
+        </svg>
+      </div>
+      <span>L</span>
+      <span>T</span>
+    </div>
+      </div>
+
       <div class="mb-7 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-4 py-2">
         <span class="lamp h-2 w-2 rounded-full bg-emerald-400"></span>
         <span class="font-mono text-[11px] uppercase tracking-[0.14em] text-mute">Live on GenLayer Studionet</span>
@@ -466,7 +491,20 @@
 
 <footer class="border-t border-white/5 py-12">
   <div class="mx-auto flex max-w-7xl flex-col gap-4 px-6 sm:flex-row sm:items-center sm:justify-between">
-    <span class="font-mono text-lg font-bold tracking-[0.18em] text-white">H<span class="text-flame">▲</span>LT</span>
+    <div class="flex items-center gap-2 font-mono text-lg font-black tracking-[0.25em] text-white select-none">
+      <span>H</span>
+      <div class="relative mx-0.5 flex items-center justify-center h-5 w-5">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+             class="h-full w-full drop-shadow-[0_0_10px_rgba(255,85,0,0.7)]">
+          <path d="M12 22L3 5C3 5 7 3 12 3C17 3 21 5 21 5L12 22Z" fill="#FF5500"
+                stroke="#FF7722" stroke-width="1.5" stroke-linejoin="round"/>
+          <rect x="9" y="8" width="2" height="6" rx="1" fill="#0A0B0E"/>
+          <rect x="13" y="8" width="2" height="6" rx="1" fill="#0A0B0E"/>
+        </svg>
+      </div>
+      <span>L</span>
+      <span>T</span>
+    </div>
     <p id="stamp" class="font-mono text-[11px] leading-relaxed text-slate-500"></p>
   </div>
 </footer>
