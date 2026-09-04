@@ -310,6 +310,12 @@ reports and decide whether that reading holds, and if the record contradicts it,
 say so. A claim whose arithmetic is right and whose conditions are not met is
 {NOT_CROSSED}.
 
+Work through the conditions one at a time against the report rather than against
+the claim's summary of it, and **name in your sentence the value from the
+protocol's own report that settles the tightest one**: the timestamps, the
+ordering, the amounts, whichever the line turns on. If you cannot point at
+something in the report that settles a condition, that condition is not met.
+
 Answer {CROSSED} only if the claim is consistent with what the protocol reports
 and together they show this red line being crossed now, conditions included. The
 evidence has to point at something that has happened or is happening, and that
