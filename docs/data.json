@@ -1,53 +1,53 @@
 {
-  "halt": "0x8b795Ddf907Aaf19063CD77cD007842D94E4C877",
-  "vault": "0x9dEB7CFDED814CC1dF546380421C46BAE35672De",
+  "halt": "0x2E3F18f16b590D1952ec865D337A33E59412e517",
+  "vault": "0xeeBb8347485eFE22316bc21aDa72Ad54Ed9Bf524",
   "network": "GenLayer Studionet",
-  "exported_at": "2026-09-03T22:37:37.326Z",
+  "exported_at": "2026-09-04T07:29:14.716Z",
   "size": {
-    "protected": 4,
+    "protected": 15,
     "guard_states": {
-      "HALTED": 3,
-      "OPEN": 1
+      "OPEN": 9,
+      "HALTED": 6
     },
-    "alarms": 4,
+    "alarms": 15,
     "outcomes": {
-      "UPHELD": 3,
-      "REFUSED": 1
+      "REFUSED": 9,
+      "UPHELD": 6
     },
     "note": "anyone may raise a guard and only the owner may lower it, because an attacker sends transactions faster than a person does"
   },
   "guard": {
-    "target": "0x9deb7cfded814cc1df546380421c46bae35672de",
+    "target": "0xeebb8347485efe22316bc21ada72ad54ed9bf524",
     "owner": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
     "red_line": "Addresses acting together are one actor in this vault, and no actor may take out more than a third of everything the vault holds inside ten minutes, however many separate addresses it spreads itself across. Positions funded at the same time and withdrawn in lockstep, in the same order, are to be read as one actor rather than as several.",
     "bounty": 0,
     "state": "HALTED",
-    "raised_at": "2026-09-03T22:22:33.508826+00:00",
-    "raised_at_epoch": 1788474153,
+    "raised_at": "2026-09-04T04:06:12.349385+00:00",
+    "raised_at_epoch": 1788494772,
     "raised_by": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
     "alarms_upheld": 1,
     "alarms_refused": 0,
     "alarms_overturned": 0,
-    "opened_at": "2026-09-03T22:21:52.698826+00:00"
+    "opened_at": "2026-09-04T04:02:54.803143+00:00"
   },
   "alarms": [
     {
-      "index": 1,
-      "target": "0x9deb7cfded814cc1df546380421c46bae35672de",
+      "index": 14,
+      "target": "0xeebb8347485efe22316bc21ada72ad54ed9bf524",
       "by": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
-      "evidence": "Two addresses are taking this vault apart between them while each one stays inside every per address limit. The vault reports one position funded with 40000000000000000 wei and a second funded with 40000000000000000 wei, and each has since withdrawn 16000000000000000 wei. To leave no room for a dispute about the arithmetic: 80000000000000000 wei has been deposited into this vault in total, 32000000000000000 wei has been withdrawn in total, and the vault currently holds 48000000000000000 wei. Each address has taken forty percent of its own position, which is inside any limit anybody could write about a single address. Together they have taken forty percent of everything deposited, inside the same ten minutes. The line is crossed if and only if these two addresses are read as one actor.",
+      "evidence": "Two addresses are taking this vault apart between them while each one stays inside every per address limit. The vault reports two positions funded with 40000000000000000 wei each, moments apart, and each has since withdrawn 16000000000000000 wei, moments apart and in the same order they were funded. Total deposited 80000000000000000 wei, total withdrawn 32000000000000000 wei, currently held 48000000000000000 wei. Each address has taken forty percent of its own position, inside any limit anybody could write about a single address. Together they have taken forty percent of everything deposited, inside the same ten minutes.",
       "deposit": 2000000000000000,
-      "reported_by_target": "{\"guardian\": \"0x8b795ddf907aaf19063cd77cd007842d94e4c877\", \"halted\": false, \"held\": \"48000000000000000\", \"positions\": [{\"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\"}, {\"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\"}], \"recent\": [{\"kind\": \"withdraw\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-03T21:46:58.728832+00:00\"}, {\"kind\": \"withdraw\", \"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-03T21:46:18.708827+00:00\"}, {\"kind\": \"deposit\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"40000000000000000\", \"at\": \"2026-09-03T21:45:39.263009+00:00\"}, {\"kind\": \"deposit\",  [...]",
-      "at": "2026-09-03T22:22:33.508826+00:00",
-      "at_epoch": 1788474153,
-      "why": "Two addresses funded identical amounts at the same time and withdrew identical amounts in lockstep within ten minutes, totaling 32 units (more than one third of the 48 units held), meeting the red line's definition of one actor.",
+      "reported_by_target": "{\"guardian\": \"0x2e3f18f16b590d1952ec865d337a33e59412e517\", \"halted\": false, \"held\": \"48000000000000000\", \"positions\": [{\"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\", \"first_deposit_at\": \"2026-09-04T04:03:34.162755+00:00\", \"last_withdrawal_at\": \"2026-09-04T04:04:53.304721+00:00\"}, {\"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\", \"first_deposit_at\": \"2026-09-04T04:04:13.539924+00:00\", \"last_withdrawal_at\": \"2026-09-04T04:05:32.738821+00:00\"}], \"recent\": [{\"kind\": \"withdraw\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-04T04:05:32.738821+00:00\"}, {\"kind\": \"withdraw\", \"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"amount\": \"16 [...]",
+      "at": "2026-09-04T04:06:12.349385+00:00",
+      "at_epoch": 1788494772,
+      "why": "The protocol's own record shows two addresses deposited equal amounts seconds apart and withdrew equal amounts in the same order seconds apart, satisfying the red line's lockstep-equals-one-actor rule, and together their 32000000000000000 wei withdrawn exceeds one third of the 80000000000000000 wei  [...]",
       "outcome": "UPHELD",
       "paid": 12000000000000000,
       "paid_to": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c"
     }
   ],
   "vault_status": {
-    "guardian": "0x8b795ddf907aaf19063cd77cd007842d94e4c877",
+    "guardian": "0x2e3f18f16b590d1952ec865d337a33e59412e517",
     "halted": true,
     "held": "48000000000000000",
     "positions": [
@@ -55,13 +55,17 @@
         "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
         "holds": "24000000000000000",
         "deposited": "40000000000000000",
-        "withdrawn": "16000000000000000"
+        "withdrawn": "16000000000000000",
+        "first_deposit_at": "2026-09-04T04:03:34.162755+00:00",
+        "last_withdrawal_at": "2026-09-04T04:04:53.304721+00:00"
       },
       {
         "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
         "holds": "24000000000000000",
         "deposited": "40000000000000000",
-        "withdrawn": "16000000000000000"
+        "withdrawn": "16000000000000000",
+        "first_deposit_at": "2026-09-04T04:04:13.539924+00:00",
+        "last_withdrawal_at": "2026-09-04T04:05:32.738821+00:00"
       }
     ],
     "recent": [
@@ -69,25 +73,25 @@
         "kind": "withdraw",
         "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
         "amount": "16000000000000000",
-        "at": "2026-09-03T21:46:58.728832+00:00"
+        "at": "2026-09-04T04:05:32.738821+00:00"
       },
       {
         "kind": "withdraw",
         "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
         "amount": "16000000000000000",
-        "at": "2026-09-03T21:46:18.708827+00:00"
+        "at": "2026-09-04T04:04:53.304721+00:00"
       },
       {
         "kind": "deposit",
         "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
         "amount": "40000000000000000",
-        "at": "2026-09-03T21:45:39.263009+00:00"
+        "at": "2026-09-04T04:04:13.539924+00:00"
       },
       {
         "kind": "deposit",
         "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
         "amount": "40000000000000000",
-        "at": "2026-09-03T21:44:59.625371+00:00"
+        "at": "2026-09-04T04:03:34.162755+00:00"
       }
     ],
     "withdrawals_blocked": 0,
@@ -95,50 +99,45 @@
   },
   "ledger": [
     {
-      "kind": "guardian",
-      "value": "0x8b795ddf907aaf19063cd77cd007842d94e4c877",
-      "at": "2026-09-03T22:21:13.133107+00:00"
-    },
-    {
       "kind": "withdraw",
       "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
       "amount": 16000000000000000,
-      "at": "2026-09-03T21:46:58.728832+00:00"
+      "at": "2026-09-04T04:05:32.738821+00:00"
     },
     {
       "kind": "withdraw",
       "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
       "amount": 16000000000000000,
-      "at": "2026-09-03T21:46:18.708827+00:00"
+      "at": "2026-09-04T04:04:53.304721+00:00"
     },
     {
       "kind": "deposit",
       "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
       "amount": 40000000000000000,
-      "at": "2026-09-03T21:45:39.263009+00:00"
+      "at": "2026-09-04T04:04:13.539924+00:00"
     },
     {
       "kind": "deposit",
       "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
       "amount": 40000000000000000,
-      "at": "2026-09-03T21:44:59.625371+00:00"
+      "at": "2026-09-04T04:03:34.162755+00:00"
     }
   ],
   "coordination": {
-    "vault": "0x9dEB7CFDED814CC1dF546380421C46BAE35672De",
+    "vault": "0xeeBb8347485eFE22316bc21aDa72Ad54Ed9Bf524",
     "guard": {
-      "target": "0x9deb7cfded814cc1df546380421c46bae35672de",
+      "target": "0xeebb8347485efe22316bc21ada72ad54ed9bf524",
       "owner": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
       "red_line": "Addresses acting together are one actor in this vault, and no actor may take out more than a third of everything the vault holds inside ten minutes, however many separate addresses it spreads itself across. Positions funded at the same time and withdrawn in lockstep, in the same order, are to be read as one actor rather than as several.",
       "bounty": 0,
       "state": "HALTED",
-      "raised_at": "2026-09-03T22:22:33.508826+00:00",
-      "raised_at_epoch": 1788474153,
+      "raised_at": "2026-09-04T04:06:12.349385+00:00",
+      "raised_at_epoch": 1788494772,
       "raised_by": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
       "alarms_upheld": 1,
       "alarms_refused": 0,
       "alarms_overturned": 0,
-      "opened_at": "2026-09-03T22:21:52.698826+00:00"
+      "opened_at": "2026-09-04T04:02:54.803143+00:00"
     },
     "watched": [
       {
@@ -172,22 +171,22 @@
     ],
     "alarms": [
       {
-        "index": 1,
-        "target": "0x9deb7cfded814cc1df546380421c46bae35672de",
+        "index": 14,
+        "target": "0xeebb8347485efe22316bc21ada72ad54ed9bf524",
         "by": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
-        "evidence": "Two addresses are taking this vault apart between them while each one stays inside every per address limit. The vault reports one position funded with 40000000000000000 wei and a second funded with 40000000000000000 wei, and each has since withdrawn 16000000000000000 wei. To leave no room for a dispute about the arithmetic: 80000000000000000 wei has been deposited into this vault in total, 32000000000000000 wei has been withdrawn in total, and the vault currently holds 48000000000000000 wei. Each address has taken forty percent of its own position, which is inside any limit anybody could write about a single address. Together they have taken forty percent of everything deposited, inside the same ten minutes. The line is crossed if and only if these two addresses are read as one actor.",
+        "evidence": "Two addresses are taking this vault apart between them while each one stays inside every per address limit. The vault reports two positions funded with 40000000000000000 wei each, moments apart, and each has since withdrawn 16000000000000000 wei, moments apart and in the same order they were funded. Total deposited 80000000000000000 wei, total withdrawn 32000000000000000 wei, currently held 48000000000000000 wei. Each address has taken forty percent of its own position, inside any limit anybody could write about a single address. Together they have taken forty percent of everything deposited, inside the same ten minutes.",
         "deposit": 2000000000000000,
-        "reported_by_target": "{\"guardian\": \"0x8b795ddf907aaf19063cd77cd007842d94e4c877\", \"halted\": false, \"held\": \"48000000000000000\", \"positions\": [{\"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\"}, {\"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\"}], \"recent\": [{\"kind\": \"withdraw\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-03T21:46:58.728832+00:00\"}, {\"kind\": \"withdraw\", \"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-03T21:46:18.708827+00:00\"}, {\"kind\": \"deposit\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"40000000000000000\", \"at\": \"2026-09-03T21:45:39.263009+00:00\"}, {\"kind\": \"deposit\",  [...]",
-        "at": "2026-09-03T22:22:33.508826+00:00",
-        "at_epoch": 1788474153,
-        "why": "Two addresses funded identical amounts at the same time and withdrew identical amounts in lockstep within ten minutes, totaling 32 units (more than one third of the 48 units held), meeting the red line's definition of one actor.",
+        "reported_by_target": "{\"guardian\": \"0x2e3f18f16b590d1952ec865d337a33e59412e517\", \"halted\": false, \"held\": \"48000000000000000\", \"positions\": [{\"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\", \"first_deposit_at\": \"2026-09-04T04:03:34.162755+00:00\", \"last_withdrawal_at\": \"2026-09-04T04:04:53.304721+00:00\"}, {\"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\", \"first_deposit_at\": \"2026-09-04T04:04:13.539924+00:00\", \"last_withdrawal_at\": \"2026-09-04T04:05:32.738821+00:00\"}], \"recent\": [{\"kind\": \"withdraw\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-04T04:05:32.738821+00:00\"}, {\"kind\": \"withdraw\", \"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"amount\": \"16 [...]",
+        "at": "2026-09-04T04:06:12.349385+00:00",
+        "at_epoch": 1788494772,
+        "why": "The protocol's own record shows two addresses deposited equal amounts seconds apart and withdrew equal amounts in the same order seconds apart, satisfying the red line's lockstep-equals-one-actor rule, and together their 32000000000000000 wei withdrawn exceeds one third of the 80000000000000000 wei  [...]",
         "outcome": "UPHELD",
         "paid": 12000000000000000,
         "paid_to": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c"
       }
     ],
     "status": {
-      "guardian": "0x8b795ddf907aaf19063cd77cd007842d94e4c877",
+      "guardian": "0x2e3f18f16b590d1952ec865d337a33e59412e517",
       "halted": true,
       "held": "48000000000000000",
       "positions": [
@@ -195,13 +194,17 @@
           "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
           "holds": "24000000000000000",
           "deposited": "40000000000000000",
-          "withdrawn": "16000000000000000"
+          "withdrawn": "16000000000000000",
+          "first_deposit_at": "2026-09-04T04:03:34.162755+00:00",
+          "last_withdrawal_at": "2026-09-04T04:04:53.304721+00:00"
         },
         {
           "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
           "holds": "24000000000000000",
           "deposited": "40000000000000000",
-          "withdrawn": "16000000000000000"
+          "withdrawn": "16000000000000000",
+          "first_deposit_at": "2026-09-04T04:04:13.539924+00:00",
+          "last_withdrawal_at": "2026-09-04T04:05:32.738821+00:00"
         }
       ],
       "recent": [
@@ -209,34 +212,34 @@
           "kind": "withdraw",
           "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
           "amount": "16000000000000000",
-          "at": "2026-09-03T21:46:58.728832+00:00"
+          "at": "2026-09-04T04:05:32.738821+00:00"
         },
         {
           "kind": "withdraw",
           "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
           "amount": "16000000000000000",
-          "at": "2026-09-03T21:46:18.708827+00:00"
+          "at": "2026-09-04T04:04:53.304721+00:00"
         },
         {
           "kind": "deposit",
           "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
           "amount": "40000000000000000",
-          "at": "2026-09-03T21:45:39.263009+00:00"
+          "at": "2026-09-04T04:04:13.539924+00:00"
         },
         {
           "kind": "deposit",
           "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
           "amount": "40000000000000000",
-          "at": "2026-09-03T21:44:59.625371+00:00"
+          "at": "2026-09-04T04:03:34.162755+00:00"
         }
       ],
       "withdrawals_blocked": 0,
       "note": "the halted flag is read from the guardian in this call; the vault stores no copy of it, so nothing here can go stale"
     },
     "threshold": {
-      "vault": "0xf712F47089a59c3671EB35AE91Ed1a4428947944",
+      "vault": "0x4b2aA451297abd5E32a5d3a2F725257A5124Ff93",
       "status": {
-        "guardian": "0x8b795ddf907aaf19063cd77cd007842d94e4c877",
+        "guardian": "0x2e3f18f16b590d1952ec865d337a33e59412e517",
         "halted": false,
         "held": "42000000000000000",
         "positions": [
@@ -244,13 +247,17 @@
             "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
             "holds": "30000000000000000",
             "deposited": "50000000000000000",
-            "withdrawn": "20000000000000000"
+            "withdrawn": "20000000000000000",
+            "first_deposit_at": "2026-09-04T03:33:43.335771+00:00",
+            "last_withdrawal_at": "2026-09-04T03:37:42.588842+00:00"
           },
           {
             "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
             "holds": "12000000000000000",
             "deposited": "20000000000000000",
-            "withdrawn": "8000000000000000"
+            "withdrawn": "8000000000000000",
+            "first_deposit_at": "2026-09-04T03:35:23.127165+00:00",
+            "last_withdrawal_at": "2026-09-04T03:36:02.757670+00:00"
           }
         ],
         "recent": [
@@ -258,25 +265,25 @@
             "kind": "withdraw",
             "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
             "amount": "20000000000000000",
-            "at": "2026-09-03T21:53:46.805789+00:00"
+            "at": "2026-09-04T03:37:42.588842+00:00"
           },
           {
             "kind": "withdraw",
             "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
             "amount": "8000000000000000",
-            "at": "2026-09-03T21:52:07.142175+00:00"
+            "at": "2026-09-04T03:36:02.757670+00:00"
           },
           {
             "kind": "deposit",
             "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
             "amount": "20000000000000000",
-            "at": "2026-09-03T21:51:27.635088+00:00"
+            "at": "2026-09-04T03:35:23.127165+00:00"
           },
           {
             "kind": "deposit",
             "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
             "amount": "50000000000000000",
-            "at": "2026-09-03T21:49:48.023611+00:00"
+            "at": "2026-09-04T03:33:43.335771+00:00"
           }
         ],
         "withdrawals_blocked": 0,
