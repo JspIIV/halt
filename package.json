@@ -1,0 +1,23 @@
+{
+  "name": "halt",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An emergency stop that nobody has to reach: a GenLayer guardian that halts a protocol when a plain-language red line is crossed",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JspIIV/halt.git"
+  },
+  "scripts": {
+    "test": "python tests/stops_only_what_it_should.py",
+    "brief": "node scripts/audit_brief.mjs > AUDIT_BRIEF.md"
+  },
+  "dependencies": {
+    "ethers": "^6.17.0",
+    "genlayer-js": "^1.1.8"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

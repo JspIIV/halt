@@ -172,10 +172,17 @@ contracts/vault.py        an ordinary protocol that asks the guard before it pay
 contracts/lying_vault.py  the same, reporting an instruction to the validator
 contracts/rate_vault.py   the same, reporting a currency and a rate instead
 tests/                    71 checks, through the real methods
-watcher.mjs               the agent that notices and asks
+scripts/watcher.mjs       the agent that notices and asks
+scripts/                  everything else that talks to the chain
 scenarios/                every claim and appeal used, one per file
 results/                  every run, every log, and the write ups
 docs/                     the page, and the export it reads
+```
+
+Install once:
+
+```bash
+npm install
 ```
 
 The scripts open two throwaway Studionet keystores. Point them at yours:
@@ -188,17 +195,20 @@ export HALT_KS_PADV=... HALT_KS_PPUB=...
 Reproducing a single run:
 
 ```bash
-node deploy.mjs contracts/halt.py
-node deploy.mjs contracts/vault.py <guardian>
-node breach.mjs <guardian> <vault>
-node raise.mjs <guardian> <vault> scenarios/b_plain.txt "a true breach"
+node scripts/deploy.mjs contracts/halt.py
+node scripts/deploy.mjs contracts/vault.py <guardian>
+node scripts/breach.mjs <guardian> <vault>
+node scripts/raise.mjs <guardian> <vault> scenarios/b_plain.txt "a true breach"
 ```
 
-`batch20.mjs` through `batch24.mjs` are the measurement runs, in order. Each
-writes to `results/trials.json` as it goes, so an interrupted batch keeps what
-it had. `audit_brief.mjs` generates the reviewer document out of that file rather
-than out of a summary of it, which is the only way a summary can be trusted not to
-have quietly improved itself.
+Run them from the repository root; they read `contracts/`, `scenarios/` and
+`results/` by relative path.
+
+`scripts/batch20.mjs` through `batch24.mjs` are the measurement runs, in order.
+Each writes to `results/trials.json` as it goes, so an interrupted batch keeps
+what it had. `scripts/audit_brief.mjs` generates the reviewer document out of
+that file rather than out of a summary of it, which is the only way a summary can
+be trusted not to have quietly improved itself.
 
 Tests need no network:
 

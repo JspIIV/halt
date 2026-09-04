@@ -8,9 +8,9 @@
 // rewritten into a success afterwards.
 //
 //   node batch20.mjs <halt> <uncoord> <clean> <breachA> <breachB> <coordA>
-import { Wallet } from '../courtscan/node_modules/ethers/lib.esm/index.js';
-import { createClient, createAccount } from '../placard-app/node_modules/genlayer-js/dist/index.js';
-import { studionet } from '../placard-app/node_modules/genlayer-js/dist/chains/index.js';
+import { Wallet } from 'ethers';
+import { createClient, createAccount } from 'genlayer-js';
+import { studionet } from 'genlayer-js/chains';
 import fs from 'fs';
 import { KS, PASS } from './keys.mjs';
 

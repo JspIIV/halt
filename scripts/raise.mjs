@@ -7,9 +7,9 @@
 // results/trials.json so the record is cumulative rather than a screenshot.
 //
 //   node raise.mjs <halt> <vault> <file with the evidence> <label> [who]
-import { Wallet } from '../courtscan/node_modules/ethers/lib.esm/index.js';
-import { createClient, createAccount } from '../placard-app/node_modules/genlayer-js/dist/index.js';
-import { studionet } from '../placard-app/node_modules/genlayer-js/dist/chains/index.js';
+import { Wallet } from 'ethers';
+import { createClient, createAccount } from 'genlayer-js';
+import { studionet } from 'genlayer-js/chains';
 import fs from 'fs';
 const [HALT, VAULT, FILE, LABEL, WHO = 'ppub'] = process.argv.slice(2);
 const KS = String.raw`C:\Users\ysfym\.genlayer\keystores`;

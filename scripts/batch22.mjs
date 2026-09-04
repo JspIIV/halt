@@ -1,18 +1,16 @@
-// Measuring the same thing twice, after asking the round to show its working.
+// The four runs the first batch never got to.
 //
-// A claim that asserts a timing the ledger denies was refused three times and
-// upheld once. One in four is not a rounding error on a device whose whole job
-// is refusing plausible claims, so the question in the guard now asks the reader
-// to name the value from the protocol's own report that settles the tightest
-// condition, rather than to satisfy itself privately.
+// Not a finding, a sequencing mistake of ours: on each vault the claims expected
+// to fail were queued ahead of the one expected to succeed, and an upheld alarm
+// halts the vault. When a claim we expected to fail was upheld instead, and when
+// three claims on one vault were all expected to be upheld, everything behind
+// the first one met a guard that was already up. Each of these gets its own
+// vault this time.
 //
-// Ten runs of the false claim and five of the true one, each on its own vault so
-// nothing queues behind a halt.
-//
-//   node batch23.mjs <halt>
-import { Wallet } from '../courtscan/node_modules/ethers/lib.esm/index.js';
-import { createClient, createAccount } from '../placard-app/node_modules/genlayer-js/dist/index.js';
-import { studionet } from '../placard-app/node_modules/genlayer-js/dist/chains/index.js';
+//   node batch22.mjs <halt>
+import { Wallet } from 'ethers';
+import { createClient, createAccount } from 'genlayer-js';
+import { studionet } from 'genlayer-js/chains';
 import fs from 'fs';
 import { KS, PASS } from './keys.mjs';
 
@@ -72,6 +70,8 @@ async function deploy() {
   }
 }
 
+const SIMPLE = 'No address may withdraw more than half of what it deposited into this vault '
+  + 'inside any ten minute window.';
 const ACTOR = 'Addresses acting together are one actor in this vault, and no actor may take out '
   + 'more than a third of everything the vault holds inside ten minutes, however many separate '
   + 'addresses it spreads itself across. Positions funded at the same time and withdrawn in '
@@ -88,29 +88,23 @@ async function claim(vault, file, label, expect) {
   const evidence = fs.readFileSync(`scenarios/${file}.txt`, 'utf8').trim();
   const out = await send(other, HALT, 'raise_alarm', [vault, evidence], GEN / 500n);
   const got = out.outcome ?? (out.error ? 'ERROR' : (out._failed ? 'FAILED' : 'none'));
-  record({ label, kind: 'alarm', batch: 'plainer_facts', at: new Date().toISOString(), halt: HALT,
-           vault, expect, outcome: out.outcome ?? null, matched: got === expect,
-           seconds: out._seconds ?? null, tx: out._tx ?? null,
-           why: out.why ?? out.error ?? out._failed ?? null, evidence });
-  log(`${got === expect ? 'ok      ' : 'SURPRISE'} ${label} -> ${got}`);
-  if (got !== expect) log(`         ${String(out.why || out.error || '').slice(0, 170)}`);
+  record({ label, kind: 'alarm', batch: 'twenty', at: new Date().toISOString(), halt: HALT, vault,
+           expect, outcome: out.outcome ?? null, matched: got === expect, seconds: out._seconds ?? null,
+           tx: out._tx ?? null, why: out.why ?? out.error ?? out._failed ?? null, evidence });
+  log(`${got === expect ? 'as expected' : 'SURPRISE  '} ${label} -> ${got}`
+      + (out._seconds ? ` (${out._seconds}s)` : ''));
+  if (got !== expect) log(`            wanted ${expect}. ${String(out.why || out.error || '').slice(0, 160)}`);
 }
 
-// The pair that is not coordinated: unequal, far apart, withdrawn out of order.
-async function apartVault() {
+async function breachVault() {
   const v = await deploy();
-  await send(owner, HALT, 'protect', [v, ACTOR], GEN / 100n);
-  await send(owner, v, 'deposit', [], 5n * GEN / 100n);
-  await wait(60);
-  await send(other, v, 'deposit', [], 2n * GEN / 100n);
-  await send(other, v, 'withdraw', [String(8n * GEN / 1000n)]);
-  await wait(60);
-  await send(owner, v, 'withdraw', [String(2n * GEN / 100n)]);
+  await send(owner, HALT, 'protect', [v, SIMPLE], GEN / 100n);
+  await send(other, v, 'deposit', [], 4n * GEN / 100n);
+  await send(other, v, 'withdraw', [String(3n * GEN / 100n)]);
   return v;
 }
 
-// The pair that is: equal, moments apart, withdrawn in the order funded.
-async function lockstepVault() {
+async function coordVault() {
   const v = await deploy();
   await send(owner, HALT, 'protect', [v, ACTOR], GEN / 100n);
   await send(owner, v, 'deposit', [], 4n * GEN / 100n);
@@ -120,19 +114,15 @@ async function lockstepVault() {
   return v;
 }
 
-log('ten runs of the claim that lies about its timing');
-for (let i = 1; i <= 10; i++) {
-  const v = await apartVault();
-  await claim(v, 'u_false_timing', `with the moments reported plainly, false claim ${i} of 10`, 'REFUSED');
-}
+log('four vaults, one question each');
+const a = await breachVault();
+await claim(a, 'b_loose', 'a true breach with the figures rounded off', 'REFUSED');
+const b = await breachVault();
+await claim(b, 'b_plain', 'a true breach stated exactly', 'UPHELD');
+const c = await coordVault();
+await claim(c, 'k_understated', 'coordination with the share understated', 'UPHELD');
+const d = await coordVault();
+await claim(d, 'k_plain', 'coordination stated exactly', 'UPHELD');
 
-log('\nfive runs of the claim that does not, to see the fix cost nothing');
-for (let i = 1; i <= 5; i++) {
-  const v = await lockstepVault();
-  await claim(v, 'k_plain', `with the moments reported plainly, true claim ${i} of 5`, 'UPHELD');
-}
-
-const all = JSON.parse(fs.readFileSync('results/trials.json', 'utf8')).filter(t => t.batch === 'plainer_facts');
-const wrong = all.filter(t => !t.matched);
-log(`\n${all.length - wrong.length} of ${all.length} as predicted`);
-for (const t of wrong) log(`  ${t.label} -> ${t.outcome}`);
+const all = JSON.parse(fs.readFileSync('results/trials.json', 'utf8')).filter(t => t.batch === 'twenty');
+log(`\nfirst batch now complete: ${all.filter(t => t.matched).length} of ${all.length} as predicted`);

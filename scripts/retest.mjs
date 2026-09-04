@@ -1,8 +1,8 @@
 // Point a vault at the new guardian and open the guard it needs there.
 //   node retest.mjs <halt> <vault> <line: simple|actor>
-import { Wallet } from '../courtscan/node_modules/ethers/lib.esm/index.js';
-import { createClient, createAccount } from '../placard-app/node_modules/genlayer-js/dist/index.js';
-import { studionet } from '../placard-app/node_modules/genlayer-js/dist/chains/index.js';
+import { Wallet } from 'ethers';
+import { createClient, createAccount } from 'genlayer-js';
+import { studionet } from 'genlayer-js/chains';
 import fs from 'fs';
 import { KS, PASS } from './keys.mjs';
 const [HALT, VAULT, WHICH] = process.argv.slice(2);

@@ -9,8 +9,8 @@
 // The last two are the pair behind the centrepiece: the protocol that was
 // halted for a line no code can hold, and the identical protocol the threshold
 // watcher was left running against without ever seeing anything.
-import { createClient } from '../placard-app/node_modules/genlayer-js/dist/index.js';
-import { studionet } from '../placard-app/node_modules/genlayer-js/dist/chains/index.js';
+import { createClient } from 'genlayer-js';
+import { studionet } from 'genlayer-js/chains';
 import fs from 'fs';
 
 const HALT = process.argv[2];

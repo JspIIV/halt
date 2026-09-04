@@ -19,9 +19,9 @@
 // pause button held by whoever wrote the fastest bot.
 //
 //   node watcher.mjs <halt> <vault> [seconds between looks] [max alarms]
-import { Wallet } from '../courtscan/node_modules/ethers/lib.esm/index.js';
-import { createClient, createAccount } from '../placard-app/node_modules/genlayer-js/dist/index.js';
-import { studionet } from '../placard-app/node_modules/genlayer-js/dist/chains/index.js';
+import { Wallet } from 'ethers';
+import { createClient, createAccount } from 'genlayer-js';
+import { studionet } from 'genlayer-js/chains';
 import fs from 'fs';
 
 const HALT = process.argv[2];

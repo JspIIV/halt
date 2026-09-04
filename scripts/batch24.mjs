@@ -10,9 +10,9 @@
 // nothing queues behind a halt.
 //
 //   node batch23.mjs <halt>
-import { Wallet } from '../courtscan/node_modules/ethers/lib.esm/index.js';
-import { createClient, createAccount } from '../placard-app/node_modules/genlayer-js/dist/index.js';
-import { studionet } from '../placard-app/node_modules/genlayer-js/dist/chains/index.js';
+import { Wallet } from 'ethers';
+import { createClient, createAccount } from 'genlayer-js';
+import { studionet } from 'genlayer-js/chains';
 import fs from 'fs';
 import { KS, PASS } from './keys.mjs';
 
@@ -88,7 +88,7 @@ async function claim(vault, file, label, expect) {
   const evidence = fs.readFileSync(`scenarios/${file}.txt`, 'utf8').trim();
   const out = await send(other, HALT, 'raise_alarm', [vault, evidence], GEN / 500n);
   const got = out.outcome ?? (out.error ? 'ERROR' : (out._failed ? 'FAILED' : 'none'));
-  record({ label, kind: 'alarm', batch: 'stability', at: new Date().toISOString(), halt: HALT,
+  record({ label, kind: 'alarm', batch: 'plainer_facts', at: new Date().toISOString(), halt: HALT,
            vault, expect, outcome: out.outcome ?? null, matched: got === expect,
            seconds: out._seconds ?? null, tx: out._tx ?? null,
            why: out.why ?? out.error ?? out._failed ?? null, evidence });
@@ -123,16 +123,16 @@ async function lockstepVault() {
 log('ten runs of the claim that lies about its timing');
 for (let i = 1; i <= 10; i++) {
   const v = await apartVault();
-  await claim(v, 'u_false_timing', `after showing the working, false claim ${i} of 10`, 'REFUSED');
+  await claim(v, 'u_false_timing', `with the moments reported plainly, false claim ${i} of 10`, 'REFUSED');
 }
 
 log('\nfive runs of the claim that does not, to see the fix cost nothing');
 for (let i = 1; i <= 5; i++) {
   const v = await lockstepVault();
-  await claim(v, 'k_plain', `after showing the working, true claim ${i} of 5`, 'UPHELD');
+  await claim(v, 'k_plain', `with the moments reported plainly, true claim ${i} of 5`, 'UPHELD');
 }
 
-const all = JSON.parse(fs.readFileSync('results/trials.json', 'utf8')).filter(t => t.batch === 'stability');
+const all = JSON.parse(fs.readFileSync('results/trials.json', 'utf8')).filter(t => t.batch === 'plainer_facts');
 const wrong = all.filter(t => !t.matched);
 log(`\n${all.length - wrong.length} of ${all.length} as predicted`);
 for (const t of wrong) log(`  ${t.label} -> ${t.outcome}`);

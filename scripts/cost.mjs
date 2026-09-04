@@ -4,8 +4,8 @@
 // alarm comes back with a gaslimit and no price against it. Kept because the
 // question gets asked, and "we checked and the network does not price it" is a
 // better answer than a number somebody made up.
-import { createClient } from '../placard-app/node_modules/genlayer-js/dist/index.js';
-import { studionet } from '../placard-app/node_modules/genlayer-js/dist/chains/index.js';
+import { createClient } from 'genlayer-js';
+import { studionet } from 'genlayer-js/chains';
 import fs from 'fs';
 const c = createClient({ chain: studionet });
 const battery = JSON.parse(fs.readFileSync('results/battery.json', 'utf8'));

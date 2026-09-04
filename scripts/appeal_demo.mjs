@@ -5,9 +5,9 @@
 // protocol stops. Then its owner answers, the network takes a second look with
 // the vault's own state in front of it, and the stop comes off in the same
 // transaction with the alarm's deposit going to the protocol it froze.
-import { Wallet } from '../courtscan/node_modules/ethers/lib.esm/index.js';
-import { createClient, createAccount } from '../placard-app/node_modules/genlayer-js/dist/index.js';
-import { studionet } from '../placard-app/node_modules/genlayer-js/dist/chains/index.js';
+import { Wallet } from 'ethers';
+import { createClient, createAccount } from 'genlayer-js';
+import { studionet } from 'genlayer-js/chains';
 import fs from 'fs';
 import { KS, PASS } from './keys.mjs';
 const [HALT, VAULT] = process.argv.slice(2);

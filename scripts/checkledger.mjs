@@ -1,5 +1,5 @@
-import { createClient } from '../placard-app/node_modules/genlayer-js/dist/index.js';
-import { studionet } from '../placard-app/node_modules/genlayer-js/dist/chains/index.js';
+import { createClient } from 'genlayer-js';
+import { studionet } from 'genlayer-js/chains';
 const c = createClient({ chain: studionet });
 const s = JSON.parse(await c.readContract({ address: process.argv[2], functionName: 'status', args: [] }));
 const e = s.recent.slice().reverse();
