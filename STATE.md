@@ -1,5 +1,11 @@
 # Halt, where it stands
 
+**Published.** https://github.com/JspIIV/halt and the page at
+https://jspiiv.github.io/halt/, which reads docs/data.json straight from chain.
+Re-export with `node export.mjs <guardian> <vault> <vault> <untouched>` and push;
+the page needs no build.
+Keystore passwords come from the environment now, see keys.mjs.
+
 Paused on 2026-09-03 to work on something else. To be finished and submitted to
 the GenLayer portal as a Project. Nothing here is throwaway: the core works and
 is proven on chain.
