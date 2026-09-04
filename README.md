@@ -196,9 +196,9 @@ node raise.mjs <guardian> <vault> scenarios/b_plain.txt "a true breach"
 
 `batch20.mjs` through `batch24.mjs` are the measurement runs, in order. Each
 writes to `results/trials.json` as it goes, so an interrupted batch keeps what
-it had. `audit_brief.mjs` and `deepseek_audit.mjs` generate the reviewer
-documents out of that file rather than out of a summary of it, which is the only
-way a summary can be trusted not to have quietly improved itself.
+it had. `audit_brief.mjs` generates the reviewer document out of that file rather
+than out of a summary of it, which is the only way a summary can be trusted not to
+have quietly improved itself.
 
 Tests need no network:
 
