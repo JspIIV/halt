@@ -453,9 +453,11 @@ fetch("./data.json").then(r => r.json()).then(d => {
     set("coordfirst", first ? '<div class="card"><header><span>And the first attempt was '
       + "refused</span></header><div class=\"body\"><p class=\"why\" style=\"margin-top:0\">"
       + esc(first.why) + "</p><p style='color:var(--dim);font-size:15px;margin-bottom:0'>"
-      + "It called forty percent of deposits forty percent of holdings. The claim was true and "
-      + "the figure was loose, and loose was enough to lose the deposit. That is the standard "
-      + "the deposit is buying.</p></div></div>" : "");
+      + "It called forty percent of deposits forty percent of holdings, and the record said "
+      + "otherwise. We first read that as a lesson about precision, and later runs corrected "
+      + "us: a claim carrying no figures at all was upheld, because the protocol's own record "
+      + "showed the breach without help. What loses a deposit is a figure the record denies, "
+      + "not a figure left vague.</p></div></div>" : "");
 
     const dump = (co.status.positions || []).map(p =>
         "  " + short(p.who) + "  put in " + gen(p.deposited) + "   took out " + gen(p.withdrawn))

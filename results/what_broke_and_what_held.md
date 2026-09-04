@@ -89,8 +89,24 @@ claims were true.
 
 No contract change: this is a rule for whoever writes an alarm, and now the
 recorded scenarios follow it. **State the numerator, the denominator and the
-remainder, and let nothing be inferred.** An alarm has to be right about the
-figures, not merely right about the story, and a loose figure costs the deposit.
+remainder, and let nothing be inferred.**
+
+We first wrote that an alarm has to be right about its figures rather than
+merely right about its story, and that a loose figure costs the deposit. Later
+runs say that is wrong, so it is corrected here rather than quietly dropped. A
+claim carrying no figures at all was upheld, and so was one that rounded them
+off, both because the protocol's own record showed the breach without help:
+
+> The protocol reports one address deposited 40000000000000000 and then withdrew
+> 30000000000000000 about 34 seconds later, which is more than half of its
+> deposit within a ten minute window.
+
+The rule that actually holds is narrower. **A claim is refused when it
+contradicts the record, not when it is vague.** The two alarms that lost their
+deposits over a figure lost them for stating a share the record denied, which is
+a contradiction rather than an imprecision. Vagueness costs nothing when the
+record speaks for itself, and it costs everything when the record is the only
+thing that could have supported you.
 
 ## 4. Can the bot ask about a pair without pretending to decide?
 

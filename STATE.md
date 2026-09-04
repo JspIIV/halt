@@ -164,8 +164,14 @@ answer the way they did.
 
 **An ambiguity that costs deposits.** A share stated as "of everything the vault
 holds" was resolved against the current balance once and the total deposited
-another time. No contract change: an alarm has to state numerator, denominator
+another time. No contract change: an alarm should state numerator, denominator
 and remainder and leave nothing to be inferred.
+
+**And the reason those alarms failed is not the one we published.** We wrote
+that looseness costs the deposit. It does not: a claim with no figures at all
+was upheld, and so was one that rounded them off, because the protocol's record
+showed the breach without help. What loses a deposit is a figure the record
+denies. Contradiction, not imprecision.
 
 ## The attack we have not closed
 
