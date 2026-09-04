@@ -36,8 +36,12 @@
          padding: 26px 0; }
   .bar nav { display: flex; gap: 34px; font: 500 14px/1 var(--sans); color: var(--dim); }
   .bar nav a:hover { color: var(--text); }
-  .wordmark { justify-self: center; font: 700 27px/1 var(--sans); letter-spacing: -0.02em;
-              color: var(--red); }
+  /* The A is a pyramid with an eye in it, and the eye's upper lid does the work
+     of the letter's crossbar. Egyptian, because the whole contract is one
+     open eye that anybody may look through. */
+  .wordmark { justify-self: center; font: 700 27px/1 var(--sans);
+              letter-spacing: 0.04em; color: var(--red); white-space: nowrap; }
+  .eyeA { height: 0.82em; width: auto; vertical-align: -0.01em; margin: 0 0.06em; }
   .bar .right { justify-self: end; display: flex; gap: 10px; align-items: center; }
   .round { width: 34px; height: 34px; border-radius: 50%; background: var(--card);
            display: grid; place-items: center; font: 500 12px/1 var(--mono); color: var(--dim); }
@@ -258,7 +262,7 @@
       <a href="#record">The record</a>
       <a href="#limits">Limits</a>
     </nav>
-    <a class="wordmark" href="https://github.com/JspIIV/halt">Halt</a>
+    <a class="wordmark" href="https://github.com/JspIIV/halt" aria-label="Halt">H<svg class="eyeA" viewBox="0 0 100 112" aria-hidden="true"><path d="M6 106 L50 6 L94 106" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 81 Q50 59 77 81 Q50 103 23 81 Z" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/><circle cx="50" cy="81" r="9.5" fill="currentColor"/></svg>LT</a>
     <div class="right">
       <a class="round" id="explorerlink" href="https://explorer-studio.genlayer.com/" title="On chain">⛓</a>
       <a class="round" href="https://github.com/JspIIV/halt" title="GitHub">GH</a>
@@ -466,7 +470,7 @@
 
   <footer class="page">
     <div>
-      <span class="wordmark">Halt</span>
+      <span class="wordmark" aria-label="Halt">H<svg class="eyeA" viewBox="0 0 100 112" aria-hidden="true"><path d="M6 106 L50 6 L94 106" fill="none" stroke="currentColor" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/><path d="M23 81 Q50 59 77 81 Q50 103 23 81 Z" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/><circle cx="50" cy="81" r="9.5" fill="currentColor"/></svg>LT</span>
       <p>An emergency stop nobody has to reach.</p>
     </div>
     <ul>
