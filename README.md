@@ -340,9 +340,12 @@ Run everything from the repository root; the scripts read `contracts/`,
 `scenarios/` and `results/` by relative path.
 
 **Studionet rate limits, and it will interrupt you.** Thirty requests a minute
-and five hundred an hour, shared across everything you run. A batch will trip it.
-`verify.mjs` waits and tries again rather than printing a stack trace; the older
-scripts mostly retry and some do not.
+and five hundred an hour, shared across everything you run, and a batch will trip
+both. After a day of measurement runs we watched the hourly budget stay closed
+for a good deal longer than an hour, so an unlucky first attempt is worth
+repeating later rather than reading as a failure. `verify.mjs` waits out the
+minute limit and says plainly what happened on the hourly one; the older scripts
+mostly retry and some do not.
 
 Tests need no network and no account:
 

@@ -42,16 +42,20 @@ async function view(address, fn, args = []) {
       if (/per hour/i.test(why)) throw new Stop([
         'Studionet has stopped answering: its five hundred requests an hour are used',
         'up for this address. That is the network rationing rather than this project',
-        'failing, and the budget refills over the following hour.',
+        'failing. It refills on its own, though after a heavy day we have watched it',
+        'stay closed for well over the hour the message promises.',
         '',
         'Everything asked for here is public state, readable meanwhile at',
         'https://explorer-studio.genlayer.com/address/' + HALT,
       ].join('\n'));
-      if (attempt >= 6) throw new Stop('Studionet did not answer after six tries: '
+      if (attempt >= 5) throw new Stop('Studionet did not answer after five tries: '
                                        + why.slice(0, 140));
+      // A minute's window clears in a minute, and every impatient retry before
+      // then spends another request out of the same budget.
+      const seconds = /rate limit/i.test(why) ? 65 : attempt * 10;
       line('  (' + (/rate limit/i.test(why) ? 'rate limited' : 'network')
-           + ', waiting ' + attempt * 15 + 's)');
-      await wait(attempt * 15000);
+           + ', waiting ' + seconds + 's)');
+      await wait(seconds * 1000);
     }
   }
 }
