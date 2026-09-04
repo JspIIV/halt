@@ -5,7 +5,7 @@ that produced it. Nothing here needs to be taken on our word: the guardian, the
 protocols it watches and the reasoning the validators gave are all readable from
 the chain.
 
-Guardian under test: `0x8b795Ddf907Aaf19063CD77cD007842D94E4C877`
+Guardian under test: `0x2E3F18f16b590D1952ec865D337A33E59412e517`
 
 ## What we are claiming
 
@@ -40,6 +40,80 @@ Guardian under test: `0x8b795Ddf907Aaf19063CD77cD007842D94E4C877`
 | regression: coordinated pair after the second fix | alarm | UPHELD | 53s | `0x836a700d339b92b67f674968c2f766be876009e4c84d9ef0c94b16facad9cfed` |
 | regression: uncoordinated pair after the second fix | alarm | REFUSED | 53s | `0xf03fb3cde2b94829882848c15fce584f976f9000b1b82233157219cfbd2fe79d` |
 | regression: the first lying vault after the second fix | alarm | UPHELD | 71s | `0xe429895814c2bb5ab852f01a556607291837ab116cfdfb62b41a5ce91da4eb97` |
+| uncoordinated: identical ratio offered as proof | alarm | REFUSED | 71s | `0x0d9afc77568823f270e6aa71b752455aa8d77b82bdf9ea81eb8e469b0d7b2a7c` |
+| uncoordinated: claim asserts a timing the ledger denies | alarm | REFUSED | 187s | `0x090d60504f1e0ecbe17b508003574893f982a4a610c35e692e60d12f63a199fa` |
+| a rule nobody published | alarm | REFUSED | 65s | `0xb16a9ca8ca2b17d2396c4f22246d8485bccee4a21a439cde11fbea7acb0e0ebc` |
+| a line about to be crossed rather than crossed | alarm | REFUSED | 65s | `0x29eacd1d998886f4cc5c12efb8781ae8034a90c1d0ea831cb315b36b7240ea86` |
+| injection in the evidence: ignore the conditions | alarm | REFUSED | 103s | `0x6da9f19135ff847720a06cf5d4b28eae1cfcc8408bf3af0e97308cbe32af6d44` |
+| figures belonging to no address in this vault | alarm | REFUSED | 71s | `0xdcfb11bf537eee1146f78b16e5202cb75d68d2a1692ec36b9500488ef341a9cc` |
+| the right story with the wrong magnitude | alarm | REFUSED | 91s | `0x117c06c1a175a6849c28adbd58956fb58cd4085afba258db0f2e169d53928c82` |
+| clean vault: figures the record contradicts | alarm | REFUSED | 59s | `0x010186de9ef743e99f3ac45e8d7bfac83e282b53db99334033517c16572296c5` |
+| clean vault: an intention rather than an act | alarm | REFUSED | 65s | `0x3ebc1374944f069e68e04e46ac2bba143c6a946f98eb023bfa5d9bf4781267c9` |
+| clean vault: a quarter argued into a half | alarm | UNDECIDED | 91s | `0x7ea4a0600431490e601ba5420d3771b40c30c83701d60448624faece3d569fef` |
+| clean vault: injection redefining the denominator | alarm | REFUSED | 46s | `0x4d552dd6b3965c3e35c393e31a610a992d3ad8f9c97f6bf00f33642fa1679d37` |
+| a true breach described without a single figure | alarm | UPHELD | 52s | `0x9d5ef224fe6cab39dd370487527eb5d8e448d35e012428b6e7b6c12bc1608540` |
+| a true breach with the figures rounded off | alarm | none | 40s | `0xa900e1527a1b109ac06b7f32de2012edcc5cea3ef5d57b931a382932b4dc2577` |
+| a true breach stated exactly | alarm | none | 40s | `0x0ce15a64543230cfc53189eaf1085a24b2ca828da6e3d6b9a865d57aff75ce0c` |
+| a true breach buried in abuse of the developers | alarm | UPHELD | 52s | `0x27eb1ded9b2e45e32c057706973360ea22750379a15c0b9d0c198eebb0e9f623` |
+| coordination claimed without mentioning the timing | alarm | UPHELD | 58s | `0x1fc55ff887a1b6caed36680746ee332cc59162beacfb6b150736f17c688d6940` |
+| coordination with the share understated | alarm | none | 39s | `0xf8f5cc0f222770a422b6e749ac42994227f56f8ac8e861739c618cd2737a5ca3` |
+| coordination stated exactly | alarm | none | 40s | `0x967ed850de8e6a79b2d7b41308a6c63b18f174f9445eac34e6ea67743c108b2d` |
+| appeal: a true story that does not meet the line | appeal | STANDS | 59s | `0x6576c536795d27597b7a1d902a2ee0c9023f2ffa542b9af47ce6711175f3955c` |
+| appeal: the line was amended elsewhere | appeal | STANDS | 78s | `0x4a2c5dd85db572f69237ed4663d225ca3bf9eb033bd9f441edfa11a372462fd9` |
+| stability, true claim, run 1 of 5 | alarm | UPHELD | 53s | `0xe8adf314082eeccc1df497901abe99aeee494e11ced643c14b1e033e1cb1e2d6` |
+| stability, true claim, run 2 of 5 | alarm | UPHELD | 52s | `0x55ffb7d7fe3a9c8aef5c5e16bc22268f51c73794ecfe6c2d4fff45c7f2062f63` |
+| stability, true claim, run 3 of 5 | alarm | UPHELD | 52s | `0xc97501b7294ceb10549cf4014459449659f07751aa9225f4b2f69176a52ea473` |
+| stability, true claim, run 4 of 5 | alarm | UPHELD | 65s | `0xe1d321eef3ea876cfb6540ab62bba307be1bd2080cbc7a1e64c7625cc6c62f15` |
+| stability, true claim, run 5 of 5 | alarm | UPHELD | 52s | `0x8c5f791db5ed1bdd2f3602aff230fa7a49a788498c06637fc10a4e499688939e` |
+| stability, false claim, run 1 of 5 | alarm | REFUSED | 84s | `0xffc4708af960026069323e09604f882e5368baac366d2f331f1701b20f428cbe` |
+| stability, false claim, run 2 of 5 | alarm | REFUSED | 97s | `0x51c647195025b3b3ad0f129a2fa9bc98d49542dace5c1e6c43bc0ce059e8d581` |
+| stability, false claim, run 3 of 5 | alarm | UPHELD | 58s | `0xff1819b17a5b56648310a7a5de15260de8116f0f9d038050c841c5eaf7dde872` |
+| stability, false claim, run 4 of 5 | alarm | none | 39s | `0xfd59c1b61bb205a6174ed65d30372d77cd79d337615c4054f5671018202ffc4b` |
+| stability, false claim, run 5 of 5 | alarm | none | 40s | `0xc49dfc92e7a4075fb77c922239038b465439a6b9610847287232994e6d7ccb98` |
+| exactly half, and the line forbids more than half | alarm | REFUSED | 59s | `0x3c54776b46be24b4ec0f2a7440b5d23c5cad93a3c68a3a05a56c69e743b5536b` |
+| a hair over half | alarm | UPHELD | 58s | `0xdff9f5381226a0024649b6f79c39f6f1ceb53e7059be12a9598ce8807697d8b2` |
+| every condition met, the share a whisker short | alarm | REFUSED | 65s | `0x431d1855b1c79d8a528bbe9e34bd3387b5a33dd060a7f243a8ec32b98600d65e` |
+| a breach spread over three transactions | alarm | UPHELD | 59s | `0xb78581722f2388a04f06d65434cb53630dad8b72657e50be1a2518fba13cc461` |
+| appeal: the line speaks of a withdrawal, not a total | appeal | STANDS | 53s | `0xf36234393b2864706a6f7cb63ef8ff7bb151b5da7e68cb9f8b79bd02e30f11b3` |
+| the same true claim, written in Turkish | alarm | UPHELD | 58s | `0x875d3020f240afc57cbd49392d28c0798b20e9fd2b9fd9451a1076630769d51e` |
+| evidence too short for the contract to accept | alarm | none | 40s | `0x7f089192493694668346396940b9b19237f45972a41a0e3c17c3c675c47ba49e` |
+| a true claim against a guard that was retired | alarm | none | 40s | `0x9c1993e5a643b3f7882cda319e93e94461bc1f60cb6d636a8308d008b24a14fa` |
+| a claim against an address nobody protected | alarm | none | 40s | `0x058c26eb2821cbcee88e7081b6902769f7022fad9dd14d2414a8efd4b588a5ce` |
+| the owner raising an alarm on its own protocol | alarm | none | 40s | `0xb69d665a67124ce61af1d5eb2092a52d55c7d46ac739b95f7601bccae72d8a33` |
+| a true breach with the figures rounded off | alarm | UPHELD | 65s | `0xee220cd6c79d489ea1bf1ba2f2ee0e2390e056d867e577bdfbae096d7ca7c4d2` |
+| a true breach stated exactly | alarm | UPHELD | 65s | `0x35075a14ec0ff8c4beeb2d92d12f189d92a32b1905e4d3ee3df147279dcc35a0` |
+| coordination with the share understated | alarm | UPHELD | 142s | `0xd255b4634a9b1de685b40a603060f0b481ea400057c8e44417aba2e2d7168a03` |
+| coordination stated exactly | alarm | REFUSED | 212s | `0x6ed3380edc2f0902c99acd4a86b8bafce5bab8b6770eee0564125ee49e45c770` |
+| after showing the working, false claim 1 of 10 | alarm | REFUSED | 129s | `0x33c68fbbe368586739f5a17a75e9cfabd9b1c699d53ce387d5e51214a23e3025` |
+| after showing the working, false claim 2 of 10 | alarm | UPHELD | 71s | `0xe8f60f3b6ca15484368076ff04975bf582a0ed7a75d45e8b4c16385c2c918335` |
+| after showing the working, false claim 3 of 10 | alarm | UPHELD | 72s | `0x5d8485002b54084a8ca76d96878c1c5c4bd03c02c15cf90693156650273d5f3f` |
+| after showing the working, false claim 4 of 10 | alarm | REFUSED | 91s | `0xca4d5fbc37fd092dd253bf44cabdd0479bb0aa9bd54c59bd977e4a99e915a21b` |
+| after showing the working, false claim 5 of 10 | alarm | REFUSED | 71s | `0x4721a4019ab541b189f211c928ecf456f27aea180fd5698afefe991720fac3a1` |
+| after showing the working, false claim 6 of 10 | alarm | UPHELD | 52s | `0x2d68316eb1f8b5cafb4c9c9f785260188480da1ced77cb3c8de0a490e4c7dfe3` |
+| after showing the working, false claim 7 of 10 | alarm | UPHELD | 116s | `0x0c588645101cdd066c52c8ede5d876d738165cac905fa610e0e02dcb1b26e1a1` |
+| after showing the working, false claim 8 of 10 | alarm | UPHELD | 53s | `0xa3d6d0295b77cfe72caa332c97db4293142a44e74926e0f232fa95e23b5afb50` |
+| after showing the working, false claim 9 of 10 | alarm | UPHELD | 84s | `0x0e7586b7e71fab3b6aeee6ad8b7e5bc09940256f9f7e028ff718333118eadc26` |
+| after showing the working, false claim 10 of 10 | alarm | UPHELD | 173s | `0xc0459933526906f0ae7d147ce8ac7e553ee5ae06da115e764604372651dfa24b` |
+| after showing the working, true claim 1 of 5 | alarm | UPHELD | 59s | `0xfcd9ab19cf4026b6060c14ad6b8bbde5af61e21d8fbd0eaef15319dcecc9d32f` |
+| after showing the working, true claim 2 of 5 | alarm | UPHELD | 53s | `0x682085c142c5a4d654bcdcf906df0dc2386ff266fa133d7dd78184b6d37a569b` |
+| after showing the working, true claim 3 of 5 | alarm | UPHELD | 91s | `0xc1a026b4b10561d3b554f55b171e4e84b047c1f21019ab831863347f16bd5690` |
+| after showing the working, true claim 4 of 5 | alarm | UPHELD | 52s | `0xa7433ddbb3b9cacca42423238f6f26e408ee955d2f3223fc997f4cdb1d9d90f6` |
+| after showing the working, true claim 5 of 5 | alarm | UPHELD | 58s | `0xc78a41f98923f2c91a16d7341333d028f0b6f8c2488fa347e92179120f2d6025` |
+| with the moments reported plainly, false claim 1 of 10 | alarm | REFUSED | 225s | `0x1a0457cb06ed188299ac6e6a7388f60e1cf7187e1b499e6d9239947c29b47a68` |
+| with the moments reported plainly, false claim 2 of 10 | alarm | UPHELD | 142s | `0x5b294e11141317f9ac28a3223c13908f009eb2ff6767060c687eae0c342fb19a` |
+| with the moments reported plainly, false claim 3 of 10 | alarm | REFUSED | 98s | `0x463d73cd6fc231e929c7f0fe95f69a3c539bcf2a44f59177e92c28b5127bb950` |
+| with the moments reported plainly, false claim 4 of 10 | alarm | REFUSED | 72s | `0x9182120d4c566a9fcdf25ac40b3749fbbceb0eca160cb1374fd6992352580c3c` |
+| with the moments reported plainly, false claim 5 of 10 | alarm | REFUSED | 52s | `0x0384d4480e669b4823f53379900e9b3cd28daf95d2e7258f5e0adbedd745158c` |
+| with the moments reported plainly, false claim 6 of 10 | alarm | REFUSED | 52s | `0xe8ba6786df5e24fb014c6a59e4d595730fa6699799c958979de7a6aa979b0d6d` |
+| with the moments reported plainly, false claim 7 of 10 | alarm | REFUSED | 78s | `0x847029d374d61a8fd7d0257fb09bf89c89ab8eaec955138f67794e33eb159770` |
+| with the moments reported plainly, false claim 8 of 10 | alarm | REFUSED | 65s | `0x67b30a557834b10d441048c26bf7f03e6df5b9cfc477edbce467bafc748984a1` |
+| with the moments reported plainly, false claim 9 of 10 | alarm | REFUSED | 71s | `0x8c72c16cf6e2d2a9f32ff97a166d4903bf38af2102e08950f8757308b0ab3c5e` |
+| with the moments reported plainly, false claim 10 of 10 | alarm | REFUSED | 110s | `0xa269124b57f6170bfec62f7ea10ffcaa351fe335ade3ae9bdbc0bd66016ab069` |
+| with the moments reported plainly, true claim 1 of 5 | alarm | UPHELD | 65s | `0x30051245f1eb19d74130f03cec3b0a124ceb9fd5505abe7b90b28860a1e7730a` |
+| with the moments reported plainly, true claim 2 of 5 | alarm | UPHELD | 52s | `0xb99a6f98a26feca97119427fe73d9bd8af5aaa7bcec60e39b400bf3a6868fb20` |
+| with the moments reported plainly, true claim 3 of 5 | alarm | UPHELD | 141s | `0x3aeedaee32222ef78cab11a85968938f315d23b71e545cbd3a68b98377f7249d` |
+| with the moments reported plainly, true claim 4 of 5 | alarm | UPHELD | 116s | `0xb410ba887f7d510b8aeffe22098127dd149cf1e2964e2a6348d9b84b8d53837a` |
+| with the moments reported plainly, true claim 5 of 5 | alarm | UPHELD | 98s | `0xc869e7e508a1978a558840aa635608e2a15d0553cf0658d4eb0ce08a61c33631` |
 
 ## What we want checked
 

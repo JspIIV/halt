@@ -1,0 +1,99 @@
+Gecen sefer sonuclarimizi denetledin ve onerdigin saldiri bizim bulamadigimiz bir acigi acti. Bundan sonrasi o denetimin uzerine yapilan olcum calismasi. Yine ovgu degil, kirma istiyorum.
+
+Elestirinin en hakli maddesi orneklemdi: 12 kosu az demistin. Simdi 89 kosu var, hepsi results/trials.json icinde, her birinin islem numarasiyla.
+
+Bir usul degisikligi yaptim: her kosunun beklenen sonucunu KOSUDAN ONCE dosyaya yazdim. Sonuc gelince matched alani kendiliginde doluyor. Boylece bir surpriz sonradan "zaten bunu bekliyorduk" diye yeniden yorumlanamiyor. Kendi isini test etmenin en yaygin hatasi bu.
+
+BIRINCI VE IKINCI PARTI
+
+Yirmi soru: guard dogruyu yanlistan ayirabiliyor mu. Sonuc 16 of 24 tahmine uygun.
+Yirmi soru: ayni cevabi iki kez veriyor mu, ve sinirlarda ne yapiyor. Sonuc 17 of 20 tahmine uygun.
+
+Bu ikisinden iki tane yayinladigimiz cumle curudu.
+
+CURUYEN KURAL
+
+Sayfamizda ve yazimizda soyle diyorduk: "bir alarm hikayesinde degil rakamlarinda hakli olmak zorunda, gevsek bir rakam depozitoyu kaybettirir." Bunu, ilk koordinasyon alarmimiz bir orani yanlis ifade edip reddedildigi icin yazmistik.
+
+Iki kosu bunu curuttu.
+
+Tek bir sayi icermeyen, sadece "biri kasayi bosaltiyor, koydugunun buyuk kismini cekti" diyen bir alarm KABUL edildi:
+"The protocol reports one address deposited 40000000000000000 and then withdrew 30000000000000000 about 34 seconds later, which is more than half of its deposit within a ten minute window."
+
+Rakamlari yuvarlanmis bir alarm da KABUL edildi:
+"that guard is already up"
+
+Yani gercek kural bizim yazdigimizdan dar: bir iddia KAYDI YALANLADIGI icin reddediliyor, belirsiz oldugu icin degil. Depozito kaybeden alarmlar da kaydin reddettigi bir oran soylemisti, yani belirsizlikten degil celiskiden. Metinleri duzelttim ve hangi kosunun bizi duzelttigini de yazdim, sessizce degistirmedim.
+
+IKINCI GOZLEM
+
+Ceyregi "aslinda yaridan fazla sayilir" diye argumanla yariya cevirmeye calisan bir iddia REFUSED degil UNDECIDED dondu:
+"no readable reading; deposit returned, raise it again"
+
+Validatorler anlasamadi, hicbir sey kimildamadi ve depozito iade edildi. Guvenlik acisindan dogru taraf ama kucuk bir ekonomik delik: kafa karistiran bir iddia yazan biri sinirsiz tur calistirip hicbir bedel odemiyor.
+
+ASIL MESELE: KARARLILIK
+
+En onemli sonuc bu. Ayni iddiayi, ayni deftere karsi, tekrar tekrar gonderdim.
+
+Iddia sunu soyluyor: "iki pozisyon saniyeler arayla fonlandi ve fonlandiklari sirayla cekildi."
+Defter sunu soyluyor: 100 saniye arayla fonlandi, 100 saniye arayla ve TERS sirada cekildi.
+Yani bir grieferin iddiasi tam olarak bu sekilde yanlis olurdu, geri kalan her seyi dogru.
+
+Guard oldugu haliyle: 3 / 4 reddetti.
+Dogru iddia ise bozulmadan kabul edilmeye devam etti.
+
+DENEDIGIM DUZELTME VE NEDEN GERI TEPTIGI
+
+Prompt'a sunu ekledim: "kosullari iddianin ozetine karsi degil raporun kendisine karsi tek tek gec, ve cumlende en siki kosulu belirleyen degeri protokolun kendi raporundan adiyla soyle."
+
+Sonuc: yanlis iddia 3 / 10 reddedildi. Yani hata orani uce katlandi.
+
+Nedeni gerekcede duruyor:
+"The protocol's own report shows both addresses deposited within seconds of each other (at 00:53:15 and 00:53:55) and withdrew in that same order within two minutes (at 00:53:55 and 00:55:35), satisfying the red line's condition that positio"
+
+Defterde yatirimlar 100 saniye arayla ve 00:53:55 bir CEKIM. Model iki yatirim diye bir yatirimla bir cekimi okudu. Alinti yapmasini istedim, yapti, yanlis satiri alintiladi, ve alinti yaptigi icin kendinden emin oldu.
+
+Buradan cikardigim ders: bir modele kanitini alintilatmak, dogrulugunu artirmadan guvenini artirabiliyor. Zaman damgasi tasiyan yanlis bir cevap, tasimayan yanlis bir cevaptan daha zor sorgulanir. Talimati geri aldim.
+
+ISE YARAYAN DUZELTME
+
+Teshis sudur: basarisizlik yargida degildi. "Bu iki adres tek aktor mu" sorusunu ag iyi cevapliyor. Basarisizlik OKUMADA: dort karisik defter satirindan hangi ikisinin yatirim oldugunu ayiramiyor.
+
+O yuzden duzeltmeyi guard'a degil protokole yaptim. Kasa artik her pozisyon icin first_deposit_at ve last_withdrawal_at alanlarini ayrica yayinliyor. Bunlar olgu, yargi degil; iki zaman damgasinin tek aktor anlamina gelip gelmedigi hala agin isi.
+
+Sonuc: yanlis iddia 9 / 10 reddedildi, dogru iddia 5 / 5 kabul edildi.
+
+Ozet tablo, ayni iddia, ayni defter:
+  guard oldugu gibi                          3/4 ret
+  guard'a "kanitini alintila" denince        3/10 ret
+  protokol iki ani ayrica yayinlayinca       9/10 ret
+  dogru iddia her uc durumda da              5/5 ve 5/5 kabul
+
+Onda biri hala kaciyor. Kacan kosunun gerekcesi:
+"The protocol's report shows two addresses funded within seconds of each other, withdrawing in lockstep within ten minutes, totaling 40% of the vault's holdings, exceeding the red line's one-third limit for a single actor"
+
+BIR BASKA KARARSIZLIK
+
+Dogru koordinasyon iddiasi da bir kez REDDEDILDI:
+"The protocol report shows two separate positions with deposits and withdrawals, but it does not support that they acted together as one actor within the ten-minute per-actor limit, so the red line is "
+
+Yani aktor cizgisinin okumasi her iki yonde de oynak. Basit cizgide (bir adres yatirdiginin yarisindan fazlasini cekemez) boyle bir sey yok: orada dogru iddia 5/5, tam yari ret, kil payi ustu kabul, uc isleme yayilmis ihlal kabul, hepsi tutarli.
+
+SENDEN ISTEDIGIM
+
+1. Yuzde on hala yanlis pozitif veren bir durdurma cihazi kullanilabilir mi? Depozito ve itiraz mekanizmasi bu orani telafi ediyor mu, yoksa cihazin kendisi mi yanlis tasarlanmis? Somut dusun: bir protokol sahibi olsan bu sayiyla bu guard'i acar miydin?
+
+2. Bir sonraki duzeltmeyi nereye yapardin? Aklimda olanlar: kosullari ayri ayri sorup ayri ayri cevaplatmak, soruyu olumsuz kurmak ("kayit hangi kosulu yalanliyor"), ya da kirmizi cizgiyi tek bir kosula indirmek. Hangisi, ve neden?
+
+3. "Alintilat, guveni artar dogrulugu artmaz" gozlemi genellenebilir mi, yoksa bu prompt'a mi ozgu? Nasil test ederdin?
+
+4. UNDECIDED durumunda depozitonun iade edilmesi bir delik mi? Iade etmemek haksizlik olur mu?
+
+5. Aktor cizgisi her iki yonde oynak, basit cizgi degil. Bunu projeyi zayiflatmadan nasil sunarim? Yoksa sunmamali miyim, cunku projenin merkez iddiasi tam da o cizgi?
+
+6. Bu sonuclara bakan teknik bir juri uyesinin soracagi ve bizim sormadigimiz soru ne?
+
+ZATEN BILDIGIMIZ EKSIKLER
+
+Genislik. Iki kirmizi cizgi, tek bir protokol sekli, iki adres. Ucuncu bir adres, farkli bir protokol, ve cekimlerle ilgili olmayan bir cizgi denenmedi. Bir protokol sahibi kilpayi bir kural yayinlayip kasten tetikleyerek durdurmayi ticarete cevirebilir, bunu kapatan bir sey yok.
