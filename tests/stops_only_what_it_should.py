@@ -272,13 +272,19 @@ def main():
         stopped = c.halted(VAULT)
         check("%-32s leaves the protocol running" % repr(answer[:30]), not stopped)
 
-    print("\nan unreadable round returns the deposit rather than keeping it")
+    print("\nan unreadable round costs a slice and leaves the guard alone")
     gl.evm.transfers.clear()
     as_(OTHER, 400)
     answers("nothing readable at all")
     undecided = json.loads(c.raise_alarm(VAULT, REAL))
     check("the alarm is undecided", undecided["outcome"] == "UNDECIDED")
-    check("and the deposit goes straight back", gl.evm.transfers == [(OTHER, 400)])
+    # Returning the whole deposit made an unreadable claim free to write, which
+    # is a round anybody can spend the network on for nothing. Most of it comes
+    # back, because an honest claim can be unreadable through no fault of its
+    # author, and a slice stays, because a free round is a free round.
+    check("most of the deposit comes back", gl.evm.transfers == [(OTHER, 340)])
+    check("and the slice is named rather than quietly kept",
+          undecided["kept"] == "60" and undecided["returned"] == "340")
     check("so it can be raised again", not c.halted(VAULT))
 
     print("\nretiring returns what is left")

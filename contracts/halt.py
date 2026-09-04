@@ -106,6 +106,11 @@ MIN_EVIDENCE = 20
 # protocol is not punished for one bad minute.
 MIN_HOLD = 15 * 60
 
+# What an unreadable claim leaves behind, as a percentage of its deposit. Small,
+# because an honest claim can be unreadable by accident, and not nothing,
+# because a free round is a free round.
+UNREADABLE_SHARE = 15
+
 
 @gl.evm.contract_interface
 class _Recipient:
@@ -495,17 +500,36 @@ class Halt(gl.Contract):
         }
 
         if not reading:
-            # Nothing moves except the deposit, which goes back. A default here
-            # would either stop a healthy protocol on a malformed answer or wave
-            # a real exploit through on one.
+            # The guard stays where it was. A default here would either stop a
+            # healthy protocol on an answer nobody could read, or wave a real
+            # exploit through on one.
+            #
+            # Most of the deposit goes back, and a slice does not. Returning all
+            # of it was the first design and a reviewer was right about what it
+            # buys: a claim written to be unreadable rather than true costs its
+            # author nothing, so anyone can run rounds all day for free. That is
+            # not a halt and it does not block a withdrawal, since the protected
+            # protocol only ever reads a view. It is still somebody spending the
+            # network's time at no price, and a price is the only thing this
+            # design uses anywhere else.
+            #
+            # The slice is small on purpose. An honest claim can be unreadable
+            # through no fault of its author, and charging it the full deposit
+            # would punish bad luck the same as bad faith.
+            kept = int(value) * UNREADABLE_SHARE // 100
+            back = int(value) - kept
             alarm["outcome"] = UNDECIDED
             alarm["why"] = None
-            alarm["paid"] = int(value)
+            alarm["paid"] = back
             alarm["paid_to"] = caller
+            alarm["kept_for_the_round"] = kept
             self.alarms.append(json.dumps(alarm))
-            _Recipient(gl.message.sender_address).emit_transfer(value=int(value))
+            if back > 0:
+                _Recipient(gl.message.sender_address).emit_transfer(value=int(back))
             return json.dumps({"ok": False, "alarm": index, "outcome": UNDECIDED,
-                               "error": "no readable reading; deposit returned, raise it again"})
+                               "returned": str(back), "kept": str(kept),
+                               "error": ("no readable reading; the guard is unchanged and most of "
+                                         "the deposit is returned, raise it again more plainly")})
 
         alarm["why"] = _read_why(raw)
         bounty = int(record["bounty"])

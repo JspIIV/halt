@@ -183,6 +183,45 @@ the failure was never judgment, it was picking two deposits out of four mixed
 entries. 89 runs are in `results/trials.json`, each with the prediction written
 down before it was sent.
 
+## What a second audit changed, and what it did not
+
+The reviewer that found the redenomination attack was given the measurement
+runs and pushed back on three things. One was right and is fixed, one rests on
+a misreading of this contract, and one is a strategy call we are not taking.
+
+**Right, and fixed.** An unreadable round returned the whole deposit, so a
+claim written to be confusing rather than true cost its author nothing and
+anybody could spend the network on rounds all day. Fifteen percent now stays
+behind. Small, because an honest claim can be unreadable through no fault of
+its author; not nothing, because a free round is a free round.
+
+**A misreading.** The same critique says ten such claims would freeze the
+protocol for ten minutes because it waits on the vote. It does not wait: the
+protected protocol only ever reads a view, and withdrawals carry on while a
+round runs. The hole is wasted time, not a freeze.
+
+**And the number is not the number it was read as.** Ten percent is not a
+chance of halting at random. It is the success rate of somebody who has
+deliberately written a claim asserting a timing the ledger denies, and paid a
+deposit to send it. No alarm rises without somebody paying for it, and the
+owner can lower a wrong stop after the hold. The right sentence is that a
+griefer pays 0.002 GEN a try, lands about one in ten, and wins a fifteen
+minute pause.
+
+**The call we are not taking.** The advice is to retire the actor line and
+ship only the numeric one, where the guard is flawless. But the numeric line
+is five lines of Solidity, and the same reviewer said in its previous round
+that a project whose red lines are all plainly measurable has no answer to
+why any of it is a network. Dropping the actor line would trade the whole
+argument for a clean score. A measured ninety percent on a rule nothing can
+compile is worth more than a hundred on a rule nobody needs consensus for.
+
+What the advice is right about in a narrower form: a safety device whose
+hardest case is nine in ten is not something to ship as production. So the two
+lines are presented apart. The numeric one is what a protocol would adopt
+today. The actor one is the argument, shown with the error rate printed next
+to it.
+
 ## The attack we have not closed
 
 A halt is public the moment it lands. So an owner could publish a hair trigger
