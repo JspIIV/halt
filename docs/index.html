@@ -1,663 +1,354 @@
-<!doctype html>
-<html lang="en" class="dark">
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>HALT · On-Chain Guardian Protocol</title>
-<link rel="icon" href="./favicon.svg" type="image/svg+xml" />
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/lucide@0.454.0/dist/umd/lucide.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          ink: "#0A0B0E",
-          panel: "#101218",
-          card: "#14161D",
-          flame: { DEFAULT: "#FF5500", soft: "#FF3333" },
-          mute: "#94A3B8",
-        },
-        fontFamily: {
-          sans: ['Inter', 'system-ui', 'sans-serif'],
-          mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
-        },
-      },
-    },
-  };
-</script>
-<style>
-  html { scroll-behavior: smooth; }
-  body { background: #0A0B0E; }
-  /* The violet only ever appears as light behind things, never as a surface. */
-  .aurora { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
-  .aurora span { position: absolute; border-radius: 9999px; filter: blur(110px); display: block; }
-  /* The light behind the page is the same flame as the accent, warm at the
-     centre and falling to a deep ember at the edges. */
-  .a1 { width: 820px; height: 720px; top: -300px; left: -210px;
-        background: radial-gradient(circle at 45% 45%, rgba(255, 85, 0, .42),
-                    rgba(190, 45, 0, .18) 55%, transparent 72%); }
-  .a2 { width: 760px; height: 660px; top: -170px; right: -230px;
-        background: radial-gradient(circle at 55% 45%, rgba(255, 120, 30, .3),
-                    rgba(140, 35, 0, .16) 55%, transparent 74%); }
-  .a3 { width: 640px; height: 540px; top: 150px; left: 34%;
-        background: radial-gradient(circle at 50% 50%, rgba(255, 60, 0, .2), transparent 70%); }
-  .glow { filter: drop-shadow(0 0 10px rgba(255, 85, 0, .75)); }
-  .lamp { animation: pulse 1.4s ease-in-out infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
-  @media (prefers-reduced-motion: reduce) { .lamp { animation: none; } }
-  /* Hand marked, because a highlighting library is a lot of bytes for six lines. */
-  .k { color: #ff7b72; } .fn { color: #d2a8ff; } .id { color: #79c0ff; } .at { color: #7ee787; }
-  .row-miss td:first-child { box-shadow: inset 3px 0 0 #fbbf24; }
-  .off { display: none; }
-  ::-webkit-scrollbar { height: 8px; width: 8px; }
-  ::-webkit-scrollbar-thumb { background: #2a2e3a; border-radius: 9999px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HALT · On-Chain Guardian Protocol</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            bg: '#0A0B0E',
+                            card: '#12141A',
+                            border: '#1E222D',
+                            orange: '#FF5500',
+                            orangeGlow: 'rgba(255, 85, 0, 0.4)',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glow-orange { filter: drop-shadow(0 0 12px rgba(255, 85, 0, 0.6)); }
+        .glow-box { box-shadow: 0 0 25px rgba(255, 85, 0, 0.15); }
+        .off { display: none; }
+    </style>
 </head>
-<body class="bg-ink font-sans text-slate-200 antialiased">
+<body class="bg-brand-bg text-slate-300 font-sans antialiased selection:bg-brand-orange selection:text-white">
 
-<header id="topbar" class="sticky top-0 z-50 border-b border-white/5 bg-black/40 backdrop-blur-md">
-  <div class="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
-    <a href="#" aria-label="HALT">
-    <div class="flex items-center gap-3 font-mono text-3xl font-black tracking-[0.2em] text-white select-none">
-      <span>H</span>
+    <!-- NAVBAR -->
+    <header class="sticky top-0 z-50 backdrop-blur-xl bg-brand-bg/80 border-b border-brand-border/60">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <!-- LOGO: H △ L T -->
+            <a href="#" class="flex items-center gap-2.5 font-mono text-2xl font-black tracking-[0.25em] text-white hover:opacity-90 transition-opacity">
+                <span>H</span>
+                <div class="relative flex items-center justify-center w-7 h-8 mx-0.5 glow-orange">
+                    <svg viewBox="0 0 32 38" fill="none" class="w-full h-full">
+                        <path d="M16 2L3 6V18C3 26.5 9.5 33.5 16 36C22.5 33.5 29 26.5 29 18V6L16 2Z" fill="#FF5500" stroke="#FF7722" stroke-width="2"/>
+                        <rect x="11.5" y="13" width="3" height="10" rx="1.5" fill="#FFFFFF"/>
+                        <rect x="17.5" y="13" width="3" height="10" rx="1.5" fill="#FFFFFF"/>
+                    </svg>
+                </div>
+                <span>L</span>
+                <span>T</span>
+            </a>
 
-      <div class="relative flex items-center justify-center w-8 h-9 mx-1">
-        <svg viewBox="0 0 32 38" fill="none" xmlns="http://www.w3.org/2000/svg"
-             class="w-full h-full drop-shadow-[0_0_12px_rgba(255,85,0,0.8)]">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M16 2L3 6V18C3 26.5 9.5 33.5 16 36C22.5 33.5 29 26.5 29 18V6L16 2Z"
-                fill="#FF5500" stroke="#FF7722" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M16 5.5L6 8.5V17.5C6 23.8 11 29.5 16 31.5C21 29.5 26 23.8 26 17.5V8.5L16 5.5Z" fill="#0A0B0E" opacity="0.3"/>
-          <rect x="11.5" y="13" width="3" height="10" rx="1.5" fill="#FFFFFF"/>
-          <rect x="17.5" y="13" width="3" height="10" rx="1.5" fill="#FFFFFF"/>
-        </svg>
-      </div>
+            <!-- NAV LINKS -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
+                <a href="#broke" class="hover:text-white transition-colors">What Broke</a>
+                <a href="#how-it-works" class="hover:text-white transition-colors">How It Works</a>
+                <a href="#measured" class="hover:text-white transition-colors">Measured</a>
+                <a href="#record" class="hover:text-white transition-colors">The Record</a>
+                <a href="#limits" class="hover:text-white transition-colors">Limits</a>
+            </nav>
 
-      <span>L</span>
-      <span>T</span>
-    </div>
-    </a>
-
-    <nav class="hidden items-center gap-1 font-mono text-[11px] uppercase tracking-[0.14em] lg:flex">
-      <button data-panel-tab="home" class="rounded-full px-4 py-2 transition">Overview</button>
-      <button data-panel-tab="how" class="rounded-full px-4 py-2 transition">How it works</button>
-      <button data-panel-tab="evidence" class="rounded-full px-4 py-2 transition">Evidence</button>
-      <button data-panel-tab="broke" class="rounded-full px-4 py-2 transition">What broke</button>
-      <button data-panel-tab="record" class="rounded-full px-4 py-2 transition">The record</button>
-      <button data-panel-tab="limits" class="rounded-full px-4 py-2 transition">Limits</button>
-    </nav>
-
-    <a id="studiolink" href="https://explorer-studio.genlayer.com/"
-       class="rounded-full bg-gradient-to-r from-flame to-flame-soft px-5 py-2.5 font-mono text-[11px]
-              font-bold uppercase tracking-[0.12em] text-white shadow-[0_0_24px_rgba(255,85,0,.35)]
-              transition hover:shadow-[0_0_34px_rgba(255,85,0,.55)]">Explorer Studio</a>
-  </div>
-</header>
-
-<div class="sticky top-[69px] z-40 border-b border-white/5 bg-black/40 backdrop-blur-md lg:hidden">
-  <div class="flex gap-1 overflow-x-auto px-4 py-3 font-mono text-[11px] uppercase tracking-[0.14em]"
-       style="scrollbar-width:none">
-    <button data-panel-tab="home" class="flex-none rounded-full px-4 py-2">Overview</button>
-    <button data-panel-tab="how" class="flex-none rounded-full px-4 py-2">How it works</button>
-    <button data-panel-tab="evidence" class="flex-none rounded-full px-4 py-2">Evidence</button>
-    <button data-panel-tab="broke" class="flex-none rounded-full px-4 py-2">What broke</button>
-    <button data-panel-tab="record" class="flex-none rounded-full px-4 py-2">The record</button>
-    <button data-panel-tab="limits" class="flex-none rounded-full px-4 py-2">Limits</button>
-  </div>
-</div>
-
-<div data-panel="home">
-<section class="relative overflow-hidden">
-  <div class="aurora"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
-  <div class="relative z-10 mx-auto grid max-w-7xl gap-14 px-6 pb-16 pt-10 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:pt-14">
-
-    <div>
-      <div class="mb-6">
-    <div class="flex items-center gap-3 font-mono text-5xl sm:text-6xl font-black tracking-[0.2em] text-white select-none">
-      <span>H</span>
-
-      <div class="relative flex items-center justify-center w-14 h-16 mx-1">
-        <svg viewBox="0 0 32 38" fill="none" xmlns="http://www.w3.org/2000/svg"
-             class="w-full h-full drop-shadow-[0_0_12px_rgba(255,85,0,0.8)]">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M16 2L3 6V18C3 26.5 9.5 33.5 16 36C22.5 33.5 29 26.5 29 18V6L16 2Z"
-                fill="#FF5500" stroke="#FF7722" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M16 5.5L6 8.5V17.5C6 23.8 11 29.5 16 31.5C21 29.5 26 23.8 26 17.5V8.5L16 5.5Z" fill="#0A0B0E" opacity="0.3"/>
-          <rect x="11.5" y="13" width="3" height="10" rx="1.5" fill="#FFFFFF"/>
-          <rect x="17.5" y="13" width="3" height="10" rx="1.5" fill="#FFFFFF"/>
-        </svg>
-      </div>
-
-      <span>L</span>
-      <span>T</span>
-    </div>
-      </div>
-
-      <div class="mb-7 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-4 py-2">
-        <span class="lamp h-2 w-2 rounded-full bg-emerald-400"></span>
-        <span class="font-mono text-[11px] uppercase tracking-[0.14em] text-mute">Live on GenLayer Studionet</span>
-      </div>
-
-      <h1 class="text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
-        The pause button<br />nobody has to press.
-      </h1>
-
-      <p class="mt-6 max-w-xl text-[17px] leading-relaxed text-mute">
-        A protocol publishes a red line in plain language and funds a bounty. Anyone who finds it
-        being crossed says so, with evidence and a deposit. The validators read the evidence
-        themselves, and the protocol stops in that same transaction.
-      </p>
-
-      <div class="mt-8 flex flex-wrap items-center gap-4">
-        <a id="livelink" href="https://explorer-studio.genlayer.com/"
-           class="inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-flame to-flame-soft
-                  px-7 py-4 text-sm font-bold text-white shadow-[0_10px_34px_rgba(255,85,0,.35)]
-                  transition hover:-translate-y-0.5 hover:shadow-[0_14px_44px_rgba(255,85,0,.5)]">
-          <i data-lucide="radio" class="h-4 w-4"></i> Watch it live
-        </a>
-        <a href="https://github.com/JspIIV/halt"
-           class="inline-flex items-center gap-2.5 rounded-full border border-white/15 px-7 py-4
-                  text-sm font-semibold text-slate-200 transition hover:border-flame hover:text-white">
-          <i data-lucide="file-code-2" class="h-4 w-4"></i> Read the contracts
-        </a>
-      </div>
-    </div>
-
-    <div class="overflow-hidden rounded-2xl border border-white/10 bg-[#08090c] shadow-2xl">
-      <div class="flex items-center gap-3 border-b border-white/10 px-4 py-3">
-        <span class="flex gap-2">
-          <i class="block h-3 w-3 rounded-full bg-[#ff5f57]"></i>
-          <i class="block h-3 w-3 rounded-full bg-[#febc2e]"></i>
-          <i class="block h-3 w-3 rounded-full bg-[#28c840]"></i>
-        </span>
-        <span class="flex-1 font-mono text-[11px] uppercase tracking-[0.14em] text-slate-500">guard.py</span>
-        <button data-copy type="button"
-                class="rounded-md border border-white/10 px-3 py-1.5 font-mono text-[10px] uppercase
-                       tracking-[0.12em] text-slate-400 transition hover:border-flame hover:text-white">Copy</button>
-      </div>
-      <pre class="overflow-x-auto px-5 py-5 font-mono text-[12.5px] leading-relaxed text-slate-200"><span class="k">def</span> <span class="fn">_guard_is_up</span>(<span class="id">self</span>) -&gt; <span class="k">bool</span>:
-    <span class="k">return</span> <span class="k">bool</span>(<span class="id">gl</span>.<span class="at">get_contract_at</span>(<span class="fn">Address</span>(<span class="id">self</span>.guardian))
-                .<span class="at">view</span>().<span class="at">halted</span>(<span class="id">gl</span>.message.contract_address.as_hex))</pre>
-      <div class="flex items-center justify-between gap-4 border-t border-white/10 px-5 py-3.5">
-        <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">No key handed over</span>
-        <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-flame">Four lines</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-</div>
-
-<div data-panel="how" hidden>
-<section class="border-y border-white/5 bg-panel py-24">
-  <div class="mx-auto max-w-7xl px-6">
-    <div class="mx-auto mb-10 max-w-3xl text-center">
-      <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-flame">The line</p>
-      <h2 class="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-        A rule with <span class="text-flame">no implementation</span>.
-      </h2>
-      <p class="mt-5 text-[17px] leading-relaxed text-mute">
-        There is a number in it, and a contract could check that part perfectly well. What no
-        contract can work out is who the number applies to, because an actor is not a field in
-        any ledger.
-      </p>
-    </div>
-    <p id="redline-top"
-       class="mx-auto max-w-4xl rounded-2xl border border-white/10 bg-[#08090c] px-8 py-7
-              font-mono text-[15px] leading-loose text-slate-200"></p>
-  </div>
-</section>
-
-<section class="border-y border-white/5 bg-panel py-24">
-  <div class="mx-auto max-w-7xl px-6">
-    <div class="mx-auto mb-14 max-w-3xl text-center">
-      <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-flame">How it works</p>
-      <h2 class="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-        Five steps, and the last one is <span class="text-flame">a transaction</span>.
-      </h2>
-    </div>
-
-    <ol class="grid gap-8 lg:grid-cols-5 lg:gap-0">
-      <li class="relative pl-10 lg:px-5 lg:pl-5 lg:text-center">
-        <span class="absolute left-0 top-1 block h-4 w-4 rounded-full border-2 border-white/20 bg-ink lg:static lg:mx-auto lg:mb-6"></span>
-        <span class="absolute left-1/2 top-[7px] hidden h-px w-full bg-white/10 lg:block"></span>
-        <p class="relative font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">01</p>
-        <h3 class="relative mt-3 text-[17px] font-semibold text-white">Publish a red line</h3>
-        <p class="relative mt-2 font-mono text-[12.5px] leading-relaxed text-slate-500">plain language, funded bounty</p>
-      </li>
-      <li class="relative pl-10 lg:px-5 lg:pl-5 lg:text-center">
-        <span class="absolute left-0 top-1 block h-4 w-4 rounded-full border-2 border-white/20 bg-ink lg:static lg:mx-auto lg:mb-6"></span>
-        <span class="absolute left-1/2 top-[7px] hidden h-px w-full bg-white/10 lg:block"></span>
-        <p class="relative font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">02</p>
-        <h3 class="relative mt-3 text-[17px] font-semibold text-white">Raise an alarm</h3>
-        <p class="relative mt-2 font-mono text-[12.5px] leading-relaxed text-slate-500">evidence, deposit at stake</p>
-      </li>
-      <li class="relative pl-10 lg:px-5 lg:pl-5 lg:text-center">
-        <span class="absolute left-0 top-1 block h-4 w-4 rounded-full border-2 border-white/20 bg-ink lg:static lg:mx-auto lg:mb-6"></span>
-        <span class="absolute left-1/2 top-[7px] hidden h-px w-full bg-white/10 lg:block"></span>
-        <p class="relative font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">03</p>
-        <h3 class="relative mt-3 text-[17px] font-semibold text-white">Validators read it</h3>
-        <p class="relative mt-2 font-mono text-[12.5px] leading-relaxed text-slate-500">against the protocol's own state</p>
-      </li>
-      <li class="relative pl-10 lg:px-5 lg:pl-5 lg:text-center">
-        <span class="absolute left-0 top-1 block h-4 w-4 rounded-full border-2 border-white/20 bg-ink lg:static lg:mx-auto lg:mb-6"></span>
-        <span class="absolute left-1/2 top-[7px] hidden h-px w-full bg-white/10 lg:block"></span>
-        <p class="relative font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">04</p>
-        <h3 class="relative mt-3 text-[17px] font-semibold text-white">They have to agree</h3>
-        <p class="relative mt-2 font-mono text-[12.5px] leading-relaxed text-slate-500">or nothing moves at all</p>
-      </li>
-      <li class="relative pl-10 lg:px-5 lg:pl-5 lg:text-center">
-        <span class="absolute left-0 top-1 block h-4 w-4 rounded-full border-2 border-flame bg-flame shadow-[0_0_0_6px_rgba(255,85,0,.16)] lg:static lg:mx-auto lg:mb-6"></span>
-        <p class="relative font-mono text-[10px] uppercase tracking-[0.18em] text-flame">05</p>
-        <h3 class="relative mt-3 text-[17px] font-semibold text-flame">Halt triggered</h3>
-        <p class="relative mt-2 font-mono text-[12.5px] leading-relaxed text-slate-500">same transaction, no key</p>
-      </li>
-    </ol>
-  </div>
-</section>
-
-</div>
-
-</div>
-
-<div data-panel="evidence" hidden>
-<div class="pt-16"></div>
-<section class="mx-auto max-w-7xl px-6 pb-24">
-  <div class="grid gap-4 rounded-2xl border border-white/10 bg-card p-7 lg:grid-cols-[1fr_1.35fr] lg:gap-10 lg:p-9">
-    <div>
-      <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-slate-500">The protocol it is watching</p>
-      <div id="live" class="mt-5"></div>
-      <div id="state" class="mt-7 grid grid-cols-3 gap-5 border-t border-white/5 pt-6"></div>
-    </div>
-    <div class="lg:border-l lg:border-white/5 lg:pl-10">
-      <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-slate-500">What its ledger shows</p>
-      <div id="lanes" class="mt-7"></div>
-      <p id="reading" class="mt-6 border-t border-white/5 pt-5 text-[14.5px] leading-relaxed text-mute"></p>
-    </div>
-  </div>
-</section>
-<section class="py-24">
-  <div class="mx-auto max-w-7xl px-6">
-    <div class="mx-auto mb-10 max-w-3xl text-center">
-      <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-flame">The split</p>
-      <h2 class="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-        What arithmetic saw, and what <span class="text-flame">the network</span> saw.
-      </h2>
-    </div>
-    <div id="split" class="grid gap-5 lg:grid-cols-2"></div>
-    <div id="first" class="mt-5"></div>
-  </div>
-</section>
-
-<section class="border-y border-white/5 bg-panel py-24">
-  <div class="mx-auto max-w-7xl px-6">
-    <div class="mx-auto mb-10 max-w-3xl text-center">
-      <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-flame">Autonomy</p>
-      <h2 class="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-        Nobody was watching <span class="text-flame">either of these</span>.
-      </h2>
-      <p class="mt-5 text-[17px] leading-relaxed text-mute">
-        The agent was given a blunt second look: two addresses funded near each other, withdrawing
-        near each other, more than a third of the vault between them. That is a coincidence, not a
-        finding, and it says so in the evidence it writes. Then it was pointed at two vaults it had
-        never seen.
-      </p>
-    </div>
-    <div id="watched" class="grid gap-5 lg:grid-cols-2"></div>
-    <p class="mx-auto mt-8 max-w-3xl text-center text-[15px] leading-relaxed text-mute">
-      Same agent, same rule, same evidence template, no human in either run. It was right once and
-      wrong once, and it paid for the wrong one.
-    </p>
-  </div>
-</section>
-
-</div>
-
-<div data-panel="broke" hidden>
-<section id="broke" class="py-24">
-  <div class="mx-auto max-w-7xl px-6">
-    <div class="mx-auto mb-12 max-w-3xl text-center">
-      <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-flame">What broke</p>
-      <h2 class="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-        Two things did, and both are <span class="text-flame">in the record</span>.
-      </h2>
-      <p class="mt-5 text-[17px] leading-relaxed text-mute">
-        Before publishing any of this we went looking for the ways it could be wrong, then handed
-        the whole record to an outside reviewer and asked it to attack rather than approve. One
-        break we found ourselves. The other we did not.
-      </p>
-    </div>
-    <div id="findings" class="grid gap-5"></div>
-  </div>
-</section>
-
-<section class="py-24">
-  <div class="mx-auto max-w-7xl px-6">
-    <div class="mx-auto mb-12 max-w-3xl text-center">
-      <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-flame">Measured</p>
-      <h2 class="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-        Numbers, <span class="text-flame">not adjectives</span>.
-      </h2>
-    </div>
-
-    <div class="grid gap-5 lg:grid-cols-4">
-      <a href="https://github.com/JspIIV/halt/blob/main/results/what_broke_and_what_held.md"
-         class="group rounded-2xl border border-white/10 bg-card p-7 transition hover:-translate-y-1 hover:border-flame/40">
-        <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em]">
-          <span class="text-flame">Study</span><span class="text-slate-600">89 runs</span>
+            <div class="flex items-center gap-4">
+                <a href="https://github.com/JspIIV/halt" target="_blank" class="px-4 py-2 text-sm font-mono text-slate-300 hover:text-white bg-brand-card border border-brand-border rounded-lg transition-colors">GH ↗</a>
+                <a id="studiolink" href="https://explorer-studio.genlayer.com/" target="_blank" class="px-4 py-2 text-sm font-semibold text-white bg-brand-orange hover:bg-orange-600 rounded-lg transition-all glow-box">Explore Studio</a>
+            </div>
         </div>
-        <h3 class="mt-4 text-lg font-semibold leading-snug text-white">What broke when we tried to break it</h3>
-        <p class="mt-3 text-[14px] leading-relaxed text-mute">Every prediction written down before
-        the run. Two faults found and closed, two published claims contradicted by our own
-        measurements, and the number that still slips named rather than smoothed over.</p>
-      </a>
+    </header>
 
-      <a href="https://github.com/JspIIV/halt/blob/main/results/the_line_code_cannot_hold.md"
-         class="group rounded-2xl border border-white/10 bg-card p-7 transition hover:-translate-y-1 hover:border-flame/40">
-        <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em]">
-          <span class="text-flame">Study</span><span class="text-slate-600">on chain</span>
+    <!-- HERO SECTION -->
+    <section class="max-w-7xl mx-auto px-6 pt-20 pb-16 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-7 space-y-6">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Live on GenLayer Studionet
+            </div>
+            <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-[1.1]">
+                The pause button <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-amber-500">nobody has to press.</span>
+            </h1>
+            <p class="text-lg text-slate-400 max-w-2xl leading-relaxed">
+                A protocol publishes a red line in plain language and funds a bounty. Anyone who finds it being crossed says so, with evidence and a deposit. The validators read the evidence themselves, and the protocol stops in that same transaction.
+            </p>
+            <div class="flex flex-wrap items-center gap-4 pt-4">
+                <a href="#broke" class="px-6 py-3.5 bg-brand-orange text-white font-semibold rounded-xl glow-box hover:bg-orange-600 transition-all">See What Broke ▷</a>
+                <a href="https://github.com/JspIIV/halt" target="_blank" class="px-6 py-3.5 bg-brand-card border border-brand-border text-slate-200 font-semibold rounded-xl hover:border-slate-600 transition-all">Read Contracts</a>
+            </div>
         </div>
-        <h3 class="mt-4 text-lg font-semibold leading-snug text-white">The line code cannot hold</h3>
-        <p class="mt-3 text-[14px] leading-relaxed text-mute">Two addresses, a fifth of the vault
-        each, inside every per address rule anybody could write. The threshold agent looked
-        straight at it and reported nothing out of line, three times.</p>
-      </a>
 
-      <a href="https://github.com/JspIIV/halt/blob/main/results/how_long_the_money_leaves.md"
-         class="group rounded-2xl border border-white/10 bg-card p-7 transition hover:-translate-y-1 hover:border-flame/40">
-        <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em]">
-          <span class="text-flame">Sources</span><span class="text-slate-600">Nomad · Curve · Euler</span>
+        <!-- CODE IDE -->
+        <div class="lg:col-span-5">
+            <div class="bg-brand-card border border-brand-border rounded-2xl overflow-hidden shadow-2xl">
+                <div class="px-4 py-3 bg-brand-bg/60 border-b border-brand-border flex items-center justify-between font-mono text-xs">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-rose-500/80"></span>
+                        <span class="w-3 h-3 rounded-full bg-amber-500/80"></span>
+                        <span class="w-3 h-3 rounded-full bg-emerald-500/80"></span>
+                        <span class="ml-2 text-slate-400">guard.py</span>
+                    </div>
+                    <span class="text-slate-500">The whole integration</span>
+                </div>
+                <div class="p-5 font-mono text-xs sm:text-sm text-slate-300 overflow-x-auto leading-relaxed">
+                    <pre><span class="text-purple-400">def</span> <span class="text-blue-400">_guard_is_up</span>(<span class="text-orange-300">self</span>) -> <span class="text-emerald-400">bool</span>:
+    <span class="text-purple-400">return</span> <span class="text-emerald-400">bool</span>(
+        gl.get_contract_at(Address(<span class="text-orange-300">self</span>.guardian))
+        .view().halted(gl.message.contract_address.as_hex)
+    )</pre>
+                </div>
+                <div class="px-5 py-3 bg-brand-bg/40 border-t border-brand-border/60 flex justify-between items-center text-xs font-mono text-slate-400">
+                    <span>No key handed over</span>
+                    <span class="text-brand-orange">Four lines</span>
+                </div>
+            </div>
         </div>
-        <h3 class="mt-4 text-lg font-semibold leading-snug text-white">How long the money leaves</h3>
-        <p class="mt-3 text-[14px] leading-relaxed text-mute">Nomad ran 960 transactions over
-        hours. Curve emptied three pools over two. Why minutes are the unit that matters, and
-        where an atomic exploit puts this out of reach.</p>
-      </a>
+    </section>
 
-      <a href="https://github.com/JspIIV/halt/blob/main/AUDIT_BRIEF.md"
-         class="group rounded-2xl border border-white/10 bg-card p-7 transition hover:-translate-y-1 hover:border-flame/40">
-        <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em]">
-          <span class="text-flame">Brief</span><span class="text-slate-600">for a reviewer</span>
+    <!-- LIVE EVIDENCE / PROOF DISPLAY (WHAT BROKE) -->
+    <section id="broke" class="max-w-7xl mx-auto px-6 py-16 border-t border-brand-border/60">
+        <div class="mb-10">
+            <p class="text-brand-orange font-mono text-sm tracking-widest uppercase">The Split</p>
+            <h2 class="text-3xl font-bold text-white mt-1">What arithmetic saw, and what <em class="text-slate-400 not-italic">the network saw</em>.</h2>
         </div>
-        <h3 class="mt-4 text-lg font-semibold leading-snug text-white">Check it without trusting us</h3>
-        <p class="mt-3 text-[14px] leading-relaxed text-mute">Every run with its transaction,
-        generated from the trial file rather than from a summary of it, which is the only way a
-        summary can be trusted not to have improved itself.</p>
-      </a>
-    </div>
-  </div>
-</section>
 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Left Card -->
+            <div id="statuscard" class="bg-brand-card border border-rose-500/30 rounded-2xl p-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-2xl"></div>
+                <div class="flex items-center gap-3 mb-4">
+                    <span id="statusdot" class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></span>
+                    <span class="font-mono text-xs text-rose-400 uppercase tracking-wider">Protocol Status</span>
+                </div>
+                <h3 id="statustitle" class="text-xl font-bold text-white mb-2">Reading the chain…</h3>
+                <p id="statusaddr" class="text-sm font-mono text-slate-400 bg-brand-bg p-3 rounded-lg border border-brand-border mb-4 break-all"></p>
+                <p id="statuswhy" class="text-sm text-slate-400"></p>
+            </div>
 
-</div>
-
-<div data-panel="record" hidden>
-<section id="record" class="py-24">
-  <div class="mx-auto max-w-7xl px-6">
-    <div class="mx-auto mb-12 max-w-3xl text-center">
-      <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-flame">The record</p>
-      <h2 class="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-        Every run, beside what we <span class="text-flame">predicted</span>.
-      </h2>
-      <p id="trialnote" class="mt-5 text-[17px] leading-relaxed text-mute"></p>
-    </div>
-
-    <div id="kpis" class="mb-5 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/5 sm:grid-cols-2 lg:grid-cols-4"></div>
-
-    <div class="overflow-hidden rounded-2xl border border-white/10 bg-card">
-      <div class="flex flex-wrap items-center gap-3 border-b border-white/5 px-5 py-4">
-        <div class="relative min-w-[190px] flex-1">
-          <i data-lucide="search" class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"></i>
-          <input id="trialsearch" type="search" placeholder="Search the runs" aria-label="Search the runs"
-                 class="w-full rounded-lg border border-white/10 bg-[#08090c] py-2.5 pl-10 pr-3
-                        font-mono text-[13px] text-slate-200 outline-none placeholder:text-slate-600
-                        focus:border-flame" />
+            <!-- Right Card -->
+            <div class="bg-brand-card border border-brand-border rounded-2xl p-6">
+                <span class="font-mono text-xs text-slate-400 uppercase tracking-wider block mb-4">What Its Ledger Shows</span>
+                <div id="ledger" class="space-y-4"></div>
+            </div>
         </div>
-        <button data-filter="all" class="rounded-full border border-flame bg-flame/10 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white">All</button>
-        <button data-filter="yes" class="rounded-full border border-white/10 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-slate-400 transition hover:text-white">As predicted</button>
-        <button data-filter="no" class="rounded-full border border-white/10 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-slate-400 transition hover:text-white">Surprises</button>
-      </div>
+    </section>
 
-      <div class="overflow-x-auto">
-        <table class="w-full min-w-[760px] border-collapse text-[14px]">
-          <thead>
-            <tr class="border-b border-white/5 text-left font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">
-              <th class="px-5 py-4 font-normal">What was tested</th>
-              <th class="px-5 py-4 font-normal">Predicted</th>
-              <th class="px-5 py-4 font-normal">Came back</th>
-              <th class="px-5 py-4 font-normal">Agreed</th>
-              <th class="px-5 py-4 font-normal">Time</th>
-              <th class="px-5 py-4 font-normal">Transaction</th>
-            </tr>
-          </thead>
-          <tbody id="trialrows"></tbody>
-        </table>
-      </div>
-
-      <div class="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
-        <span id="trialfoot" class="font-mono text-[11px] leading-relaxed text-slate-500"></span>
-        <button id="showall" type="button"
-                class="rounded-full border border-white/10 px-4 py-2 font-mono text-[10px] uppercase
-                       tracking-[0.12em] text-slate-400 transition hover:border-flame hover:text-white">Show every run</button>
-      </div>
-    </div>
-
-    <details class="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-card">
-      <summary class="cursor-pointer px-6 py-5 font-mono text-[11px] uppercase tracking-[0.14em] text-slate-400 transition hover:text-white">
-        Open the full record, refusals and reversals included
-      </summary>
-      <div id="alarms" class="divide-y divide-white/5 border-t border-white/5"></div>
-    </details>
-  </div>
-</section>
-
-</div>
-
-<div data-panel="limits" hidden>
-<section id="limits" class="border-y border-white/5 bg-panel py-24">
-  <div class="mx-auto max-w-7xl px-6">
-    <div class="mx-auto mb-12 max-w-3xl text-center">
-      <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-flame">Limits</p>
-      <h2 class="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-        What it <span class="text-flame">will not</span> do.
-      </h2>
-    </div>
-
-    <div class="grid gap-5 lg:grid-cols-3">
-      <div class="rounded-2xl border border-white/10 bg-card p-8">
-        <div class="flex items-center gap-2.5">
-          <i data-lucide="search-x" class="h-4 w-4 text-flame"></i>
-          <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-flame">Limit 01</span>
+    <!-- HOW IT WORKS -->
+    <section id="how-it-works" class="max-w-7xl mx-auto px-6 py-16 border-t border-brand-border/60">
+        <div class="mb-12">
+            <p class="text-brand-orange font-mono text-sm tracking-widest uppercase">How It Works</p>
+            <h2 class="text-3xl font-bold text-white mt-1">Five steps, and the last one is <em class="text-slate-400 not-italic">a transaction</em>.</h2>
         </div>
-        <h3 class="mt-5 text-xl font-semibold text-white">It does not find exploits.</h3>
-        <p class="mt-3 text-[15px] leading-relaxed text-mute">Somebody has to see it and say so,
-        and that somebody can be a bot. What this removes is the wait between the seeing and the
-        stopping: the alarm, the reading and the halt are one transaction, so there is no key to
-        reach and nobody to wake at four in the morning. The seeing is still yours.</p>
-      </div>
 
-      <div class="rounded-2xl border border-white/10 bg-card p-8">
-        <div class="flex items-center gap-2.5">
-          <i data-lucide="scale" class="h-4 w-4 text-flame"></i>
-          <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-flame">Limit 02</span>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div class="bg-brand-card p-5 rounded-xl border border-brand-border hover:border-brand-orange/50 transition-colors">
+                <span class="text-2xl font-mono font-bold text-brand-orange block mb-2">01</span>
+                <h3 class="text-white font-semibold mb-1">Publish a red line</h3>
+                <p class="text-xs text-slate-400">Plain language, funded bounty.</p>
+            </div>
+            <div class="bg-brand-card p-5 rounded-xl border border-brand-border hover:border-brand-orange/50 transition-colors">
+                <span class="text-2xl font-mono font-bold text-brand-orange block mb-2">02</span>
+                <h3 class="text-white font-semibold mb-1">Anyone raises alarm</h3>
+                <p class="text-xs text-slate-400">Evidence, deposit at stake.</p>
+            </div>
+            <div class="bg-brand-card p-5 rounded-xl border border-brand-border hover:border-brand-orange/50 transition-colors">
+                <span class="text-2xl font-mono font-bold text-brand-orange block mb-2">03</span>
+                <h3 class="text-white font-semibold mb-1">Validators read</h3>
+                <p class="text-xs text-slate-400">Evidence and protocol's own state.</p>
+            </div>
+            <div class="bg-brand-card p-5 rounded-xl border border-brand-border hover:border-brand-orange/50 transition-colors">
+                <span class="text-2xl font-mono font-bold text-brand-orange block mb-2">04</span>
+                <h3 class="text-white font-semibold mb-1">They have to agree</h3>
+                <p class="text-xs text-slate-400">Or nothing moves at all.</p>
+            </div>
+            <div class="bg-brand-card p-5 rounded-xl border border-rose-500/40 bg-rose-500/5">
+                <span class="text-2xl font-mono font-bold text-rose-400 block mb-2">05</span>
+                <h3 class="text-white font-semibold mb-1">Withdrawals stop</h3>
+                <p class="text-xs text-slate-400">Same transaction, no key.</p>
+            </div>
         </div>
-        <h3 class="mt-5 text-xl font-semibold text-white">It judges what is, never what might be.</h3>
-        <p class="mt-3 text-[15px] leading-relaxed text-mute">A theoretical bug, a design somebody
-        dislikes, a risk with no event behind it: all refused, and refused at the cost of the
-        deposit. Ten false alarms out of ten were turned away, including a rule nobody published
-        and an instruction hidden in the evidence. A pause button anyone can press with a
-        paragraph is a denial of service with extra steps.</p>
-      </div>
+    </section>
 
-      <div class="rounded-2xl border border-white/10 bg-card p-8">
-        <div class="flex items-center gap-2.5">
-          <i data-lucide="zap-off" class="h-4 w-4 text-flame"></i>
-          <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-flame">Limit 03</span>
+    <!-- MEASURED -->
+    <section id="measured" class="max-w-7xl mx-auto px-6 py-16 border-t border-brand-border/60">
+        <div class="mb-12">
+            <p class="text-brand-orange font-mono text-sm tracking-widest uppercase">Measured</p>
+            <h2 class="text-3xl font-bold text-white mt-1">Numbers, not adjectives.</h2>
         </div>
-        <h3 class="mt-5 text-xl font-semibold text-white">It does not stop an atomic exploit.</h3>
-        <p class="mt-3 text-[15px] leading-relaxed text-mute">Nothing outside the transaction can,
-        and pretending otherwise would be the easiest lie on this page. This is built for the
-        drains that take minutes and hours, which is where most of the value has actually gone:
-        Nomad ran 960 transactions, Curve emptied three pools over two hours.</p>
-      </div>
-    </div>
-  </div>
-</section>
 
-<section class="relative overflow-hidden py-24">
-  <div class="aurora"><span class="a3" style="left:30%;top:-40px"></span></div>
-  <div class="relative z-10 mx-auto max-w-3xl px-6 text-center">
-    <h2 class="text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl">
-      A rule that cannot be written in code,
-      <span class="text-flame">held by a network that reads it</span>.
-    </h2>
-    <p class="mt-5 font-mono text-[11px] uppercase tracking-[0.16em] text-slate-500">
-      Four lines to adopt. No inheritance, no proxy, no upgrade.
-    </p>
-    <div class="mt-9 flex flex-wrap justify-center gap-4">
-      <a href="https://github.com/JspIIV/halt"
-         class="inline-flex items-center gap-2.5 rounded-full bg-gradient-to-r from-flame to-flame-soft
-                px-7 py-4 text-sm font-bold text-white shadow-[0_10px_34px_rgba(255,85,0,.35)]
-                transition hover:-translate-y-0.5">
-        <i data-lucide="github" class="h-4 w-4"></i> Read the contracts
-      </a>
-      <a id="explorerlink" href="https://explorer-studio.genlayer.com/"
-         class="inline-flex items-center gap-2.5 rounded-full border border-white/15 px-7 py-4
-                text-sm font-semibold text-slate-200 transition hover:border-flame hover:text-white">
-        <i data-lucide="external-link" class="h-4 w-4"></i> Open the guardian
-      </a>
-    </div>
-  </div>
-</section>
+        <div id="kpis" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6"></div>
 
-</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <a href="https://github.com/JspIIV/halt/blob/main/results/what_broke_and_what_held.md" target="_blank"
+               class="bg-brand-card p-6 rounded-2xl border border-brand-border hover:border-brand-orange/50 transition-colors">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-mono text-brand-orange uppercase">Study</span>
+                    <span class="text-xs font-mono text-slate-400">89 runs</span>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">What broke when we tried to break it</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                    Every prediction written down before the run, every surprise kept. Two faults found and closed, two published claims contradicted by our own measurements.
+                </p>
+            </a>
 
-<footer class="border-t border-white/5 py-12">
-  <div class="mx-auto flex max-w-7xl flex-col gap-4 px-6 sm:flex-row sm:items-center sm:justify-between">
-    <div class="flex items-center gap-3 font-mono text-lg font-black tracking-[0.2em] text-white select-none">
-      <span>H</span>
+            <a href="https://github.com/JspIIV/halt/blob/main/results/the_line_code_cannot_hold.md" target="_blank"
+               class="bg-brand-card p-6 rounded-2xl border border-brand-border hover:border-brand-orange/50 transition-colors">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-mono text-brand-orange uppercase">Study</span>
+                    <span class="text-xs font-mono text-slate-400">On chain</span>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">The line code cannot hold</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                    Two addresses, a fifth of the vault each, inside every per address rule. The threshold saw nothing until the agent read the coincidence.
+                </p>
+            </a>
+        </div>
+    </section>
 
-      <div class="relative flex items-center justify-center w-5 h-6 mx-1">
-        <svg viewBox="0 0 32 38" fill="none" xmlns="http://www.w3.org/2000/svg"
-             class="w-full h-full drop-shadow-[0_0_12px_rgba(255,85,0,0.8)]">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M16 2L3 6V18C3 26.5 9.5 33.5 16 36C22.5 33.5 29 26.5 29 18V6L16 2Z"
-                fill="#FF5500" stroke="#FF7722" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M16 5.5L6 8.5V17.5C6 23.8 11 29.5 16 31.5C21 29.5 26 23.8 26 17.5V8.5L16 5.5Z" fill="#0A0B0E" opacity="0.3"/>
-          <rect x="11.5" y="13" width="3" height="10" rx="1.5" fill="#FFFFFF"/>
-          <rect x="17.5" y="13" width="3" height="10" rx="1.5" fill="#FFFFFF"/>
-        </svg>
-      </div>
+    <!-- THE TRIALS & THE RECORD (TABLE) -->
+    <section id="record" class="max-w-7xl mx-auto px-6 py-16 border-t border-brand-border/60">
+        <div class="mb-8">
+            <p class="text-brand-orange font-mono text-sm tracking-widest uppercase">The Record</p>
+            <h2 class="text-3xl font-bold text-white mt-1">Every alarm ever raised against it.</h2>
+            <p id="trialnote" class="text-sm text-slate-400 mt-3 max-w-3xl leading-relaxed"></p>
+        </div>
 
-      <span>L</span>
-      <span>T</span>
-    </div>
-    <p id="stamp" class="font-mono text-[11px] leading-relaxed text-slate-500"></p>
-  </div>
-</footer>
+        <div class="bg-brand-card border border-brand-border rounded-2xl overflow-hidden shadow-xl">
+            <div class="p-4 border-b border-brand-border flex flex-wrap gap-3 items-center">
+                <input id="trialsearch" type="search" placeholder="Search the runs" aria-label="Search the runs"
+                       class="flex-1 min-w-[200px] bg-brand-bg border border-brand-border rounded-lg px-4 py-2.5 font-mono text-xs text-slate-200 outline-none focus:border-brand-orange placeholder:text-slate-600">
+                <button data-filter="all" class="px-4 py-2 rounded-lg font-mono text-xs border border-brand-orange bg-brand-orange/10 text-white">All</button>
+                <button data-filter="yes" class="px-4 py-2 rounded-lg font-mono text-xs border border-brand-border text-slate-400 hover:text-white">As predicted</button>
+                <button data-filter="no" class="px-4 py-2 rounded-lg font-mono text-xs border border-brand-border text-slate-400 hover:text-white">Surprises</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left font-mono text-xs">
+                    <thead class="bg-brand-bg/80 border-b border-brand-border text-slate-400">
+                        <tr>
+                            <th class="p-4">What was tested</th>
+                            <th class="p-4">Predicted</th>
+                            <th class="p-4">Came back</th>
+                            <th class="p-4">Agreed</th>
+                            <th class="p-4">Time</th>
+                            <th class="p-4">Transaction</th>
+                        </tr>
+                    </thead>
+                    <tbody id="trialrows" class="divide-y divide-brand-border/60 text-slate-300"></tbody>
+                </table>
+            </div>
+            <details class="p-4 bg-brand-bg/40 border-t border-brand-border text-xs text-slate-400">
+                <summary class="font-mono text-brand-orange hover:underline cursor-pointer">Open the full record, refusals and reversals included</summary>
+                <div id="alarms" class="mt-4 space-y-4"></div>
+            </details>
+        </div>
+    </section>
+
+    <!-- LIMITS -->
+    <section id="limits" class="max-w-7xl mx-auto px-6 py-16 border-t border-brand-border/60">
+        <div class="mb-12">
+            <p class="text-brand-orange font-mono text-sm tracking-widest uppercase">Limits</p>
+            <h2 class="text-3xl font-bold text-white mt-1">What it <em class="text-rose-400 not-italic">will not</em> do.</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-brand-card p-6 rounded-2xl border border-brand-border">
+                <h3 class="text-white font-bold mb-2">It does not find exploits.</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                    Somebody has to see it and say so. What this removes is the wait between the seeing and the stopping.
+                </p>
+            </div>
+            <div class="bg-brand-card p-6 rounded-2xl border border-brand-border">
+                <h3 class="text-white font-bold mb-2">It judges what is, never what might be.</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                    A theoretical bug or a risk with no event behind it is refused at the cost of the deposit.
+                </p>
+            </div>
+            <div class="bg-brand-card p-6 rounded-2xl border border-brand-border">
+                <h3 class="text-white font-bold mb-2">It does not stop an atomic exploit.</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                    Nothing outside the transaction can. This is built for drains that take minutes and hours.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-brand-border bg-brand-card/50 py-12">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2 font-mono text-xl font-bold text-white">
+                <span>H</span>
+                <span class="relative flex items-center justify-center w-5 h-6 glow-orange">
+                    <svg viewBox="0 0 32 38" fill="none" class="w-full h-full">
+                        <path d="M16 2L3 6V18C3 26.5 9.5 33.5 16 36C22.5 33.5 29 26.5 29 18V6L16 2Z" fill="#FF5500" stroke="#FF7722" stroke-width="2"/>
+                        <rect x="11.5" y="13" width="3" height="10" rx="1.5" fill="#FFFFFF"/>
+                        <rect x="17.5" y="13" width="3" height="10" rx="1.5" fill="#FFFFFF"/>
+                    </svg>
+                </span>
+                <span>L</span>
+                <span>T</span>
+                <span class="text-xs font-normal text-slate-500 ml-2">An emergency stop nobody has to reach.</span>
+            </div>
+            <div class="flex gap-6 text-sm text-slate-400 font-mono">
+                <a href="https://github.com/JspIIV/halt" target="_blank" class="hover:text-white">GitHub</a>
+                <a id="explorerlink" href="https://explorer-studio.genlayer.com/" target="_blank" class="hover:text-white">Explorer</a>
+            </div>
+        </div>
+        <p id="stamp" class="max-w-7xl mx-auto px-6 mt-8 font-mono text-[11px] text-slate-600"></p>
+    </footer>
 
 <script>
+/* The design above is fixed. What follows only fills it with what is actually on
+   chain: the addresses, the amounts, the runs and their transactions. Nothing
+   here is a sample row. */
 const gen = wei => (Number(wei) / 1e18).toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
 const esc = s => String(s).replace(/[<>&]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]));
 const short = a => String(a).slice(0, 10) + "…";
-const clock = t => new Date(t).toISOString().slice(11, 19);
 const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
-
-document.querySelectorAll("[data-copy]").forEach(button => {
-  button.addEventListener("click", () => {
-    const code = button.closest("div").parentElement.querySelector("pre").innerText;
-    navigator.clipboard.writeText(code).then(() => {
-      button.textContent = "Copied";
-      setTimeout(() => { button.textContent = "Copy"; }, 1600);
-    }).catch(() => { button.textContent = "Select it"; });
-  });
-});
-
-/* One screen at a time. The nav is the tab bar, and every other section lives
-   in a panel that is hidden until it is asked for. */
-const PANELS = ["home", "how", "evidence", "broke", "record", "limits"];
-const ON = "bg-flame/15 text-white";
-const OFF = "text-mute hover:text-white";
-
-function showPanel(name) {
-  if (!PANELS.includes(name)) name = "home";
-  document.querySelectorAll("[data-panel]").forEach(box => {
-    box.hidden = box.dataset.panel !== name;
-  });
-  document.querySelectorAll("[data-panel-tab]").forEach(tab => {
-    const on = tab.dataset.panelTab === name;
-    tab.className = tab.className.replace(ON, "").replace(OFF, "").trim() + " " + (on ? ON : OFF);
-    tab.setAttribute("aria-current", on ? "page" : "false");
-  });
-  if (location.hash.slice(1) !== name) history.replaceState(null, "", "#" + name);
-  scrollTo({ top: 0, behavior: "instant" });
-}
-
-document.querySelectorAll("[data-panel-tab]").forEach(tab => {
-  tab.addEventListener("click", () => showPanel(tab.dataset.panelTab));
-});
-addEventListener("hashchange", () => showPanel(location.hash.slice(1)));
-showPanel(location.hash.slice(1) || "home");
 
 fetch("./data.json").then(r => r.json()).then(d => {
   const co = d.coordination;
   const url = "https://explorer-studio.genlayer.com/address/" + d.halt;
-  ["studiolink", "livelink", "explorerlink"].forEach(id => {
+  ["studiolink", "explorerlink"].forEach(id => {
     const el = document.getElementById(id); if (el) el.href = url;
   });
 
+  /* ---------------------------------------------------------- the live card */
   const guard = d.guard || {};
   const up = guard.state === "HALTED";
-  set("live",
-    '<div class="flex items-start gap-4"><span class="lamp mt-2 h-3.5 w-3.5 flex-none rounded-full '
-    + (up ? "bg-flame" : "bg-emerald-400") + '"></span><div><b class="block text-2xl font-bold '
-    + 'leading-snug tracking-tight text-white">'
-    + (up ? "This protocol is halted right now." : "This protocol is running.")
-    + '</b><span class="mt-2 block break-all font-mono text-[11.5px] text-slate-500">'
-    + esc(d.vault) + "</span></div></div>");
+  document.getElementById("statustitle").textContent =
+    up ? "This protocol is halted right now." : "This protocol is running.";
+  document.getElementById("statusaddr").textContent = d.vault;
+  if (!up) {
+    document.getElementById("statuscard").className =
+      "bg-brand-card border border-emerald-500/30 rounded-2xl p-6 relative overflow-hidden";
+    document.getElementById("statusdot").className =
+      "w-3 h-3 rounded-full bg-emerald-400 animate-pulse";
+  }
+  const upheld = co && (co.alarms || []).filter(a => a.outcome === "UPHELD").pop();
+  document.getElementById("statuswhy").textContent = upheld ? upheld.why
+    : "No alarm stands against it. A guard is open and funded, and withdrawals are unaffected.";
 
-  const st = d.vault_status;
-  const stat = (value, label, hot) =>
-    '<div><b class="block font-mono text-xl font-medium ' + (hot ? "text-flame" : "text-white")
-    + '">' + value + '</b><span class="mt-2 block font-mono text-[10px] uppercase '
-    + 'tracking-[0.14em] text-slate-500">' + label + "</span></div>";
-  if (st) set("state", stat(esc(guard.state || "none"), "guard", up)
-    + stat(gen(st.held), "GEN held") + stat(st.withdrawals_blocked, "withdrawals blocked"));
-
+  /* ------------------------------------------------------------- the ledger */
   if (co) {
-    const top = document.getElementById("redline-top");
-    if (top) top.textContent = (co.guard && co.guard.red_line) || "";
+    const rows = (co.status.positions || []).map((p, i) =>
+      '<div class="p-3 bg-brand-bg rounded-lg border border-brand-border flex justify-between items-center gap-3">'
+      + '<span class="font-mono text-xs text-slate-300">Address ' + (i ? "B" : "A") + " ("
+      + short(p.who) + ')</span>'
+      + '<span class="text-xs font-mono text-rose-400">Out: ' + gen(p.withdrawn) + " GEN</span></div>").join("");
 
-    const events = (co.status.recent || []).map(e => ({
-      kind: e.kind, who: String(e.who).toLowerCase(), amount: e.amount, t: Date.parse(e.at),
-    })).sort((a, b) => a.t - b.t);
-    const holders = (co.status.positions || []).map(p => String(p.who).toLowerCase());
-    const t0 = events.length ? events[0].t : 0;
-    const span = events.length ? Math.max(1, events[events.length - 1].t - t0) : 1;
-    const at = t => (4 + ((t - t0) / span) * 92).toFixed(2) + "%";
-
-    set("lanes", holders.map((address, index) => {
-      const marks = events.filter(e => e.who === address).map(e => {
-        const out = e.kind === "withdraw";
-        return '<span class="absolute -translate-x-1/2 -translate-y-1/2" style="left:' + at(e.t) + ';top:50%">'
-          + '<span class="block h-3.5 w-3.5 rounded-full ' + (out
-            ? "bg-flame shadow-[0_0_0_5px_rgba(255,85,0,.16)]" : "border-2 border-slate-600 bg-ink")
-          + '"></span><span class="absolute left-1/2 top-4 -translate-x-1/2 whitespace-nowrap '
-          + 'font-mono text-[11px] text-slate-500">' + (out ? "out " : "in ") + gen(e.amount)
-          + "</span></span>";
-      }).join("");
-      return '<div class="mb-9 grid grid-cols-[92px_1fr] items-center gap-4 last:mb-2">'
-        + '<span class="text-right font-mono text-[11.5px] leading-snug text-slate-500">'
-        + '<b class="block text-slate-400">address ' + (index === 0 ? "A" : "B") + "</b>"
-        + short(address) + '</span><div class="relative h-px bg-white/10">' + marks + "</div></div>";
-    }).join("")
-      + '<div class="ml-[108px] flex justify-between border-t border-white/5 pt-3 font-mono '
-      + 'text-[11px] text-slate-500"><span>' + (events.length ? clock(t0) : "") + "</span><span>"
-      + Math.round(span / 1000) + " seconds</span><span>"
-      + (events.length ? clock(events[events.length - 1].t) : "") + "</span></div>");
-
+    const events = (co.status.recent || []).map(e => ({ kind: e.kind, t: Date.parse(e.at) }));
     const gapOf = kind => {
       const both = events.filter(e => e.kind === kind);
       return both.length === 2 ? Math.round(Math.abs(both[1].t - both[0].t) / 1000) : null;
@@ -665,201 +356,108 @@ fetch("./data.json").then(r => r.json()).then(d => {
     const funded = gapOf("deposit"), pulled = gapOf("withdraw");
     const share = (co.status.positions || []).map(p =>
       Math.round(Number(p.withdrawn) / Number(p.deposited) * 100));
-    set("reading", 'Funded <b class="text-white">' + (funded !== null ? funded + " seconds" : "moments")
-      + ' apart</b>. Withdrawn <b class="text-white">' + (pulled !== null ? pulled + " seconds" : "moments")
-      + ' apart</b>, in the same order they were funded. Each took '
-      + (share.length && share.every(x => x === share[0]) ? share[0] + " percent"
-         : share.length ? share.join(" and ") + " percent" : "well under half")
-      + " of its own deposit, inside every rule anybody could write about a single address. "
-      + "The network read them as one actor and halted the protocol.");
 
-    const upheld = (co.alarms || []).filter(a => a.outcome === "UPHELD").pop();
-    const rule = co.threshold && co.threshold.rule;
-    const para = t => '<p class="mt-4 text-[15px] leading-relaxed text-mute">' + t + "</p>";
-    const card = (title, body, verdict, hot) =>
-      '<div class="rounded-2xl border ' + (hot ? "border-flame/30" : "border-white/10")
-      + ' bg-card p-8"><h3 class="text-lg font-semibold text-white">' + title + "</h3>" + body
-      + '<span class="mt-6 inline-block rounded-full border ' + (hot
-        ? "border-flame/40 text-flame" : "border-white/10 text-slate-500")
-      + ' px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.1em]">' + verdict + "</span></div>";
-
-    set("split",
-      card("What a per address rule saw",
-        para("Nothing, and there was nothing for it to see. The agent's arithmetic rule was pointed "
-          + "at an identical vault and left running."
-          + (rule ? " It compares one address with itself: more than "
-            + Math.round(rule.share_that_looks_wrong * 100) + " percent of that address's own deposit "
-            + "inside " + (rule.window_seconds / 60) + " minutes. Each of these is at 40." : ""))
-        + para("It is not badly tuned. Lower it and it fires on honest users. The blindness is "
-          + "structural: what is wrong is between two addresses, and arithmetic can only compare an "
-          + "address with itself."),
-        "No alarm raised", false)
-      + card("What the validators saw",
-        (upheld ? para(esc(upheld.why)) : "")
-        + para("They did not apply a larger threshold. They decided from the timing that two "
-          + "addresses were one actor, then applied the ordinary number to that actor."),
-        "Upheld" + (co.seconds ? " · halted in " + co.seconds + "s" : ""), true));
-
-    const first = co.first_attempt;
-    set("first", first ? '<div class="rounded-2xl border border-white/10 bg-card p-8">'
-      + '<p class="font-mono text-[11px] uppercase tracking-[0.14em] text-slate-500">'
-      + "And the first attempt was refused</p>"
-      + '<p class="mt-4 text-[15px] italic leading-relaxed text-mute">' + esc(first.why) + "</p>"
-      + '<p class="mt-4 text-[15px] leading-relaxed text-mute">It called forty percent of deposits '
-      + "forty percent of holdings, and the record said otherwise. We first read that as a lesson "
-      + "about precision, and later runs corrected us: a claim carrying no figures at all was "
-      + "upheld, because the record showed the breach without help. What loses a deposit is a "
-      + "figure the record denies, not a figure left vague.</p></div>" : "");
-
-    if ((co.watched || []).length) set("watched", co.watched.map(run => {
-      const won = run.outcome === "UPHELD";
-      return card("It flagged " + esc(run.note),
-        para("Two positions funded " + run.funded_apart + " seconds apart, withdrawn "
-          + run.pulled_apart + " seconds apart, "
-          + (run.same_order ? "in the same order they were funded"
-                            : "in the opposite order to the funding")
-          + ". The agent reported the timings and said the reading was not its to make.")
-        + para(esc(String(run.why || ""))),
-        esc(run.outcome) + " · " + run.seconds + "s" + (won ? " · protocol halted" : " · deposit lost"),
-        won);
-    }).join(""));
+    set("ledger", rows
+      + '<div class="text-xs text-slate-500 italic leading-relaxed">Funded '
+      + (funded !== null ? funded + " seconds" : "moments") + " apart, withdrawn "
+      + (pulled !== null ? pulled + " seconds" : "moments")
+      + " apart, in the same order they were funded. "
+      + (share.length && share.every(x => x === share[0])
+          ? "Each took " + share[0] + " percent of its own deposit, inside every per address rule. "
+          : "")
+      + "Combined: more than a third of the vault.</div>");
   }
 
-  set("findings", (d.findings || []).map(f =>
-    '<div class="rounded-2xl border border-white/10 bg-card p-8">'
-    + '<h3 class="text-xl font-semibold text-white">' + esc(f.title) + "</h3>"
-    + '<p class="mt-3 max-w-4xl text-[15px] leading-relaxed text-mute">' + esc(f.what) + "</p>"
-    + '<div class="mt-6 grid gap-4 lg:grid-cols-2">'
-    + (f.before ? '<div class="min-w-0 rounded-xl border border-white/10 bg-[#08090c] p-5">'
-        + '<span class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">Before</span>'
-        + '<q class="mt-3 block break-words text-[14px] italic leading-relaxed text-mute">'
-        + esc(f.before.why) + "</q>"
-        + '<span class="mt-4 block font-mono text-[11px] uppercase tracking-[0.1em] text-amber-400">'
-        + esc(f.before.outcome) + " · wrong</span></div>" : "")
-    + (f.after ? '<div class="min-w-0 rounded-xl border border-white/10 bg-[#08090c] p-5">'
-        + '<span class="font-mono text-[10px] uppercase tracking-[0.14em] text-slate-500">After the fix</span>'
-        + '<q class="mt-3 block break-words text-[14px] italic leading-relaxed text-mute">'
-        + esc(f.after.why) + "</q>"
-        + '<span class="mt-4 block font-mono text-[11px] uppercase tracking-[0.1em] text-emerald-400">'
-        + esc(f.after.outcome) + " · " + f.after.seconds + "s</span></div>" : "")
-    + "</div></div>").join(""));
-
+  /* --------------------------------------------------------------- the KPIs */
   const tr = d.trials;
+  const b = d.battery && d.battery.summary;
+  const auto = co && (co.watched || []).find(r => r.outcome === "UPHELD");
+  const kpi = (value, label) =>
+    '<div class="bg-brand-card p-5 rounded-xl border border-brand-border">'
+    + '<span class="block font-mono text-3xl font-bold text-white">' + value + "</span>"
+    + '<span class="block mt-2 font-mono text-[10px] uppercase tracking-widest text-slate-500">'
+    + label + "</span></div>";
+  if (tr) set("kpis",
+    kpi(tr.total, "runs on chain")
+    + kpi((d.findings || []).length, "faults found and closed")
+    + kpi((b ? b.median_seconds : "-") + "s", "median alarm to halted")
+    + kpi(tr.matched + " / " + tr.predicted, "came out as predicted"));
+
+  /* -------------------------------------------------------------- the table */
   if (tr) {
     const never = tr.rows.filter(r => !r.matched && r.outcome === null).length;
     const surprises = tr.predicted - tr.matched - never;
     document.getElementById("trialnote").textContent =
       tr.predicted + " runs carried a prediction written down before they were sent, and "
-      + tr.matched + " came out as predicted. " + surprises + " were genuine surprises and are why "
-      + "this page has a section about what broke. " + never + " never reached a verdict at all: "
-      + "they met a guard an earlier run had already put up, which is a mistake in how we ordered "
-      + "them rather than an answer from the network.";
-
-    const b = d.battery && d.battery.summary;
-    const auto = co && (co.watched || []).find(r => r.outcome === "UPHELD");
-    const kpi = (value, label, note) =>
-      '<div class="bg-card p-7"><b class="block font-mono text-4xl font-medium tracking-tight '
-      + 'text-white">' + value + '</b><span class="mt-3 block font-mono text-[10px] uppercase '
-      + 'tracking-[0.14em] text-slate-500">' + label + '</span>'
-      + '<em class="mt-3 block text-[13px] not-italic leading-relaxed text-mute">' + note + "</em></div>";
-    set("kpis",
-      kpi(tr.total, "runs on chain", "Each with its transaction, and with the outcome we wrote down before sending it.")
-      + kpi((d.findings || []).length, "faults found and closed", "One of them by an outside reviewer handed the whole record.")
-      + kpi((b ? b.median_seconds : "-") + "s", "median alarm to halted",
-            "Fastest measured " + (b ? b.fastest : "-") + "s"
-            + (auto ? ". The agent's own catch took " + auto.seconds + "s." : "."))
-      + kpi(tr.matched + " / " + tr.predicted, "came out as predicted",
-            "The rest are in the table below, marked down the left."));
+      + tr.matched + " came out as predicted. " + surprises + " were genuine surprises. "
+      + never + " never reached a verdict, because they met a guard an earlier run had already "
+      + "put up, which is a mistake in how we ordered them rather than an answer from the network."
+      + (auto ? " The agent's own catch, with nobody in the loop, took " + auto.seconds + " seconds." : "");
 
     const cut = 12;
+    const tone = o => o === "UPHELD" ? "text-rose-400"
+      : o === "REFUSED" ? "text-emerald-400" : "text-amber-400";
     set("trialrows", tr.rows.slice().reverse().map((r, i) => {
-      const agreed = r.matched;
       const got = r.outcome || "no verdict";
-      const tone = got === "UPHELD" ? "border-flame/40 text-flame"
-        : got === "REFUSED" ? "border-emerald-400/40 text-emerald-400"
-        : "border-amber-400/40 text-amber-400";
-      return '<tr class="border-b border-white/5 align-top ' + (agreed ? "" : "row-miss ")
-        + (i < cut ? "" : "off") + '">'
-        + '<td class="max-w-[42ch] px-5 py-4 text-slate-200">' + esc(r.label) + "</td>"
-        + '<td class="whitespace-nowrap px-5 py-4 font-mono text-[12.5px] text-slate-500">' + esc(r.expect) + "</td>"
-        + '<td class="whitespace-nowrap px-5 py-4"><span class="rounded-full border px-2.5 py-1 '
-        + 'font-mono text-[10px] uppercase tracking-[0.08em] ' + tone + '">' + esc(got) + "</span></td>"
-        + '<td class="whitespace-nowrap px-5 py-4 font-mono text-[12px] ' + (agreed
-            ? "text-emerald-400" : "text-amber-400") + '">' + (agreed ? "yes" : "no") + "</td>"
-        + '<td class="whitespace-nowrap px-5 py-4 font-mono text-[12.5px] text-slate-500">'
-        + (r.seconds !== null ? r.seconds + "s" : "") + "</td>"
-        + '<td class="whitespace-nowrap px-5 py-4 font-mono text-[12.5px]">' + (r.tx
-            ? '<a class="text-slate-400 underline decoration-white/20 underline-offset-4 hover:text-flame" '
-              + 'href="https://explorer-studio.genlayer.com/tx/' + r.tx + '">' + r.tx.slice(0, 10)
-              + "…</a>" : "") + "</td></tr>";
+      return '<tr class="' + (i < cut ? "" : "off") + (r.matched ? "" : " bg-amber-500/[0.03]") + '">'
+        + '<td class="p-4 font-sans font-semibold text-white align-top max-w-[36ch]">' + esc(r.label) + "</td>"
+        + '<td class="p-4 align-top whitespace-nowrap ' + tone(r.expect) + '">' + esc(r.expect) + "</td>"
+        + '<td class="p-4 align-top whitespace-nowrap ' + tone(got) + '">' + esc(got) + "</td>"
+        + '<td class="p-4 align-top whitespace-nowrap"><span class="px-2 py-1 rounded '
+        + (r.matched ? "bg-emerald-500/10 text-emerald-400" : "bg-amber-500/10 text-amber-400")
+        + '">' + (r.matched ? "Yes" : "No") + "</span></td>"
+        + '<td class="p-4 align-top whitespace-nowrap">' + (r.seconds !== null ? r.seconds + "s" : "") + "</td>"
+        + '<td class="p-4 align-top whitespace-nowrap">' + (r.tx
+            ? '<a class="text-brand-orange hover:underline" target="_blank" '
+              + 'href="https://explorer-studio.genlayer.com/tx/' + r.tx + '">'
+              + r.tx.slice(0, 8) + "…" + r.tx.slice(-4) + "</a>" : "") + "</td></tr>";
     }).join(""));
 
     const search = document.getElementById("trialsearch");
-    const foot = document.getElementById("trialfoot");
     let filter = "all";
     function apply() {
       const term = (search.value || "").trim().toLowerCase();
-      let shown = 0;
       document.querySelectorAll("#trialrows tr").forEach(row => {
-        const agreed = !row.classList.contains("row-miss");
+        const agreed = !row.className.includes("bg-amber");
         const hit = !term || row.textContent.toLowerCase().includes(term);
-        const kept = hit && (filter === "all" || (filter === "yes") === agreed);
-        row.classList.toggle("off", !kept);
-        if (kept) shown += 1;
+        row.classList.toggle("off", !(hit && (filter === "all" || (filter === "yes") === agreed)));
       });
-      foot.textContent = shown + (shown === 1 ? " run" : " runs")
-        + (term || filter !== "all" ? " matching" : " in all")
-        + ". The ones that did not agree are marked down the left.";
-      const button = document.getElementById("showall");
-      if (button) button.remove();
     }
-    foot.textContent = "Showing the last " + Math.min(cut, tr.rows.length) + " of " + tr.rows.length
-      + ". The ones that did not agree are marked down the left.";
-    search.addEventListener("input", apply);
+    search.addEventListener("input", () => { filter = filter; apply(); });
     document.querySelectorAll("[data-filter]").forEach(button => {
       button.addEventListener("click", () => {
-        document.querySelectorAll("[data-filter]").forEach(b => {
-          b.className = b.className
-            .replace("border-flame bg-flame/10 text-white", "border-white/10 text-slate-400");
+        document.querySelectorAll("[data-filter]").forEach(b2 => {
+          b2.className = "px-4 py-2 rounded-lg font-mono text-xs border border-brand-border text-slate-400 hover:text-white";
         });
-        button.className = button.className
-          .replace("border-white/10 text-slate-400", "border-flame bg-flame/10 text-white");
+        button.className = "px-4 py-2 rounded-lg font-mono text-xs border border-brand-orange bg-brand-orange/10 text-white";
         filter = button.dataset.filter;
         apply();
       });
     });
-    document.getElementById("showall").addEventListener("click", apply);
   }
 
+  /* ------------------------------------------------------------- the alarms */
   set("alarms", (d.alarms || []).slice().reverse().map(a => {
-    const tone = a.outcome === "UPHELD" ? "border-flame/40 text-flame"
-      : a.outcome === "REFUSED" ? "border-emerald-400/40 text-emerald-400"
-      : "border-amber-400/40 text-amber-400";
-    return '<div class="p-6">'
-      + '<div class="flex flex-wrap items-baseline gap-3 font-mono text-[12px] text-slate-500">'
-      + '<span class="rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-[0.08em] '
-      + tone + '">' + a.outcome + "</span><span>#" + a.index + "</span><span>by "
-      + esc(short(a.by)) + "</span><span>"
+    const c = a.outcome === "UPHELD" ? "text-rose-400"
+      : a.outcome === "REFUSED" ? "text-emerald-400" : "text-amber-400";
+    return '<div class="bg-brand-bg border border-brand-border rounded-lg p-4">'
+      + '<div class="flex flex-wrap gap-3 items-baseline font-mono text-[11px] text-slate-500">'
+      + '<span class="' + c + ' font-semibold">' + a.outcome + "</span><span>#" + a.index
+      + "</span><span>by " + esc(short(a.by)) + "</span><span>"
       + (a.paid ? gen(a.paid) + " GEN to " + esc(short(a.paid_to)) : "nothing paid") + "</span></div>"
-      + (a.why ? '<p class="mt-3 text-[14.5px] leading-relaxed text-mute">'
+      + (a.why ? '<p class="mt-2 text-xs text-slate-400 leading-relaxed">'
         + (a.appeal_why ? "the round said: " : "") + esc(a.why) + "</p>" : "")
-      + (a.appeal_why ? '<p class="mt-2 text-[14.5px] leading-relaxed text-mute">the appeal said: '
-        + esc(a.appeal_why) + "</p>" : "")
-      + '<p class="mt-3 break-words font-mono text-[11.5px] leading-relaxed text-slate-600">'
-      + esc(String(a.evidence).slice(0, 260)) + "</p></div>";
+      + (a.appeal_why ? '<p class="mt-1 text-xs text-slate-400 leading-relaxed">the appeal said: '
+        + esc(a.appeal_why) + "</p>" : "") + "</div>";
   }).join(""));
 
   document.getElementById("stamp").textContent =
     "Read from " + short(d.halt) + " on " + d.network + ", "
-    + new Date(d.exported_at).toISOString().slice(0, 16).replace("T", " ") + " UTC. "
-    + "Contracts, tests and every dataset on GitHub.";
-
-  if (window.lucide) lucide.createIcons();
+    + new Date(d.exported_at).toISOString().slice(0, 16).replace("T", " ")
+    + " UTC. Contracts, tests and every dataset on GitHub.";
 }).catch(() => {
-  set("live", '<p class="text-mute">Nothing exported yet.</p>');
+  document.getElementById("statustitle").textContent = "Nothing exported yet.";
 });
-
-if (window.lucide) lucide.createIcons();
 </script>
 </body>
 </html>
