@@ -74,6 +74,19 @@ enforces is the owner's own sentence about its own balance. A guard with no floo
 published behaves exactly as it did before and is never stopped by arithmetic,
 however far its balance falls.
 
+And a protocol willing to ask before it pays refuses the withdrawal in front of
+it rather than the one after. `would_break` is a view, so the question costs the
+withdrawal's own transaction and not another one:
+
+```
+{"ok":false,"halted":false,"error":"this would cross the floor this contract published"}
+```
+
+Read `halted: false`. The guard was never raised: no deposit, no alarm, no
+validator asked anything, and the protocol stayed open for everything that did
+not cross its own floor. The money simply did not move.
+[results/first_transaction.log](results/first_transaction.log) has the run.
+
 ## What a protocol has to add
 
 Four lines. No inheritance, no proxy, no upgrade, and no key handed to anybody.
@@ -204,14 +217,16 @@ it does not. What loses a deposit is a figure the record **denies**.
 
 ## What it will not do
 
-**It does not stop the first transaction of an atomic exploit, and that is a
-choice rather than a limit.** A protocol could call a judged round inside its own
+**It stops the first transaction of an atomic breach only where the breach is a
+number.** A published floor is checked before the money moves and refuses the
+payment itself. A breach that has to be read is a different matter, and that is a
+choice rather than a limit. A protocol could call a judged round inside its own
 withdrawal and refuse before paying. It would work. It would also put a language
 model in the path of every payment the protocol ever makes, at about half a
 minute and one round of consensus each, and a protection that makes ordinary use
-unusable is not protection. So judgment sits outside the payment path and the
-first transaction gets through. The floor, which needs no model, is the part that
-could sit inside it.
+unusable is not protection. So judgment sits outside the payment path, and where
+a breach needs judgment the first transaction gets through. The floor needs no
+model, which is why it is already inside.
 
 **It does not find exploits.** Somebody has to see it and say so. What this
 removes is the wait between the seeing and the stopping, which is where the money

@@ -1,48 +1,60 @@
-guardian 0x5D9D81dDDddA356c1b6E3854C897c37055E5450a
-vault    0x1c9127927A0f732C5D82765d0c23F3952d1D76d1
-protect  {"ok":true,"target":"0x1c9127927a0f732c5d82765d0c23f3952d1d76d1","bounty":"10000000000000000","state":"OPEN"}
-deposit  {"ok":true,"balance":"40000000000000000"}
-floor    {"ok":true,"target":"0x1c9127927a0f732c5d82765d0c23f3952d1d76d1","floor":"not more than 50 percent inside 600 seconds"}
+Refusing the withdrawal in front of you, rather than the one after it.
+
+  node scripts/firsttransaction.mjs
+
+Studionet, 2026-09-04. Transcript below with the rate limit noise taken out and
+nothing else changed; the run was interrupted twice by Studionet's thirty a
+minute and five hundred an hour, and the last withdrawal was sent again once the
+budget came back.
+
+  guardian 0x5D9D81dDDddA356c1b6E3854C897c37055E5450a
+  vault    0x1c9127927A0f732C5D82765d0c23F3952d1D76d1
+
+  protect  {"ok":true,"bounty":"10000000000000000","state":"OPEN"}
+  deposit  {"ok":true,"balance":"40000000000000000"}
+  floor    {"ok":true,"floor":"not more than 50 percent inside 600 seconds"}
+
+The floor is published after the deposit, so the high point is the funded
+balance rather than an empty contract.
 
 taking a quarter, which the floor allows
-   {"ok":true,"withdrew":"10000000000000000","left":"30000000000000000"}
+
+  {"ok":true,"withdrew":"10000000000000000","left":"30000000000000000"}
 
 taking enough to cross it, in one transaction
-   {"ok":false,"halted":false,"blocked_so_far":1,"error":"this would cross the floor this contract published"}
-GenLayer RPC error (gen_call): Rate limit exceeded: 30 requests per minute
-file:///D:/projects/GenLayer/halt/node_modules/viem/_esm/utils/buildRequest.js:127
-                        throw new UnknownRpcError(err);
-                              ^
 
-UnknownRpcError: An unknown RPC error occurred.
+  {"ok":false,"halted":false,"blocked_so_far":1,
+   "error":"this would cross the floor this contract published"}
 
-Details: Rate limit exceeded: 30 requests per minute
-Version: viem@2.56.3
-    at withRetry.delay.count.count (file:///D:/projects/GenLayer/halt/node_modules/viem/_esm/utils/buildRequest.js:127:31)
-    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
-    at async attemptRetry (file:///D:/projects/GenLayer/halt/node_modules/viem/_esm/utils/promise/withRetry.js:24:30) {
-  details: 'Rate limit exceeded: 30 requests per minute',
-  docsPath: undefined,
-  metaMessages: undefined,
-  shortMessage: 'An unknown RPC error occurred.',
-  version: '2.56.3',
-  code: -1,
-  [cause]: {
-    code: -32029,
-    message: 'Rate limit exceeded: 30 requests per minute',
-    data: {
-      bucket: 'standard',
-      window: 'minute',
-      limit: 30,
-      current: 30,
-      retry_after_seconds: 1
-    }
-  }
-}
+Sent again after the rate limit cleared, to be sure the first was not an accident
+of timing:
 
-Node.js v24.18.0
-attempt 1 failed: Rate limit exceeded: 30 requests per minute
-attempt 2 failed: Rate limit exceeded: 30 requests per minute
-attempt 3 failed: Rate limit exceeded: 500 requests per hour
-attempt 4 failed: Rate limit exceeded: 500 requests per hour
-attempt 5 failed: Rate limit exceeded: 500 requests per hour
+  {"ok":false,"halted":false,"blocked_so_far":2,
+   "error":"this would cross the floor this contract published"}
+  tx  0xa07d998e3b8476a6a67125fdb23531e3a2bbae656811fb8b543e39d5a3ca5669
+  39s, which is what an ordinary transaction costs on this network
+
+What the guard was asked, and answered, as a view inside that same transaction:
+
+  {"ok": true, "would_break": true,
+   "held": "30000000000000000", "taking": "15000000000000000",
+   "measured_against": "40000000000000000",
+   "would_have_fallen": 62, "floor_percent": 50}
+
+Three things worth reading twice.
+
+`"halted": false`. The guard was never raised. Nobody staked a deposit, nobody
+raised an alarm, no validator was asked anything, and the protocol is still open
+for business on everything that does not cross its own published floor. The
+payment was refused and that was the whole of it.
+
+`measured_against` is the high point rather than the current balance. The quarter
+that already left counts towards the same window, which is what makes this a
+limit on a rate rather than a limit on one transaction. An attacker splitting the
+withdrawal in two is refused on the second half.
+
+And `62` against `50` is arithmetic. No prompt, no round, no model. That is why
+it can sit in the payment path at all, and it is exactly the boundary of what
+this can do about an atomic breach: the half that can be stated as a number is
+refused before the money moves, and the half that needs reading still needs a
+round, which is not something anybody would put in front of every payment.
