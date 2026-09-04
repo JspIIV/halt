@@ -1,0 +1,32 @@
+run 1: guard up 47.6s, protocol refusing 50s, finalized 77.5s, round on chain 46s
+run 2: guard up 42.5s, protocol refusing 44.5s, finalized 69.2s, round on chain 38s
+run 3: guard up 23.6s, protocol refusing 25.7s, finalized 52.6s, round on chain 20s
+GenLayer RPC error (eth_getTransactionByHash): fetch failed
+file:///D:/projects/GenLayer/halt/node_modules/viem/_esm/utils/buildRequest.js:127
+                        throw new UnknownRpcError(err);
+                              ^
+
+UnknownRpcError: An unknown RPC error occurred.
+
+Details: fetch failed
+Version: viem@2.56.3
+    at withRetry.delay.count.count (file:///D:/projects/GenLayer/halt/node_modules/viem/_esm/utils/buildRequest.js:127:31)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async attemptRetry (file:///D:/projects/GenLayer/halt/node_modules/viem/_esm/utils/promise/withRetry.js:24:30) {
+  details: 'fetch failed',
+  docsPath: undefined,
+  metaMessages: undefined,
+  shortMessage: 'An unknown RPC error occurred.',
+  version: '2.56.3',
+  code: -1,
+  [cause]: [TypeError: fetch failed] {
+    [cause]: ConnectTimeoutError: Connect Timeout Error (attempted addresses: 104.21.53.84:443, 172.67.210.182:443, timeout: 10000ms)
+        at onConnectTimeout (node:internal/deps/undici/undici:1991:23)
+        at Immediate._onImmediate (node:internal/deps/undici/undici:1957:35)
+        at process.processImmediate (node:internal/timers:504:21) {
+      code: 'UND_ERR_CONNECT_TIMEOUT'
+    }
+  }
+}
+
+Node.js v24.18.0

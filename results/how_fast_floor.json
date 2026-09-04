@@ -1,0 +1,42 @@
+[
+  {
+    "run": 1,
+    "vault": "0x4df81B6A86ffA0cd402abeC514e9386746880A20",
+    "tx": "0x02827f13d311e1fa815933a3437772588695a691e223258caa4881e6880fc549",
+    "guard_up": 7.2,
+    "protocol_refusing": 9,
+    "finalized": 37.6
+  },
+  {
+    "run": 2,
+    "vault": "0x1d586B0Adc6e432Bf7b1cd85f23bF8bd2d0476F6",
+    "tx": "0x7b7d30db3c188f6ff31a3810bf46228383858057278d2bc8c5871c681ee8bfda",
+    "guard_up": 7.1,
+    "protocol_refusing": 8.9,
+    "finalized": 35.2
+  },
+  {
+    "run": 3,
+    "vault": "0xc95Dc4Ba6A47359141f963e9C97b5C6C9F6A1776",
+    "tx": "0xa876a3ec96300a9d4447eace7ccca225edc86b41d07511c60794e973803ed74b",
+    "guard_up": 8.7,
+    "protocol_refusing": 10.4,
+    "finalized": 37.9
+  },
+  {
+    "run": 4,
+    "vault": "0x216d2Ada02Cb79D0A9a92e9eed101545cC14DCe6",
+    "tx": "0x50f2c55072fb9f2d530fec19d781783a9fd81ad162a20214d9630ae52d4999a6",
+    "guard_up": 5.5,
+    "protocol_refusing": 7.2,
+    "finalized": 34.8
+  },
+  {
+    "run": 5,
+    "vault": "0xF3D5910eB750fB0E6676273fED67e37f63a34813",
+    "tx": "0x4e41df6e4e754d63c39b1a73034436a85cff3241eb4aca407e104eeb2e3dff85",
+    "guard_up": 5.4,
+    "protocol_refusing": 7.2,
+    "finalized": 35.2
+  }
+]

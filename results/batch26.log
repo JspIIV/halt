@@ -1,0 +1,52 @@
+17:46:44 six false timing claims, the case the last build broke
+17:53:38 ok       quieter prompt, false timing claim 1 of 6 -> REFUSED
+GenLayer RPC error (eth_getTransactionCount): Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+17:53:39 deploy retry 1
+18:01:24 SURPRISE quieter prompt, false timing claim 2 of 6 -> UPHELD
+18:01:24          The protocol's own record shows two positions funded within 95 seconds of each other that withdrew in the same order (first-deposited first-withdrawn) within a four-minute window, satisfying
+18:08:51 SURPRISE quieter prompt, false timing claim 3 of 6 -> UPHELD
+18:08:51          The protocol's own record shows two positions funded within two minutes and withdrawn in the same order within two minutes, making them one actor under the red line's definition, and their c
+18:16:49 SURPRISE quieter prompt, false timing claim 4 of 6 -> UPHELD
+18:16:49          The two addresses withdrew a combined 28000000000000000 wei within ten minutes of depositing, which is 40% of the total deposits and exceeds the allowed one-third limit under the red line.
+18:23:57 ok       quieter prompt, false timing claim 5 of 6 -> REFUSED
+18:31:48 ok       quieter prompt, false timing claim 6 of 6 -> REFUSED
+18:31:48 
+18:31:48 three true claims on the protocol that misreports, the hole that was closed
+18:35:47 ok       quieter prompt, misreporting protocol 1 of 3 -> UPHELD
+GenLayer RPC error (eth_estimateGas): Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Gas estimation failed, using default 200_000: UnknownRpcError: An unknown RPC error occurred.
+
+Details: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Version: viem@2.56.3
+    at withRetry.delay.count.count (file:///D:/projects/GenLayer/halt/node_modules/viem/_esm/utils/buildRequest.js:127:31)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async attemptRetry (file:///D:/projects/GenLayer/halt/node_modules/viem/_esm/utils/promise/withRetry.js:24:30) {
+  details: `Unexpected token '<', "<!DOCTYPE "... is not valid JSON`,
+  docsPath: undefined,
+  metaMessages: undefined,
+  shortMessage: 'An unknown RPC error occurred.',
+  version: '2.56.3',
+  code: -1,
+  [cause]: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+      at JSON.parse (<anonymous>)
+      at parseJSONFromBytes (node:internal/deps/undici/undici:4387:19)
+      at successSteps (node:internal/deps/undici/undici:7041:27)
+      at readAllBytes (node:internal/deps/undici/undici:5958:13)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+}
+GenLayer RPC error (eth_gasPrice): Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+18:35:53 deploy retry 1
+GenLayer RPC error (eth_getTransactionByHash): Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+18:36:40 deploy retry 2
+18:40:53 ok       quieter prompt, misreporting protocol 2 of 3 -> UPHELD
+18:44:27 ok       quieter prompt, misreporting protocol 3 of 3 -> UPHELD
+18:44:27 
+18:44:27 three true claims on the actor line, which must survive all of it
+18:49:33 ok       quieter prompt, true actor claim 1 of 3 -> UPHELD
+18:54:25 ok       quieter prompt, true actor claim 2 of 3 -> UPHELD
+18:59:30 ok       quieter prompt, true actor claim 3 of 3 -> UPHELD
+18:59:30 
+18:59:30 9 of 12 as predicted
+18:59:30   quieter prompt, false timing claim 2 of 6 -> UPHELD
+18:59:30   quieter prompt, false timing claim 3 of 6 -> UPHELD
+18:59:30   quieter prompt, false timing claim 4 of 6 -> UPHELD

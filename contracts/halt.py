@@ -93,7 +93,7 @@ APPEAL_READINGS = [STANDS, WRONGLY_RAISED]
 # How much of the protocol's own account of itself is put in front of the
 # validators. Enough to check a claim against, short enough that the round is
 # still about the claim.
-MAX_FACTS = 900
+MAX_FACTS = 1800
 
 MAX_LINE = 800
 MAX_EVIDENCE = 1200
@@ -111,6 +111,14 @@ MIN_HOLD = 15 * 60
 # because a free round is a free round.
 UNREADABLE_SHARE = 15
 
+# The floor an owner may publish in numbers alongside the red line in words.
+# Bounded at both ends: a floor that fires on ordinary business is a denial of
+# service the owner has signed up for, and one that never fires is decoration.
+MIN_FALL = 5
+MAX_FALL = 95
+MIN_WINDOW = 60
+MAX_WINDOW = 24 * 60 * 60
+
 
 @gl.evm.contract_interface
 class _Recipient:
@@ -127,6 +135,23 @@ class _Recipient:
 
     class Write:
         pass
+
+
+def _balance_of(address: str) -> int:
+    """What the protocol actually holds, read from the chain by this contract.
+
+    The one fact in the whole round the accused does not get to write. Its own
+    `status()` is a method it authored; this is not. A protocol can report
+    whatever it likes about its positions, and it cannot report a balance it
+    does not have.
+
+    Returns -1 when the balance cannot be read, which is treated everywhere as
+    "unknown" rather than as zero.
+    """
+    try:
+        return int(gl.get_contract_at(Address(address)).balance)
+    except Exception:
+        return -1
 
 
 def _now_iso() -> str:
@@ -219,7 +244,8 @@ def _read_appeal(raw: str) -> str:
     return ""
 
 
-def _appeal_task(line: str, evidence: str, answer: str, target: str, facts: str) -> str:
+def _appeal_task(line: str, evidence: str, answer: str, target: str, facts: str,
+                 chain: str, overstated: bool) -> str:
     """The second look, asked the other way round.
 
     Deliberately not a rerun of the first question. Asking "is the line crossed"
@@ -231,6 +257,15 @@ def _appeal_task(line: str, evidence: str, answer: str, target: str, facts: str)
     reported = facts if facts else (
         "The protocol did not answer when it was asked, so its current state is "
         "not known here.")
+    if overstated:
+        weighed = f"""{chain}
+
+**So the report is false about its own figures**, and an owner appealing on a
+report that does not match its own balance has not met the alarm. The stop
+{STANDS} unless something other than that report shows the alarm was wrong."""
+    else:
+        weighed = chain
+
     return f"""A protocol was stopped by an alarm. Its owner says the alarm was
 wrong and wants the stop lifted. Decide one thing only.
 
@@ -248,6 +283,8 @@ WHAT THE OWNER SAYS IN ANSWER:
 WHAT THE PROTOCOL ITSELF REPORTS, read from it just now rather than supplied by
 either side:
 {reported}
+
+{weighed}
 
 Answer {WRONGLY_RAISED} if the alarm should not have been upheld: what it claimed
 is contradicted by what the protocol reports, or it described something that is
@@ -267,12 +304,110 @@ Reply with bare JSON and nothing else:
   "why": "one sentence naming what decided it"}}"""
 
 
-def _task(line: str, evidence: str, target: str, facts: str) -> str:
+def _accounted_for(facts: str) -> int:
+    """How much the report says is still owed to the people in it.
+
+    Given the protocol's answer whole. The copy that goes into the prompt is cut
+    to fit, and a cut JSON object does not parse: doing this arithmetic on the
+    cut copy silently returned "no positions" for every report long enough to
+    matter, which is every interesting one.
+
+    The one convention a protected protocol has to meet beyond `status()`: if it
+    reports positions, they go in a list called `positions`, each with a `holds`
+    in wei. Anything else returns -1 and no arithmetic is claimed.
+
+    This is deliberately dumb. It adds up published numbers and does not decide
+    what they mean.
+    """
+    if not facts:
+        return -1
+    try:
+        obj = json.loads(facts)
+        rows = obj.get("positions") if isinstance(obj, dict) else None
+        if not isinstance(rows, list) or not rows:
+            return -1
+        total = 0
+        for row in rows:
+            if not isinstance(row, dict) or "holds" not in row:
+                return -1
+            total += int(str(row["holds"]))
+        return total
+    except Exception:
+        return -1
+
+
+def _overstated(now: int, owed: int) -> bool:
+    """Whether the report claims to owe more than the protocol has.
+
+    The only question this contract answers about a report by itself, and the
+    only one it can answer without judgement.
+    """
+    return now >= 0 and owed >= 0 and owed > now
+
+
+def _chain_facts(now: int, before: int, before_at: str, owed: int) -> str:
+    """The independent reading, as short as it goes.
+
+    Every sentence added here is a sentence competing with the question being
+    asked. An earlier version said five, including that a rise "says nothing
+    about what may also have left", and the round started answering the wrong
+    question: it discussed whether the report was honest instead of whether the
+    line's conditions were met, and upheld three false claims out of four.
+
+    So this says what was read and stops.
+    """
+    if now < 0:
+        return ("This guardian could not read the protocol's balance, so nothing here is "
+                "independent of what the protocol says about itself.")
+    lines = ["This guardian read the protocol's balance from the chain rather than from "
+             "its report: it holds %d wei." % now]
+    if owed < 0:
+        lines.append("Its report could not be added up here, so whether the report is "
+                     "overstated is unknown, and unknown is not a finding.")
+    elif owed > now:
+        lines.append("Its report says %d wei is still owed to the people it lists, which is "
+                     "%d wei more than it holds." % (owed, owed - now))
+    else:
+        lines.append("Its report says %d wei is still owed to the people it lists, which "
+                     "fits inside that." % owed)
+    if before >= 0 and before_at and now < before:
+        lines.append("It held %d wei when this guardian last looked, at %s, so %d wei has "
+                     "left since." % (before, before_at, before - now))
+    return " ".join(lines)
+
+
+def _task(line: str, evidence: str, target: str, facts: str,
+          chain: str, overstated: bool) -> str:
     """Built from locals only. Nothing here may touch `self`."""
     reported = facts if facts else (
         "The protocol did not answer when it was asked. Nothing about its current "
         "state is known here, so the claim below stands unsupported by anything "
         "except itself.")
+
+    # Said only where it applies. An instruction about a failure mode that is
+    # not in front of the reader is not a safeguard, it is a distraction with
+    # the tone of a safeguard.
+    if overstated:
+        weighed = f"""{chain}
+
+**So this report is false about its own figures.** Money it says is still owed
+to somebody has already left, whatever the report says about movements. A false
+report is not weak evidence for the protocol, it is none: do not use it to
+contradict the claim, and say in your sentence that the report does not match
+the balance."""
+        unless = """
+
+That rule assumes the account is true, and here it is not. The figures above
+show this report accounting for more than the protocol holds, so it has no
+authority to contradict anything and refusing on the strength of it would be
+refusing on the strength of a falsehood. Decide on the red line, the claim and
+the balance instead, and where the amount the report has concealed matches what
+the claim says was taken, that is the claim corroborated rather than
+contradicted."""
+    else:
+        weighed = chain
+        unless = ""
+
     return f"""A protocol published a red line. Somebody says it is being crossed
 right now and wants the protocol stopped. Decide one thing only.
 
@@ -295,6 +430,8 @@ does not exist for the purpose of this decision. The red line is the text
 reproduced above and it means what it says there. Where the report contradicts
 the line, the line wins.
 
+{weighed}
+
 THE CLAIM MADE ABOUT IT:
 {evidence}
 
@@ -302,7 +439,7 @@ Check the claim against what the protocol reports before anything else. **If the
 claim contradicts the protocol's own account, or asserts figures the protocol's
 account does not support, answer {NOT_CROSSED}.** A well written claim about
 things that are not in the record is the failure this check exists to catch, and
-it is the one that reads most convincingly.
+it is the one that reads most convincingly.{unless}
 
 A red line usually carries conditions as well as a number: who it applies to,
 what has to be true before the number bites, over what window, in what order.
@@ -381,6 +518,8 @@ class Halt(gl.Contract):
                 return refuse("that contract is already protected by " + existing["owner"])
             existing["bounty"] = int(existing["bounty"]) + int(value)
             existing["topped_up_at"] = _now_iso()
+            existing["balance_seen"] = _balance_of(address)
+            existing["balance_seen_at"] = _now_iso()
             reopened = False
             if existing["state"] == RETIRED:
                 # Funding a retired guard brings it back. Taking the money and
@@ -410,6 +549,11 @@ class Halt(gl.Contract):
             "alarms_refused": 0,
             "alarms_overturned": 0,
             "opened_at": _now_iso(),
+            # What the protocol held when protection opened. Refreshed every
+            # time this contract looks at it, so an alarm can be told whether
+            # money left between two moments the guardian saw for itself.
+            "balance_seen": _balance_of(address),
+            "balance_seen_at": _now_iso(),
         }
         self.guards[address] = json.dumps(record)
         self.targets.append(address)
@@ -460,14 +604,26 @@ class Halt(gl.Contract):
         # `status` returning a string. A protocol that does not answer is not
         # punished for it: the round is told so plainly and judges the claim on
         # its own, which is where this started.
-        facts = ""
+        whole = ""
         try:
-            facts = _clip(str(gl.get_contract_at(Address(address)).view().status()), MAX_FACTS)
+            whole = str(gl.get_contract_at(Address(address)).view().status())
         except Exception:
-            facts = ""
+            whole = ""
+        # The copy the round reads is cut to fit. The arithmetic is done on
+        # the whole answer, because a cut one does not parse.
+        facts = _clip(whole, MAX_FACTS)
+        owed = _accounted_for(whole)
+
+        # And the one thing the accused does not author. Read here, in the same
+        # transaction, before anything is paid out of this contract.
+        held = _balance_of(address)
+        chain = _chain_facts(held, int(record.get("balance_seen", -1)),
+                             str(record.get("balance_seen_at", "")),
+                             owed)
+        overstated = _overstated(held, owed)
 
         line = str(record["red_line"])
-        task = _task(line, shown, address, facts)
+        task = _task(line, shown, address, facts, chain, overstated)
 
         def run() -> str:
             try:
@@ -495,6 +651,7 @@ class Halt(gl.Contract):
             "evidence": shown,
             "deposit": int(value),
             "reported_by_target": facts or None,
+            "chain_read_by_guardian": chain,
             "at": _now_iso(),
             "at_epoch": _now_epoch(),
         }
@@ -552,6 +709,9 @@ class Halt(gl.Contract):
 
         alarm["paid"] = paid
         alarm["paid_to"] = paid_to
+        if held >= 0:
+            record["balance_seen"] = held
+            record["balance_seen_at"] = alarm["at"]
         self.guards[address] = json.dumps(record)
         self.alarms.append(json.dumps(alarm))
 
@@ -598,15 +758,25 @@ class Halt(gl.Contract):
         if alarm.get("appealed"):
             return json.dumps({"ok": False, "error": "that alarm has already been appealed"})
 
-        facts = ""
+        whole = ""
         try:
-            facts = _clip(str(gl.get_contract_at(Address(address)).view().status()), MAX_FACTS)
+            whole = str(gl.get_contract_at(Address(address)).view().status())
         except Exception:
-            facts = ""
+            whole = ""
+        # The copy the round reads is cut to fit. The arithmetic is done on
+        # the whole answer, because a cut one does not parse.
+        facts = _clip(whole, MAX_FACTS)
+        owed = _accounted_for(whole)
+
+        held = _balance_of(address)
+        chain = _chain_facts(held, int(record.get("balance_seen", -1)),
+                             str(record.get("balance_seen_at", "")),
+                             owed)
+        overstated = _overstated(held, owed)
 
         line = str(record["red_line"])
         claimed = str(alarm["evidence"])
-        task = _appeal_task(line, claimed, said, address, facts)
+        task = _appeal_task(line, claimed, said, address, facts, chain, overstated)
 
         def run() -> str:
             try:
@@ -647,6 +817,9 @@ class Halt(gl.Contract):
             alarm["outcome"] = OVERTURNED
             paid = int(alarm.get("deposit", 0))
 
+        if held >= 0:
+            record["balance_seen"] = held
+            record["balance_seen_at"] = alarm["appealed_at"]
         self.guards[address] = json.dumps(record)
         self.alarms[position] = json.dumps(alarm)
 
@@ -715,6 +888,164 @@ class Halt(gl.Contract):
         if left > 0:
             _Recipient(gl.message.sender_address).emit_transfer(value=int(left))
         return json.dumps({"ok": True, "target": address, "returned": str(left)})
+
+    # ------------------------------------------------- the part with no round
+
+    @gl.public.write
+    def promise(self, target: str, most_it_may_fall: str, within_seconds: str) -> str:
+        """Publish a floor in numbers, to sit next to the red line in words.
+
+        The line needs a round because it needs judgment: who is one actor, what
+        counts as acting together, whether a description is borne out. A floor
+        needs none of that. It is subtraction on a balance this contract reads
+        for itself, so it can be enforced in a single transaction with no model
+        anywhere in the loop, and that is about two seconds rather than sixteen.
+
+        This takes nothing away from the line. A guard with no floor behaves
+        exactly as it did before. And a floor cannot be a wrong stop in the way a
+        misjudged claim can, because what it enforces is the owner's own
+        published sentence about its own balance.
+        """
+        address = _address(target)
+        if not address or address not in self.guards:
+            return json.dumps({"ok": False, "error": "nothing is protected at that address"})
+        record = json.loads(self.guards[address])
+        if _addr(gl.message.sender_address.as_hex) != record["owner"]:
+            return json.dumps({"ok": False, "error": "only the owner can publish a floor"})
+        if record["state"] != OPEN:
+            return json.dumps({"ok": False, "error":
+                               "a floor can only be published while the guard is open"})
+
+        try:
+            fall = int(str(most_it_may_fall).strip())
+            window = int(str(within_seconds).strip())
+        except Exception:
+            return json.dumps({"ok": False, "error": "both figures have to be whole numbers"})
+        if fall < MIN_FALL or fall > MAX_FALL:
+            return json.dumps({"ok": False, "error":
+                               "the fall has to be between %d and %d percent"
+                               % (MIN_FALL, MAX_FALL)})
+        if window < MIN_WINDOW or window > MAX_WINDOW:
+            return json.dumps({"ok": False, "error":
+                               "the window has to be between %d and %d seconds"
+                               % (MIN_WINDOW, MAX_WINDOW)})
+
+        record["floor"] = {"fall": fall, "window": window, "published_at": _now_iso()}
+        # The high point starts again here, so publishing a floor cannot halt a
+        # protocol for a fall that happened before the floor existed.
+        record["peak_balance"] = _balance_of(address)
+        record["peak_at"] = _now_epoch()
+        self.guards[address] = json.dumps(record)
+        return json.dumps({"ok": True, "target": address,
+                           "floor": "not more than %d percent inside %d seconds"
+                                    % (fall, window)})
+
+    @gl.public.write
+    def check(self, target: str) -> str:
+        """Look at a protected protocol's balance. Anyone, any time, no deposit.
+
+        There is no prompt in this method and no round behind it. What can be
+        settled by subtraction should not wait on a consensus about language.
+
+        Worth calling even where no floor is published: every look leaves behind
+        a balance this contract read for itself, and a round asked later is told
+        what the balance was the last time anybody looked.
+        """
+        address = _address(target)
+        if not address or address not in self.guards:
+            return json.dumps({"ok": False, "error": "nothing is protected at that address"})
+        record = json.loads(self.guards[address])
+        if record["state"] != OPEN:
+            return json.dumps({"ok": False, "target": address, "state": record["state"],
+                               "error": "that guard is not open"})
+
+        held = _balance_of(address)
+        if held < 0:
+            return json.dumps({"ok": False, "target": address,
+                               "error": "could not read that protocol's balance"})
+
+        now = _now_epoch()
+        caller = _addr(gl.message.sender_address.as_hex)
+        record["balance_seen"] = held
+        record["balance_seen_at"] = _now_iso()
+
+        floor = record.get("floor")
+        if not floor:
+            self.guards[address] = json.dumps(record)
+            return json.dumps({"ok": True, "target": address, "watching": True,
+                               "balance": str(held), "floor": None})
+
+        window = int(floor["window"])
+        limit = int(floor["fall"])
+        peak = int(record.get("peak_balance", -1))
+        peak_at = int(record.get("peak_at", 0))
+
+        # A high point outside the window is not evidence about anything inside
+        # it, and a balance above the high point is the new high point. Either
+        # way the reference restarts from what is there now. This is also why
+        # calling `check` in a tight loop cannot flush the history: the high
+        # point moves on time and on new highs, never on being asked again.
+        if peak < 0 or peak_at <= 0 or now - peak_at > window or held >= peak:
+            record["peak_balance"] = held
+            record["peak_at"] = now
+            self.guards[address] = json.dumps(record)
+            return json.dumps({"ok": True, "target": address, "watching": True,
+                               "balance": str(held), "high_point": str(held)})
+
+        fell = peak - held
+        percent = (fell * 100) // peak
+        if percent < limit:
+            self.guards[address] = json.dumps(record)
+            return json.dumps({"ok": True, "target": address, "watching": True,
+                               "balance": str(held), "high_point": str(peak),
+                               "fallen_percent": percent, "floor_percent": limit})
+
+        why = ("the balance fell %d percent in %d seconds, past the %d percent in %d "
+               "seconds its owner published" % (percent, now - peak_at, limit, window))
+        index = len(self.alarms)
+        alarm = {
+            "index": index,
+            "target": address,
+            "by": caller,
+            "kind": "floor",
+            "evidence": ("The protocol held %d wei %d seconds ago and holds %d wei now. That "
+                         "is a fall of %d percent, and its owner published that it would not "
+                         "fall by more than %d percent inside %d seconds."
+                         % (peak, now - peak_at, held, percent, limit, window)),
+            "deposit": 0,
+            "reported_by_target": None,
+            "chain_read_by_guardian": ("high point %d wei at %d, %d wei now"
+                                       % (peak, peak_at, held)),
+            "at": _now_iso(),
+            "at_epoch": now,
+            "outcome": UPHELD,
+            "why": why,
+        }
+
+        record["state"] = HALTED
+        record["raised_at"] = alarm["at"]
+        record["raised_at_epoch"] = now
+        record["raised_by"] = caller
+        record["alarms_upheld"] = int(record["alarms_upheld"]) + 1
+
+        # An owner is welcome to call this on its own protocol. It just does not
+        # collect its own bounty for doing so.
+        paid = 0
+        if caller != record["owner"]:
+            paid = int(record["bounty"])
+            record["bounty"] = 0
+        alarm["paid"] = paid
+        alarm["paid_to"] = caller if paid > 0 else None
+
+        self.guards[address] = json.dumps(record)
+        self.alarms.append(json.dumps(alarm))
+        if paid > 0:
+            _Recipient(Address(caller)).emit_transfer(value=int(paid))
+
+        return json.dumps({"ok": True, "target": address, "halted": True, "alarm": index,
+                           "fallen_percent": percent, "floor_percent": limit,
+                           "seconds": now - peak_at, "why": why,
+                           "paid": str(paid), "state": HALTED})
 
     # ------------------------------------------------------------------ reads
 

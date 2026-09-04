@@ -64,12 +64,52 @@ doing next.
 * [BlockSec, Euler Finance Incident](https://blocksec.com/blog/euler-finance-incident-the-largest-hack-of-2023)
 * [Coinbase, Euler Compromise Investigation, Part 1](https://www.coinbase.com/blog/euler-compromise-investigation-part-1-the-exploit)
 
-## Measured against our own numbers
+## Measured against our own numbers, after we found we had measured it wrong
 
-Alarm to halted, on Studionet, across separate runs: 57, 62, 65, 69, 80 seconds,
-median 69. The watcher run went from the first malicious withdrawal to a halted
-protocol in two minutes and five seconds with nobody watching a screen.
+The figure this document used to carry was **57, 62, 65, 69, 80 seconds, median
+69**, and it was the answer to a question nobody asks.
+
+It was measured to FINALIZED, by the same script that sent the transaction,
+polling every six seconds. A protected protocol does not wait for finalisation.
+It reads the guard with `view()`, whose default state is the latest non final
+one, so it starts refusing when the round decides. The number that matters is
+the one a depositor would feel: **how long does the protocol keep paying out
+after somebody raises the alarm.**
+
+`scripts/howfast.mjs` sends an alarm and then does nothing but ask, several times
+a second, whether the protocol has started refusing. Each run gets its own vault.
+
+| | protocol refusing | finalised |
+| --- | --- | --- |
+| the judged line, five runs | 23.8, 25.7, 40.8, 44.5, 50.0 | 52.6 to 77.5 |
+| the published floor, four runs | 7.2, 8.9, 9.0, 10.4 | 34.8 to 37.9 |
+
+Two thirds of what we had been publishing was a wait nothing was waiting for.
+
+The floor is the path with no round in it: no prompt, no model, no deposit, just
+a balance the guardian reads for itself and a number its owner published. It
+lands inside a single Ethereum block time. The judged line is four to five times
+slower, and that is the price of asking a question a contract cannot answer.
+
+**One caution about the judged figures.** They range from 23.8 to 50.0 seconds
+across five runs on a network that spent the day returning HTML error pages
+instead of RPC replies. A single earlier observation on a different build came
+in at 16.9 seconds. Five runs on a bad day is a range, not a median worth
+quoting to one decimal place, and it is published as a range for that reason.
+
+## What that changes about the argument
+
+Nothing, and it is worth saying why not.
 
 Against Nomad's few hours and 1,175 withdrawals, or Curve's three pools over two
-hours, a minute is not the wrong order of magnitude. Against a single flash loan
-transaction it is infinitely too slow, and that case is not claimed.
+hours, forty seconds and seventy seconds are the same answer. The correction
+matters for honesty rather than for the case: we were publishing a number that
+described our own polling loop and calling it the speed of the system.
+
+Against a single flash loan transaction, both are infinitely too slow, and that
+case is still not claimed. What can now be said precisely is which half of the
+problem sits on which side of the line. A velocity floor needs no judgment, runs
+in one transaction with no model in it, and could be called from inside a
+withdrawal by a protocol willing to pay one cross contract call. A red line about
+who an actor is cannot, unless a protocol is willing to put a consensus round in
+the path of every payment it ever makes.

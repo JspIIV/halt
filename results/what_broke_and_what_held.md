@@ -296,13 +296,236 @@ percent is a published number, not a solved problem, and it is the number a
 protocol owner should have before deciding whether the deposit and the appeal
 are enough cover for the rest.
 
+## 8. Can the protocol just report false numbers?
+
+Sections 2 and 5 both let the protocol talk. One told the validator what to do
+and the other supplied a premise, and both were beaten by saying what a report
+is: balances and movements, and otherwise the accused speaking about its own
+case.
+
+That fix has a hole in the middle of it, and this is the hole. It defines what
+counts as evidence in the report. It has nothing to say about whether the
+balances and movements are true.
+
+`contracts/quiet_vault.py` does not argue. It pays out correctly, moves the real
+money, and then reports the position as though nothing had left:
+
+```python
+put_in = int(self.deposited[who]) if who in self.deposited else 0
+positions.append({"who": who, "holds": str(put_in),
+                  "deposited": str(put_in),
+                  "withdrawn": "0",
+                  "last_withdrawal_at": ""})
+```
+
+Withdrawals are left out of `recent` as well. No instruction, no premise, no
+unit, nothing for the report-is-not-argument paragraph to catch. Every field is
+the shape the guard expects.
+
+A real breach was committed on it. Three quarters of a position, forty seconds
+after depositing, well inside the window:
+
+```
+withdraw {"ok":true,"withdrew":"30000000000000000","left":"10000000000000000"}
+```
+
+An ordinary alarm was raised on it, with the prediction written down first:
+**REFUSED**.
+
+**REFUSED in 69 seconds.** The round wrote:
+
+> The protocol report shows this address deposited 40000000000000000 wei and
+> withdrawn 0, with only a deposit in the recent movements, so the claim of a
+> 30000000000000000 wei withdrawal is not supported by the record.
+
+The reasoning is correct. Given that record, refusing is the only defensible
+answer, and the alarm-raiser lost its deposit for telling the truth.
+
+### Why this is the architecture and not a prompt
+
+Every other fault in this document was a reading fault, and reading faults are
+fixable: two of them were fixed by writing the guard's instructions better and
+one by having the protocol publish a fact it was making the reader reconstruct.
+
+This one is not a reading fault. The guard's single source of ground truth is
+
+```python
+facts = gl.get_contract_at(Address(address)).view().status()
+```
+
+`status()` is a method the accused wrote. The guardian judges a protocol against
+a red line using an account of events supplied by that protocol. No sentence
+added to the prompt changes that, because the prompt governs how the record is
+read and the record itself is the thing that is false.
+
+### What it does and does not cost
+
+It is worth being exact about the size of it, because the honest version is
+narrower than the alarming version.
+
+It cannot be used to keep paying out **and** be believed. `quiet_vault` reports a
+balance it does not have. Anybody reading the chain sees the vault holds
+0.01 while its own report claims 0.04 of positions. The lie is visible; the
+guard is simply not the thing looking.
+
+It cannot be turned on somebody else. A protocol can only falsify its own
+report, so this defeats an alarm about itself and cannot manufacture one.
+
+What it does is let a protocol that is already willing to publish false
+accounting opt into a guard, wear the protection publicly, and be immune to it.
+That is worse than not having a guard, because the guard is visible and the
+immunity is not.
+
+### The fix, and the two that did not work first
+
+`gl.get_contract_at(address).balance` reads a contract's balance from the chain.
+Not from the report, not from the claim. The accused writes its `status()` and
+does not write this.
+
+**Putting it in the prompt did nothing.** The round was shown `holds: 40000...`
+in the report and `10000...` from the chain, in the same page, and refused
+anyway. It never put the two numbers together.
+
+**Doing the arithmetic in the guardian did nothing either.** So the contract
+added the positions up itself and stated the conclusion as a sentence: *the
+report accounts for 40000000000000000 wei, the protocol holds 10000000000000000
+wei, the report cannot be true.* **REFUSED** again, citing `withdrawn: "0"`.
+
+What was beating it was a sentence this project had written months earlier to
+stop griefers, and it was doing its job:
+
+> If the claim contradicts the protocol's own account, or asserts figures the
+> protocol's account does not support, answer NOT_CROSSED.
+
+Unconditional, and it names an answer. Every new paragraph about false reports
+was competing with a rule that told the reader what to output. So the rule got
+the exception it had always implied and never said:
+
+> That rule assumes the account is true. Where the figures above say the report
+> is overstated, the account has no authority to contradict anything, and
+> refusing on the strength of it would be refusing on the strength of a
+> falsehood.
+
+Same vault, same evidence: **UPHELD in 59 seconds**, and three times out of
+three when it was repeated.
+
+> The protocol's report is false because it claims to hold 40000000000000000 wei
+> while the chain shows it only holds 10000000000000000 wei, corroborating the
+> claim that 30000000000000000 wei was withdrawn within the ten-minute window.
+
+### What it still does not catch
+
+`contracts/silent_vault.py` is the same lie told smaller. It reports the world
+that would exist if the deposit had only ever been what is left: deposited what
+remains, withdrawn nothing, holding what remains. Every figure agrees with every
+other figure and with the balance, so there is nothing to add up and nothing to
+contradict.
+
+That is the honest boundary of this check. It catches a protocol claiming to
+hold money that is gone. It does not catch one that shrinks its whole history to
+fit what it has.
+
+## 9. What the fix cost, and what it cost to find out
+
+The fix above was measured against everything else in this document, and the
+first two builds of it broke the centrepiece. This section is that arc, because
+a fix published without its cost is a claim rather than a result.
+
+| build | false claim refused | true claim upheld | misreporting protocol caught |
+| --- | --- | --- | --- |
+| before the balance was read at all | 9 of 10 | 5 of 5 | 0 of 1 |
+| balance read, arithmetic on the copy that fits | 3 of 4 | 3 of 3 | 3 of 3 |
+| arithmetic on the whole answer, warnings added | 1 of 4 | 3 of 3 | 3 of 3 |
+| the warnings said only where they apply | 3 of 6 | 3 of 3 | 3 of 3 |
+| the ledger reported in the order it happened | 6 of 6 | 1 of 3 | 2 of 2 |
+| the same, on a line a chain can satisfy | 3 of 3 | 3 of 3 | 3 of 3 |
+
+Row three is a live protocol halted on a false claim. It paid the claimant the
+bounty. Three separate faults were behind those rows and none of them was the
+one being looked for.
+
+### The arithmetic was being done on the cut copy
+
+The report goes into the prompt clipped to fit. The new arithmetic was run on
+the clipped string, and a clipped JSON object does not parse, so every report
+long enough to matter came back as *no positions*. The sentence the guardian was
+supposed to contribute was simply absent, and the round filled the gap with its
+own version: it compared the report's **deposits** against the balance, found 70
+against 42, and declared an honest report false.
+
+Deposits are history. A protocol's deposits are not supposed to equal its
+balance and it is not lying because they do not. The fix is one line, reading
+the whole answer and clipping only the copy that travels.
+
+### Raising the limit uncovered a ledger written backwards
+
+With the arithmetic fixed, the clip was raised from 900 characters to 1800 so
+reports would stop being cut mid list. False positives went to three in four.
+
+The reasoning said why, three times in the same words: *withdrew in the same
+order, first deposited first withdrawn.* The vault's ledger says the opposite.
+`vault.py` was building its `recent` list by walking the ledger backwards,
+newest first, and saying so nowhere. At 900 characters that list had always been
+cut off and the round had to use the explicit `first_deposit_at` and
+`last_withdrawal_at` on each position. At 1800 it could read the order straight
+off the list, and it read it upside down.
+
+**The truncation had been protecting us by accident.** The fix went into the
+protocol rather than the guard, which is where the fix went last time too: the
+list is now in the order the movements happened and the report says which way
+round it is. False positives went to none in six.
+
+### And then the red line turned out to be unsatisfiable
+
+Reading the ledger correctly, the round began refusing **true** claims:
+
+> deposits 40 s apart and withdrawals 40 s apart, so the funded at the same time
+> condition for treating them as one actor is not met by the timestamps
+
+It is right. The line said *positions funded at the same time*, and on this
+network a transaction takes about forty seconds to settle, so no two positions
+are ever funded at the same time. The line asked for something no chain
+provides, and for as long as the ledger was being misread nobody noticed.
+
+The line now names what a ledger can show: funded within a few minutes of each
+other, for amounts of the same size, drawn on in the order they were funded. The
+word *lockstep* is gone from it, because this project's own rule is that such a
+word is the claimant's reading rather than evidence for it. On that line the
+same two vaults separate cleanly: **three of three upheld and three of three
+refused.**
+
+### What the three have in common
+
+Every one of them was a fault in what the round was shown rather than in what it
+decided. The arithmetic was missing, the order was inverted, the condition was
+impossible. Given the right material the judgment was sound each time, including
+the times it refused us.
+
+That is the fourth time in this document that the fix has been a fact rather
+than an instruction, and the second time an added instruction made things worse.
+
 ## What this leaves
 
-The reading discriminates on the condition rather than on arithmetic, and it
-holds against an accused protocol that lies about itself. Sample size is no longer the thinnest part: 89 runs are in `trials.json`,
-appended as they happened, including every one that went the wrong way and every
-prediction that was written down before the run and then missed.
+The reading discriminates on the condition rather than on arithmetic. It holds
+against a protocol that argues about itself, and against one that claims to hold
+money it does not have. It does not hold against one that shrinks its whole
+history to match its balance, which is the end of section 8 and is not fixed.
 
-What is thin now is breadth. Two red lines, one protocol, two addresses. A third
-address, a second protocol shape, and a line about something other than
-withdrawals would each be a real test and none of them has been run.
+Sample size is not the thin part: 154 runs are in `trials.json`, appended as they
+happened, each carrying the outcome predicted before it was sent, including every
+one that went the wrong way. Three of them were recorded as errors by a script
+that retried after a network failure without noticing the first send had gone
+through, and one of those was hiding a live protocol halted on a false claim.
+They were read back off the guardian and corrected in place, and the scripts now
+read the outcome off the chain whenever a reply does not carry one. A false
+positive that files itself as a network error is worse than a false positive.
+
+What is thin is breadth. Two red lines, one protocol shape, two addresses. A
+third address, a protocol that is not a vault, and a line about something other
+than withdrawals would each be a real test and none of them has been run.
+
+One thing this document should be read for over the numbers: **every fault in it
+was in what the round was shown, and none was in what it decided.** Truncated
+arithmetic, an inverted ledger, an impossible condition, a rule with an unstated
+assumption. Four fixes were facts and two were instructions, and both of the
+instructions made it worse.

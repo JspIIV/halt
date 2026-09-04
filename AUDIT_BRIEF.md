@@ -5,7 +5,7 @@ that produced it. Nothing here needs to be taken on our word: the guardian, the
 protocols it watches and the reasoning the validators gave are all readable from
 the chain.
 
-Guardian under test: `0x2E3F18f16b590D1952ec865D337A33E59412e517`
+Guardian under test: `0x280eff6e765C5d72C97F8ee406ED838257C89DfB`
 
 ## What we are claiming
 
@@ -13,10 +13,21 @@ Guardian under test: `0x2E3F18f16b590D1952ec865D337A33E59412e517`
    consensus round can enforce it. The condition we used: **addresses acting
    together are one actor**, with the ordinary limit applying to the actor
    rather than to each address.
-2. That reading discriminates. It upholds a pair that really is moving in
-   lockstep and refuses a pair that only looks similar.
-3. The check survives the protocol under judgment lying about itself.
+2. That reading discriminates. It upholds a pair that really is moving together
+   and refuses a pair that only looks similar.
+3. The check survives a protocol that argues about its own case, and one that
+   claims to hold money it does not have. It does not survive a protocol that
+   shrinks its whole reported history to match its balance, and we say where
+   that boundary is rather than leaving it to be found.
 4. An owner cannot talk a correct stop away.
+
+**And the claim we are least sure of.** Rows in this table come from six builds
+of the guard, not one, and three of those builds were worse than the one before.
+The table is in the order the runs happened, so a rate computed across the whole
+of it is meaningless. Read it by build. The current one is the rows labelled
+`chronological ledger` and `satisfiable line`, and everything before them is
+either history or a fault we caused and then fixed. One of those rows is a live
+protocol halted on a false claim, and it is left in.
 
 ## Every run, in order
 
@@ -114,6 +125,71 @@ Guardian under test: `0x2E3F18f16b590D1952ec865D337A33E59412e517`
 | with the moments reported plainly, true claim 3 of 5 | alarm | UPHELD | 141s | `0x3aeedaee32222ef78cab11a85968938f315d23b71e545cbd3a68b98377f7249d` |
 | with the moments reported plainly, true claim 4 of 5 | alarm | UPHELD | 116s | `0xb410ba887f7d510b8aeffe22098127dd149cf1e2964e2a6348d9b84b8d53837a` |
 | with the moments reported plainly, true claim 5 of 5 | alarm | UPHELD | 98s | `0xc869e7e508a1978a558840aa635608e2a15d0553cf0658d4eb0ce08a61c33631` |
+| a protocol that simply misreports its own figures | alarm | REFUSED | 69s | `0x8815c68e101a1d2ccd9b9524eb3df5dc7e8877c5f90fc711379013f63c9f0222` |
+| misreporting protocol, guardian reading the balance itself | alarm | REFUSED | 48s | `0x562d36f9597d6523f3c290f45a3d88c5b7351d86fc8e862a3d7ead7b7bd7cc53` |
+| misreporting protocol, guardian doing the arithmetic itself | alarm | REFUSED | 67s | `0x7e05f7be68c48c160519353a60a9cee00510c8a6bc8f85b0fe035ee8db9599fa` |
+| misreporting protocol, the account is not allowed to be true | alarm | UPHELD | 59s | `0x78bb600e8c7b476082df19da1553e2926861561bf3330756c69883ad99f4605f` |
+| misreporting protocol, true claim 1 of 3 | alarm | UPHELD | 72s | `0x41eb31161faddd14a0fe20e0db044bc29dc637547ec095ae4ae27a0516a79c6d` |
+| misreporting protocol, true claim 2 of 3 | alarm | UPHELD | 59s | `0xb54ba0dc521063696e0be6174f42798f703a1e991990939591ae1aa7aba0ac0d` |
+| misreporting protocol, true claim 3 of 3 | alarm | UPHELD | 53s | `0x23f5a29a2f0bcbf6a08d0f140f007e3ef2107fe9a620770ea88b4893dc35d30e` |
+| misreporting protocol, false claim 1 of 2 | alarm | REFUSED | 66s | `0x6dbcb2a4a32141b72f76a19bce07a71073866b6868eaf353f3d9304366ea6714` |
+| misreporting protocol, false claim 2 of 2 | alarm | REFUSED | 706s | `0x57c80a6adee46434779e475562d8527eb3ea12d4b37417ee646af5b126294f60` |
+| honest report, false timing claim 1 of 4 | alarm | REFUSED | 119s | `0x2e4961c78e00d6f3cde67987b822a83eab1d88fbab5087b076b7ebfce2bc23a6` |
+| honest report, false timing claim 2 of 4 | alarm | REFUSED | 53s | `0x0fe21b14be16d27690e18331a63eca77aff1d8e8b82f55b4018902e415f2959e` |
+| honest report, false timing claim 3 of 4 | alarm | REFUSED | 78s | `0x32aef1abe7f5e58ee4e384eef06c6bd7eb192b382fa42c9e28e004dfbfc6344a` |
+| honest report, false timing claim 4 of 4 | alarm | UPHELD | 60s | `0xbfe02f7974616fbcd57b31869fc3f0b51dca65876d6eb1ccdbd8f84d8326e265` |
+| honest report, invented withdrawal 1 of 2 | alarm | REFUSED | 66s | `0x32036d7d79204568fe035a78d79cb1d353e43fb2801a3e58302973bc41ad6fc9` |
+| honest report, invented withdrawal 2 of 2 | alarm | REFUSED | 72s | `0xcdf41f9d8a2110cf1768a825c0fdaa1b59f9aaf2e78c7a006ffc02114e8aa8f5` |
+| honest report, true actor claim 1 of 3 | alarm | UPHELD | 40s | `0x35ef9e709a6c4dd7d96a0df4bad00ce87d5a8e469fa73e816723ea8366900af9` |
+| honest report, true actor claim 2 of 3 | alarm | UPHELD | 173s | `0x2587aa5a66cb7d35fd267f887a96a52eb9d0d2fbdde942dd73cc20f396f8030f` |
+| honest report, true actor claim 3 of 3 | alarm | UPHELD | 40s | `0x7a270b11d9d9e593cfc015609c959abb4474a41d349899660fd1768bc939a5cc` |
+| honest report, true numeric claim 1 of 2 | alarm | UPHELD | 59s | `0x4e2a256cb7d4100080a1723d8b80eb3f5aded1616421e85f7d222eedcd728b0f` |
+| honest report, true numeric claim 2 of 2 | alarm | UPHELD | 49s | `0x5409b2a70b4dcc01d89b999baebe948e9dff70b9a92ec243477fc41fd667632c` |
+| misreporting protocol, true claim 1 of 3 | alarm | UPHELD | 65s | `0x21bb2641f3d790e91dcba02bddc7148d9d1a93d6f27e0d47c2866ff8b9ab754d` |
+| misreporting protocol, true claim 2 of 3 | alarm | UPHELD | 71s | `0x8dfb2a9c628b11462f00b6ebcb97e8630577739c40aa1fd37f56a69a542a8d4c` |
+| misreporting protocol, true claim 3 of 3 | alarm | UPHELD | 117s | `0x47671c2a6704a38e04275e3d77e0d506807b465015f0d79527af84c231773104` |
+| misreporting protocol, false claim 1 of 2 | alarm | REFUSED | 59s | `0xe03d1b1c3f040f2d376157c3a15acc00dab3a75a5b7069476fea700d7f7836a4` |
+| misreporting protocol, false claim 2 of 2 | alarm | REFUSED | 65s | `0xd6eda957774b401ee2488a225942bd6509ab7b3f690702b7644cc22fd5bdb649` |
+| honest report, false timing claim 1 of 4 | alarm | REFUSED | 59s | `0x894d2e1172a40b1561de3fe8f749e0356c1b8296abc9f24d02c8405a99dc680e` |
+| honest report, false timing claim 2 of 4 | alarm | UPHELD | 142s | `0x821a97b4c54195691f5cdf3137a23fccf811e8d0a69a04caa024f45b9da6d484` |
+| honest report, false timing claim 3 of 4 | alarm | UPHELD | 197s | `0xddd5f3294705969e47b7a23472afb3b77039c49a2e61d633d4f5c1c4ac18c3b5` |
+| honest report, false timing claim 4 of 4 | alarm | UPHELD | 93s | `0xb71a37c1a14d37d9ee284481195a356af96a41e825691f4fdf5cddf868ecd31c` |
+| honest report, invented withdrawal 1 of 2 | alarm | REFUSED | 54s | `0x84b50c4c07d1333cc71cb1dec6325ed3b8c6e35609158d8a30dc768433ad5328` |
+| honest report, invented withdrawal 2 of 2 | alarm | REFUSED | 53s | `0x4cfd4fdbe5e6682b796326d9603d251779bc92a47074f1a81535a5535d9ce6d2` |
+| honest report, true actor claim 1 of 3 | alarm | UPHELD | 61s | `0xcfb5c2407d6b5ea2c25dd37487b1d0e012f581d3f6b435fa738b01c7bbbc3f5d` |
+| honest report, true actor claim 2 of 3 | alarm | UPHELD | 81s | `0x99740b5c71296a2d66249f8581db27c8fee30bf65b6ea56e6fe44670a9df95dd` |
+| honest report, true actor claim 3 of 3 | alarm | UPHELD | 42s | `0xa0e918e80892bae8419e9307e7707557b0f50e95165b1035d5a0bf86d7ad75a9` |
+| honest report, true numeric claim 1 of 2 | alarm | UPHELD | 62s | `0x96dbdd37cfa245e692defe8291f5a1aa95f592f46012ddb476316c327ecd37a9` |
+| honest report, true numeric claim 2 of 2 | alarm | UPHELD | 74s | `0x1c8d53fe8319a364ceb266502fd59c2d6d4ad6f39284f171f4e537ed75c1dd3d` |
+| quieter prompt, false timing claim 1 of 6 | alarm | REFUSED | 53s | `0x1a5b5bf2bec25d943737ecdde2773137708b5c56c49242b685a0f3c77160555a` |
+| quieter prompt, false timing claim 2 of 6 | alarm | UPHELD | 92s | `0xa162b2ee6a0b84e261e6c2dee856f7c35c498779dd43b44da3a3d6b7180e1fdb` |
+| quieter prompt, false timing claim 3 of 6 | alarm | UPHELD | 86s | `0xb1b80b54d60c9dec75195c31ea678278ee41aea3d820a20a6c6e98d788c231c9` |
+| quieter prompt, false timing claim 4 of 6 | alarm | UPHELD | 113s | `0x6714460baab3da098e26dd3c620548ecc5ea0ee0987d7775c197c6cce5023480` |
+| quieter prompt, false timing claim 5 of 6 | alarm | REFUSED | 66s | `0x1c626fecad4a3172502a9239e132b3f50d1b0f318c6fd302b590f3dd36d50806` |
+| quieter prompt, false timing claim 6 of 6 | alarm | REFUSED | 117s | `0x850a6ca56bc557f9f1583edfa8c44bad91c26860b353a028145519089edd4e39` |
+| quieter prompt, misreporting protocol 1 of 3 | alarm | UPHELD | 79s | `0x64713a35232340115a89c8c74c4bc8649d17a027b0978214c87065c346e465b6` |
+| quieter prompt, misreporting protocol 2 of 3 | alarm | UPHELD | 53s | `0x6f0ecb98895f9dd515728fd4936eec47c59aaf4277c35ab83b2bfae9c17ef025` |
+| quieter prompt, misreporting protocol 3 of 3 | alarm | UPHELD | 53s | `0x8ecbac9aba3c80543648347a873e1cea248360c5872c36b91a7f3e616c903342` |
+| quieter prompt, true actor claim 1 of 3 | alarm | UPHELD | 65s | `0x88d31a3b4eaf677ac5ed64e5e11c52d24ad9e5fb48595b9623df1d62f1527642` |
+| quieter prompt, true actor claim 2 of 3 | alarm | UPHELD | 54s | `0x5290a286dcf588f90a3a40bb820f79beac61ff9b35299957f0e9b63945c02258` |
+| quieter prompt, true actor claim 3 of 3 | alarm | UPHELD | 61s | `0x82e9a7568b3d199c19887b8835cabf89fd01085317b993ea8cae9b026b20bd18` |
+| chronological ledger, false timing claim 1 of 6 | alarm | REFUSED | 182s | `0xa6ee5fa7e7d5cda12e45575cc1c46f2903f8e9259102bccb401dc0d26d1e0ec3` |
+| chronological ledger, false timing claim 2 of 6 | alarm | REFUSED | 166s | `0x9683d1d6082009e53ffb49dd3cd3103dd411003e447bdc44906e48da648eec48` |
+| chronological ledger, false timing claim 3 of 6 | alarm | REFUSED | 81s | `0xb51e988dd6d59b7e7b187fffbf88fb99751443802b170f46f47d19080184e3bd` |
+| chronological ledger, false timing claim 4 of 6 | alarm | REFUSED | 74s | `0xe914310c06fc41dd4af3faa40742a605c0bc06139fe0283e27e8a00517ffe604` |
+| chronological ledger, false timing claim 5 of 6 | alarm | REFUSED | 182s | `0x4b4b67fe1461bc2808f3138b49c468565b2f0d403f8de33e8874d690814ac3ad` |
+| chronological ledger, false timing claim 6 of 6 | alarm | REFUSED | 84s | `0xb053436053cf8c1de709609bc3ac1c8c08fde2221c0714948aedfd43185d3726` |
+| chronological ledger, true actor claim 1 of 3 | alarm | UPHELD | 53s | `0xb5726f7fee4dbd5ccadad6e138c0b842502683ee767abf7ab7af9f84234d83c8` |
+| chronological ledger, true actor claim 2 of 3 | alarm | REFUSED | 65s | `0x2995876dac517e9942757a3cb4e3bbbe8977aaec630ef31939f4bfc7935bcbd3` |
+| chronological ledger, true actor claim 3 of 3 | alarm | REFUSED | 73s | `0x1c3c76fc0f681d2fd5a6b3fac03efd100139f576675026547e53fa13bb9ee58f` |
+| chronological ledger, misreporting protocol 1 of 2 | alarm | UPHELD | 55s | `0x26f226a55f9b133dfd21b6942dd4e87dd435c1d2d2de87a0e196627e58e08b18` |
+| chronological ledger, misreporting protocol 2 of 2 | alarm | UPHELD | 52s | `0x8865c7389393c708bdad095f1f3fa93d65d0dc46ba5e2eb38758b77b59b13e8e` |
+| satisfiable line, true actor claim 1 of 3 | alarm | UPHELD | 54s | `0xd2135dd4795d4b1dae24885a1ae94aab02c91f7a21053224eb9ce85dcacddffe` |
+| satisfiable line, true actor claim 2 of 3 | alarm | UPHELD | 66s | `0xdff31a30f0d56b0294763a60665aa2b8bc209749cf6cba6802f9016d8d4a0dd7` |
+| satisfiable line, true actor claim 3 of 3 | alarm | UPHELD | 54s | `0x6d4d7483252904c61be3fc66beaee8e0ec095c01264cf45511a331b3ea935bdf` |
+| satisfiable line, false timing claim 1 of 3 | alarm | REFUSED | 59s | `0xc649f0c45a94c5f503d76b549f93c93f0682302d88232e8aed611df946743f6c` |
+| satisfiable line, false timing claim 2 of 3 | alarm | REFUSED | 59s | `0x99e41cd4a319f76b6506401fdefb7cfa7130734eccf9b8acb9b7bca155fae418` |
+| satisfiable line, false timing claim 3 of 3 | alarm | REFUSED | 52s | `0x6849652eadc3b82fc2416598081d37ba0b1fbd52a770756250c1635b5c284a5b` |
 
 ## What we want checked
 

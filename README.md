@@ -5,16 +5,18 @@
 A protocol publishes a red line in plain language and funds a bounty behind it.
 Anyone who finds the line being crossed says so, with evidence and a deposit.
 GenLayer's validators read the evidence themselves, check it against what the
-protocol reports about itself, and if the line is being crossed the protocol
-stops paying out in that same transaction. A false alarm loses its deposit. A
-protocol stopped by mistake can appeal and be released at once.
+protocol reports about itself and against the balance the guard reads off the
+chain, and if the line is being crossed the protocol stops paying out in that
+same transaction. A false alarm loses its deposit. A protocol stopped by mistake
+can appeal and be released at once.
 
 Live on Studionet. Every number on this page comes from a transaction.
 
 | | |
 | --- | --- |
-| Guardian | [`0x2E3F18f16b590D1952ec865D337A33E59412e517`](https://explorer-studio.genlayer.com/address/0x2E3F18f16b590D1952ec865D337A33E59412e517) |
-| A protocol it is watching | [`0xeeBb8347485eFE22316bc21aDa72Ad54Ed9Bf524`](https://explorer-studio.genlayer.com/address/0xeeBb8347485eFE22316bc21aDa72Ad54Ed9Bf524) |
+| Guardian | [`0x280eff6e765C5d72C97F8ee406ED838257C89DfB`](https://explorer-studio.genlayer.com/address/0x280eff6e765C5d72C97F8ee406ED838257C89DfB) |
+| A protocol it stopped | [`0x06fCC2D9D213d4c8977ab583b2508702F4E35610`](https://explorer-studio.genlayer.com/address/0x06fCC2D9D213d4c8977ab583b2508702F4E35610) |
+| On chain right now | 39 protected, 38 alarms, 24 upheld and 14 refused |
 | Page | [docs/index.html](docs/index.html), reading [docs/data.json](docs/data.json) straight from chain |
 
 ---
@@ -25,9 +27,10 @@ Because the rule it enforces is not about a number in one account.
 
 > Addresses acting together are one actor in this vault, and no actor may take
 > out more than a third of everything the vault holds inside ten minutes,
-> however many separate addresses it spreads itself across. Positions funded at
-> the same time and withdrawn in lockstep, in the same order, are to be read as
-> one actor rather than as several.
+> however many separate addresses it spreads itself across. Positions funded
+> within a few minutes of each other for amounts of the same size, and then
+> drawn on in the order they were funded, are to be read as one actor rather
+> than as several.
 
 There is a number in that, and a contract could check it perfectly well. What no
 contract can work out is **who the number applies to**, because an actor is not a
@@ -42,6 +45,34 @@ ordinary number to that actor, and halted the protocol.
 
 Written up with the transcripts in
 [results/the_line_code_cannot_hold.md](results/the_line_code_cannot_hold.md).
+
+## Two speeds, and knowing which question needs which
+
+Not everything needs an opinion. A protocol may publish a floor in numbers next
+to its line in words:
+
+```
+promise(target, "50", "600")   not more than half of it, inside ten minutes
+check(target)                  anyone, any time, no deposit, no prompt, no round
+```
+
+`check` is arithmetic on a balance the guardian reads for itself. There is no
+model in it. What it costs is one transaction, and the protocol starts refusing
+about nine seconds later.
+
+The line in words takes a round, and a round takes about five times as long.
+Both halts land in the same public record, so a protocol gets both from one
+integration and neither is a different product.
+
+| | what it stops | protocol refusing |
+| --- | --- | --- |
+| the floor, no round | a fall the owner published a number for | 7.2 to 10.4 seconds |
+| the line, judged | anything that needs reading | 23.8 to 50.0 seconds |
+
+The floor cannot fire wrongly in the way a misjudged claim can, because what it
+enforces is the owner's own sentence about its own balance. A guard with no floor
+published behaves exactly as it did before and is never stopped by arithmetic,
+however far its balance falls.
 
 ## What a protocol has to add
 
@@ -70,6 +101,36 @@ claim named a per address deposit and withdrawal, the protocol published only
 totals, and the validators quite correctly said the account did not support the
 figures. [`contracts/vault.py`](contracts/vault.py) shows the shape.
 
+**And report your movements in the order they happened.** We learned this one
+the hard way too, and it is in the next section.
+
+## Where the guard's facts come from
+
+The guard used to take one thing entirely on trust: the protocol's own account
+of itself. `status()` is a method the accused wrote, and a protocol that simply
+reports false numbers defeated a true alarm every time.
+
+[`contracts/quiet_vault.py`](contracts/quiet_vault.py) does not argue. It pays
+out correctly, moves the real money, and reports the position as though nothing
+had left. A real breach, a real alarm, **refused**, and the round was right to:
+given that record, refusing was the only defensible answer. The person telling
+the truth lost their deposit.
+
+`gl.get_contract_at(address).balance` reads a balance from the chain rather than
+from the report. The guardian now adds up the positions in a protocol's own
+account and compares them against what it actually holds. A protocol cannot
+report money it does not have.
+
+> The protocol's report is false because it claims to hold 40000000000000000 wei
+> while the chain shows it only holds 10000000000000000 wei, corroborating the
+> claim that 30000000000000000 wei was withdrawn within the ten-minute window.
+
+**UPHELD in 59 seconds**, and five times out of five since.
+
+It has a boundary and [`contracts/silent_vault.py`](contracts/silent_vault.py)
+is on the other side of it: a protocol that shrinks its whole history to match
+its balance is consistent with everything the guard can check.
+
 ## The agent
 
 `watcher.mjs` reads a protected protocol and raises alarms itself. It notices
@@ -84,99 +145,109 @@ It was right once and wrong once and it paid for the wrong one.
 
 ## How well it works, including where it does not
 
-89 runs are in [results/trials.json](results/trials.json), each carrying the
-transaction that produced it and the outcome we predicted **before** sending it.
-A surprise cannot be reread afterwards as something we meant all along.
+154 runs are in [results/trials.json](results/trials.json), each carrying the
+transaction that produced it and, for 135 of them, the outcome we predicted
+**before** sending it. A surprise cannot be reread afterwards as something we
+meant all along.
+
+The current build, on the line quoted at the top of this page:
+
+| | |
+| --- | --- |
+| true claim upheld | 3 of 3 |
+| false claim refused | 3 of 3 |
+| protocol misreporting its own figures, caught | 5 of 5 |
+| false claim against a protocol whose report was discredited, still refused | 2 of 2 |
 
 **On a numeric line** (`no address may withdraw more than half of what it
-deposited inside ten minutes`) it is consistent. The true claim is upheld five
-times out of five. Exactly half is refused and a hair over is upheld. A breach
-spread across three small withdrawals is caught. Ten false alarms out of ten are
-refused, including prompt injection in the evidence, a rule nobody published,
+deposited inside ten minutes`) it has been consistent throughout: the true claim
+upheld five times out of five, exactly half refused and a hair over upheld, a
+breach spread across three small withdrawals caught, and ten false alarms out of
+ten refused, including prompt injection in the evidence, a rule nobody published,
 figures the record denies, and an event that has not happened.
 
-**On the actor line** it is not. Sending the same false claim over and over,
-against a ledger that denies it:
-
-| what was being asked | false claim refused | true claim upheld |
-| --- | --- | --- |
-| the guard as it stood | 3 of 4 | 5 of 5 |
-| the guard told to cite the record | 3 of 10 | 5 of 5 |
-| the protocol reporting its two moments | **9 of 10** | 5 of 5 |
-
-One in ten still slips. That is the number a protocol owner should have before
-deciding whether a deposit and an appeal are cover enough for the rest.
-
-Read the middle row twice. Telling the reader to name the value from the record
-that settles the condition **tripled** the error rate: it cited a withdrawal as
-a deposit, and having cited something it was certain. Asking a model to quote its
-evidence raised its confidence without raising its accuracy. That instruction is
-gone.
-
-The fix that worked went into the protocol rather than the prompt. The failure
-was never judgment, it was reading four mixed ledger entries. Each position now
-publishes `first_deposit_at` and `last_withdrawal_at`. Facts, not judgments:
-whether two timestamps mean one actor is still nobody's business but the
-network's.
+**The earlier builds are in the file too, including the ones we broke.** One of
+them halted a live protocol on a false claim and paid the claimant the bounty.
+That row is in `trials.json` with the rest.
 
 ## What broke when we tried to break it
 
-Two faults, both closed, both with the run that exposed them.
-[results/what_broke_and_what_held.md](results/what_broke_and_what_held.md).
+Nine faults, in [results/what_broke_and_what_held.md](results/what_broke_and_what_held.md),
+each with the run that exposed it. The four worth knowing before you trust any
+of this:
 
 **A pair that only looked similar was upheld.** The guard checked a claim's
-figures and nothing checked its characterisation, so a red line's conditions
-went untested. Fixed generically: conditions carry the same weight as the
-number, and words like *in lockstep* are the claimant's reading rather than
-evidence for it.
+figures and nothing checked its characterisation. Fixed generically: conditions
+carry the same weight as the number, and words like *in lockstep* are the
+claimant's reading rather than evidence for it.
 
-**A protocol argued its way out of a true alarm.** It did not deny its figures.
-It announced that the line was denominated in another currency, supplied a rate,
-and concluded a seventy five percent withdrawal was thirty two. A ratio does not
-change when both sides are multiplied, so the arithmetic could not have followed
-even if the premise were true, and the round took both. Found by an outside
-reviewer handed the whole record. Fixed by defining what a protocol's report is:
-balances and movements, and otherwise the accused speaking about its own case.
+**A protocol argued its way out of a true alarm.** It announced that the line
+was denominated in another currency, supplied a rate, and concluded a seventy
+five percent withdrawal was thirty two. Found by an outside reviewer handed the
+whole record. Fixed by defining what a protocol's report is: balances and
+movements, and otherwise the accused speaking about its own case.
+
+**A protocol reported false numbers and beat the guard completely.** That is the
+section above, and it took three attempts to close, two of which changed nothing
+at all.
+
+**Closing it broke the centrepiece.** Three separate faults, and none of them was
+the one being looked for: the new arithmetic was being done on the clipped copy
+of the report rather than the whole one, raising the clip limit uncovered a
+ledger this project had been publishing backwards for its whole life, and the red
+line itself turned out to demand something no chain provides. Section 9 is that
+arc, with the row where a live protocol was stopped on a false claim.
 
 Two things we published turned out to be wrong and are corrected in place, with
-the runs that corrected us named. We wrote that a loose figure costs the
-deposit; it does not. A claim with no figures at all was upheld, because the
-record showed the breach without help. What loses a deposit is a figure the
-record **denies**.
+the runs that corrected us named. We wrote that a loose figure costs the deposit;
+it does not. What loses a deposit is a figure the record **denies**.
 
 ## What it will not do
 
-**It does not find exploits.** Somebody has to see it and say so. What this
-removes is the wait between the seeing and the stopping, which is where the
-money usually goes. See
-[results/how_long_the_money_leaves.md](results/how_long_the_money_leaves.md).
+**It does not stop the first transaction of an atomic exploit, and that is a
+choice rather than a limit.** A protocol could call a judged round inside its own
+withdrawal and refuse before paying. It would work. It would also put a language
+model in the path of every payment the protocol ever makes, at about half a
+minute and one round of consensus each, and a protection that makes ordinary use
+unusable is not protection. So judgment sits outside the payment path and the
+first transaction gets through. The floor, which needs no model, is the part that
+could sit inside it.
 
-**It does not stop an atomic exploit.** Nothing outside the transaction can.
+**It does not find exploits.** Somebody has to see it and say so. What this
+removes is the wait between the seeing and the stopping, which is where the money
+usually goes. See [results/how_long_the_money_leaves.md](results/how_long_the_money_leaves.md):
+Nomad ran to 1,175 withdrawals over hours, Curve to three pools over two.
 
 **It judges what is happening, never what might.** A theoretical bug, a design
 somebody dislikes, a risk with no event behind it: refused, at the cost of the
-deposit. A pause button anyone can press with a paragraph is a denial of service
+deposit. This is also why there is no cascade. Halting a second protocol because
+a first one was halted would be stopping something with no evidence about it at
+all, and a pause button anyone can press with a paragraph is a denial of service
 with extra steps.
 
 **An owner could still trade its own halt.** Publish a hair trigger line, arrange
 for it to be crossed, take a position before the stop is public. The line is
-public from the moment protection opens, the owner cannot raise alarms on its
-own protocol, and the minimum hold stops it being flicked around a trade. None
-of that closes it.
+public from the moment protection opens, the owner cannot raise alarms on its own
+protocol, and the minimum hold stops it being flicked around a trade. None of
+that closes it.
 
 ## The repository
 
 ```
-contracts/halt.py         the guardian: protect, raise_alarm, appeal, lower, retire
-contracts/vault.py        an ordinary protocol that asks the guard before it pays
-contracts/lying_vault.py  the same, reporting an instruction to the validator
-contracts/rate_vault.py   the same, reporting a currency and a rate instead
-tests/                    71 checks, through the real methods
-scripts/watcher.mjs       the agent that notices and asks
-scripts/                  everything else that talks to the chain
-scenarios/                every claim and appeal used, one per file
-results/                  every run, every log, and the write ups
-docs/                     the page, and the export it reads
+contracts/halt.py          the guardian: protect, promise, raise_alarm, check,
+                           appeal, lower, retire
+contracts/vault.py         an ordinary protocol that asks the guard before it pays
+contracts/lying_vault.py   the same, reporting an instruction to the validator
+contracts/rate_vault.py    the same, reporting a currency and a rate instead
+contracts/quiet_vault.py   the same, reporting figures that are simply false
+contracts/silent_vault.py  the same, false and consistent with its own balance
+tests/                     103 checks, through the real methods
+scripts/watcher.mjs        the agent that notices and asks
+scripts/howfast.mjs        how long a protocol keeps paying after an alarm
+scripts/                   everything else that talks to the chain
+scenarios/                 every claim and appeal used, one per file
+results/                   every run, every log, and the write ups
+docs/                      the page, and the export it reads
 ```
 
 Install once:
@@ -204,11 +275,17 @@ node scripts/raise.mjs <guardian> <vault> scenarios/b_plain.txt "a true breach"
 Run them from the repository root; they read `contracts/`, `scenarios/` and
 `results/` by relative path.
 
-`scripts/batch20.mjs` through `batch24.mjs` are the measurement runs, in order.
+`scripts/batch20.mjs` through `batch28.mjs` are the measurement runs, in order.
 Each writes to `results/trials.json` as it goes, so an interrupted batch keeps
-what it had. `scripts/audit_brief.mjs` generates the reviewer document out of
-that file rather than out of a summary of it, which is the only way a summary can
-be trusted not to have quietly improved itself.
+what it had, and each reads an outcome back off the guardian when a reply does
+not carry one. That last part is not a nicety: three runs were filed as network
+errors by a script that retried a send which had already gone through, and one of
+them was hiding a live protocol halted on a false claim. A false positive that
+files itself as an error is worse than a false positive.
+
+`scripts/audit_brief.mjs` generates the reviewer document out of `trials.json`
+rather than out of a summary of it, which is the only way a summary can be
+trusted not to have quietly improved itself.
 
 Tests need no network:
 

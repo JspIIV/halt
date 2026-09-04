@@ -1,53 +1,56 @@
 {
-  "halt": "0x2E3F18f16b590D1952ec865D337A33E59412e517",
-  "vault": "0xeeBb8347485eFE22316bc21aDa72Ad54Ed9Bf524",
+  "halt": "0x280eff6e765C5d72C97F8ee406ED838257C89DfB",
+  "vault": "0x06fCC2D9D213d4c8977ab583b2508702F4E35610",
   "network": "GenLayer Studionet",
-  "exported_at": "2026-09-04T07:43:54.955Z",
+  "exported_at": "2026-09-04T21:26:03.310Z",
   "size": {
-    "protected": 15,
+    "protected": 40,
     "guard_states": {
-      "OPEN": 9,
-      "HALTED": 6
+      "OPEN": 16,
+      "HALTED": 24
     },
-    "alarms": 15,
+    "alarms": 38,
     "outcomes": {
-      "REFUSED": 9,
-      "UPHELD": 6
+      "REFUSED": 14,
+      "UPHELD": 24
     },
     "note": "anyone may raise a guard and only the owner may lower it, because an attacker sends transactions faster than a person does"
   },
   "guard": {
-    "target": "0xeebb8347485efe22316bc21ada72ad54ed9bf524",
+    "target": "0x06fcc2d9d213d4c8977ab583b2508702f4e35610",
     "owner": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
-    "red_line": "Addresses acting together are one actor in this vault, and no actor may take out more than a third of everything the vault holds inside ten minutes, however many separate addresses it spreads itself across. Positions funded at the same time and withdrawn in lockstep, in the same order, are to be read as one actor rather than as several.",
+    "red_line": "Addresses acting together are one actor in this vault, and no actor may take out more than a third of everything the vault holds inside ten minutes, however many separate addresses it spreads itself across. Positions funded within a few minutes of each other for amounts of the same size, and then drawn on in the same order they were funded, are to be read as one actor rather than as several.",
     "bounty": 0,
     "state": "HALTED",
-    "raised_at": "2026-09-04T04:06:12.349385+00:00",
-    "raised_at_epoch": 1788494772,
+    "raised_at": "2026-09-04T20:19:44.870300+00:00",
+    "raised_at_epoch": 1788553184,
     "raised_by": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
     "alarms_upheld": 1,
     "alarms_refused": 0,
     "alarms_overturned": 0,
-    "opened_at": "2026-09-04T04:02:54.803143+00:00"
+    "opened_at": "2026-09-04T20:16:24.190065+00:00",
+    "balance_seen": 48000000000000000,
+    "balance_seen_at": "2026-09-04T20:19:44.870300+00:00"
   },
   "alarms": [
     {
-      "index": 14,
-      "target": "0xeebb8347485efe22316bc21ada72ad54ed9bf524",
+      "index": 23,
+      "target": "0x06fcc2d9d213d4c8977ab583b2508702f4e35610",
       "by": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
       "evidence": "Two addresses are taking this vault apart between them while each one stays inside every per address limit. The vault reports two positions funded with 40000000000000000 wei each, moments apart, and each has since withdrawn 16000000000000000 wei, moments apart and in the same order they were funded. Total deposited 80000000000000000 wei, total withdrawn 32000000000000000 wei, currently held 48000000000000000 wei. Each address has taken forty percent of its own position, inside any limit anybody could write about a single address. Together they have taken forty percent of everything deposited, inside the same ten minutes.",
       "deposit": 2000000000000000,
-      "reported_by_target": "{\"guardian\": \"0x2e3f18f16b590d1952ec865d337a33e59412e517\", \"halted\": false, \"held\": \"48000000000000000\", \"positions\": [{\"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\", \"first_deposit_at\": \"2026-09-04T04:03:34.162755+00:00\", \"last_withdrawal_at\": \"2026-09-04T04:04:53.304721+00:00\"}, {\"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\", \"first_deposit_at\": \"2026-09-04T04:04:13.539924+00:00\", \"last_withdrawal_at\": \"2026-09-04T04:05:32.738821+00:00\"}], \"recent\": [{\"kind\": \"withdraw\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-04T04:05:32.738821+00:00\"}, {\"kind\": \"withdraw\", \"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"amount\": \"16 [...]",
-      "at": "2026-09-04T04:06:12.349385+00:00",
-      "at_epoch": 1788494772,
-      "why": "The protocol's own record shows two addresses deposited equal amounts seconds apart and withdrew equal amounts in the same order seconds apart, satisfying the red line's lockstep-equals-one-actor rule, and together their 32000000000000000 wei withdrawn exceeds one third of the 80000000000000000 wei  [...]",
+      "reported_by_target": "{\"guardian\": \"0x280eff6e765c5d72c97f8ee406ed838257c89dfb\", \"halted\": false, \"held\": \"48000000000000000\", \"positions\": [{\"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\", \"first_deposit_at\": \"2026-09-04T20:17:04.405230+00:00\", \"last_withdrawal_at\": \"2026-09-04T20:18:23.405797+00:00\"}, {\"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"holds\": \"24000000000000000\", \"deposited\": \"40000000000000000\", \"withdrawn\": \"16000000000000000\", \"first_deposit_at\": \"2026-09-04T20:17:43.994657+00:00\", \"last_withdrawal_at\": \"2026-09-04T20:19:03.824751+00:00\"}], \"recent\": [{\"kind\": \"deposit\", \"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"amount\": \"40000000000000000\", \"at\": \"2026-09-04T20:17:04.405230+00:00\"}, {\"kind\": \"deposit\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"40000000000000000\", \"at\": \"2026-09-04T20:17:43.994657+00:00\"}, {\"kind\": \"withdraw\", \"who\": \"0x80519c53f10d731e4ff83a7d9acd69cf98da6258\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-04T20:18:23.405797+00:00\"}, {\"kind\": \"withdraw\", \"who\": \"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c\", \"amount\": \"16000000000000000\", \"at\": \"2026-09-04T20:19:03.824751+00:00\"}], \"withdrawals_blocked\": 0, \"recent_is\": \"the last movements in the order they happened, oldest first\", \"note\": \"the halted flag is read from the guardian in this call; the vault stores no copy of it, so nothing here can go stale\"}",
+      "chain_read_by_guardian": "This guardian read the protocol's balance from the chain rather than from its report: it holds 48000000000000000 wei. Its report says 48000000000000000 wei is still owed to the people it lists, which fits inside that.",
+      "at": "2026-09-04T20:19:44.870300+00:00",
+      "at_epoch": 1788553184,
+      "why": "The protocol reports two addresses funded with identical amounts 39 seconds apart and drawn on in that same order within a two-minute window, totaling a withdrawal of 32,000,000,000,000,000 wei, which exceeds one-third of the 80,000,000,000,000,000 wei total value (held plus withdrawn).",
       "outcome": "UPHELD",
       "paid": 12000000000000000,
       "paid_to": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c"
     }
   ],
   "vault_status": {
-    "guardian": "0x2e3f18f16b590d1952ec865d337a33e59412e517",
+    "guardian": "0x280eff6e765c5d72c97f8ee406ed838257c89dfb",
     "halted": true,
     "held": "48000000000000000",
     "positions": [
@@ -56,45 +59,46 @@
         "holds": "24000000000000000",
         "deposited": "40000000000000000",
         "withdrawn": "16000000000000000",
-        "first_deposit_at": "2026-09-04T04:03:34.162755+00:00",
-        "last_withdrawal_at": "2026-09-04T04:04:53.304721+00:00"
+        "first_deposit_at": "2026-09-04T20:17:04.405230+00:00",
+        "last_withdrawal_at": "2026-09-04T20:18:23.405797+00:00"
       },
       {
         "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
         "holds": "24000000000000000",
         "deposited": "40000000000000000",
         "withdrawn": "16000000000000000",
-        "first_deposit_at": "2026-09-04T04:04:13.539924+00:00",
-        "last_withdrawal_at": "2026-09-04T04:05:32.738821+00:00"
+        "first_deposit_at": "2026-09-04T20:17:43.994657+00:00",
+        "last_withdrawal_at": "2026-09-04T20:19:03.824751+00:00"
       }
     ],
     "recent": [
       {
-        "kind": "withdraw",
-        "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
-        "amount": "16000000000000000",
-        "at": "2026-09-04T04:05:32.738821+00:00"
-      },
-      {
-        "kind": "withdraw",
+        "kind": "deposit",
         "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
-        "amount": "16000000000000000",
-        "at": "2026-09-04T04:04:53.304721+00:00"
+        "amount": "40000000000000000",
+        "at": "2026-09-04T20:17:04.405230+00:00"
       },
       {
         "kind": "deposit",
         "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
         "amount": "40000000000000000",
-        "at": "2026-09-04T04:04:13.539924+00:00"
+        "at": "2026-09-04T20:17:43.994657+00:00"
       },
       {
-        "kind": "deposit",
+        "kind": "withdraw",
         "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
-        "amount": "40000000000000000",
-        "at": "2026-09-04T04:03:34.162755+00:00"
+        "amount": "16000000000000000",
+        "at": "2026-09-04T20:18:23.405797+00:00"
+      },
+      {
+        "kind": "withdraw",
+        "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
+        "amount": "16000000000000000",
+        "at": "2026-09-04T20:19:03.824751+00:00"
       }
     ],
     "withdrawals_blocked": 0,
+    "recent_is": "the last movements in the order they happened, oldest first",
     "note": "the halted flag is read from the guardian in this call; the vault stores no copy of it, so nothing here can go stale"
   },
   "ledger": [
@@ -102,29 +106,30 @@
       "kind": "withdraw",
       "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
       "amount": 16000000000000000,
-      "at": "2026-09-04T04:05:32.738821+00:00"
+      "at": "2026-09-04T20:19:03.824751+00:00"
     },
     {
       "kind": "withdraw",
       "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
       "amount": 16000000000000000,
-      "at": "2026-09-04T04:04:53.304721+00:00"
+      "at": "2026-09-04T20:18:23.405797+00:00"
     },
     {
       "kind": "deposit",
       "who": "0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c",
       "amount": 40000000000000000,
-      "at": "2026-09-04T04:04:13.539924+00:00"
+      "at": "2026-09-04T20:17:43.994657+00:00"
     },
     {
       "kind": "deposit",
       "who": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
       "amount": 40000000000000000,
-      "at": "2026-09-04T04:03:34.162755+00:00"
+      "at": "2026-09-04T20:17:04.405230+00:00"
     }
   ],
   "coordination": {
     "vault": "0xeeBb8347485eFE22316bc21aDa72Ad54Ed9Bf524",
+    "halt": "0x2E3F18f16b590D1952ec865D337A33E59412e517",
     "guard": {
       "target": "0xeebb8347485efe22316bc21ada72ad54ed9bf524",
       "owner": "0x80519c53f10d731e4ff83a7d9acd69cf98da6258",
@@ -333,12 +338,42 @@
         "tx": "0xf130a14a22ea9b974dea81897451a571d730e96af708e960719b0aeca2bada1f",
         "seconds": 59
       }
+    },
+    {
+      "title": "A protocol reported false numbers and the guard believed it",
+      "what": "It did not argue and it did not instruct. It paid out correctly, moved the real money, and reported the position as though nothing had left. The guard’s only source of ground truth was a method the accused had written, so a true alarm was refused and the person telling the truth lost their deposit. The guardian now reads the protocol’s balance off the chain and adds up the positions its report claims are still owed.",
+      "before": {
+        "outcome": "REFUSED",
+        "why": "The protocol report shows this address deposited 40000000000000000 wei and withdrawn 0, with only a deposit in the recent movements, so the claim of a 30000000000000000 wei withdrawal is not supported by the record.",
+        "tx": "0x8815c68e101a1d2ccd9b9524eb3df5dc7e8877c5f90fc711379013f63c9f0222"
+      },
+      "after": {
+        "outcome": "UPHELD",
+        "why": "The vault holds 10 000 000 000 000 000 wei while the report claims a 40 000 000 000 000 000 wei position, showing 30 000 000 000 000 000 wei left the vault seconds after the deposit, which exceeds half the deposit within the ten‑minute window",
+        "tx": "0x21bb2641f3d790e91dcba02bddc7148d9d1a93d6f27e0d47c2866ff8b9ab754d",
+        "seconds": 65
+      }
+    },
+    {
+      "title": "And closing that broke the centrepiece",
+      "what": "The new arithmetic was being run on the copy of the report clipped to fit the prompt, and a clipped JSON object does not parse. The sentence the guardian was meant to contribute went missing and the round filled the gap itself, comparing the report’s deposits against its balance and calling an honest report false. Raising the clip limit then uncovered a ledger this project had been publishing newest first without saying so, and the round read the withdrawal order off it backwards.",
+      "before": {
+        "outcome": "UPHELD",
+        "why": "The two addresses acted together as one actor, withdrawing 28000000000000000 wei (40%) within ten minutes, exceeding the red line limit of one-third.",
+        "tx": "0xb71a37c1a14d37d9ee284481195a356af96a41e825691f4fdf5cddf868ecd31c"
+      },
+      "after": {
+        "outcome": "REFUSED",
+        "why": "The protocol's record does not show a single actor withdrawing more than one-third of the total held within any ten-minute window.",
+        "tx": "0xa6ee5fa7e7d5cda12e45575cc1c46f2903f8e9259102bccb401dc0d26d1e0ec3",
+        "seconds": 182
+      }
     }
   ],
   "trials": {
-    "total": 89,
-    "predicted": 74,
-    "matched": 55,
+    "total": 154,
+    "predicted": 135,
+    "matched": 107,
     "rows": [
       {
         "label": "uncoordinated: identical ratio offered as proof",
@@ -1005,8 +1040,577 @@
         "seconds": 98,
         "tx": "0xc869e7e508a1978a558840aa635608e2a15d0553cf0658d4eb0ce08a61c33631",
         "kind": "alarm"
+      },
+      {
+        "label": "misreporting protocol, true claim 1 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 72,
+        "tx": "0x41eb31161faddd14a0fe20e0db044bc29dc637547ec095ae4ae27a0516a79c6d",
+        "kind": "alarm"
+      },
+      {
+        "label": "misreporting protocol, true claim 2 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 59,
+        "tx": "0xb54ba0dc521063696e0be6174f42798f703a1e991990939591ae1aa7aba0ac0d",
+        "kind": "alarm"
+      },
+      {
+        "label": "misreporting protocol, true claim 3 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 53,
+        "tx": "0x23f5a29a2f0bcbf6a08d0f140f007e3ef2107fe9a620770ea88b4893dc35d30e",
+        "kind": "alarm"
+      },
+      {
+        "label": "misreporting protocol, false claim 1 of 2",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 66,
+        "tx": "0x6dbcb2a4a32141b72f76a19bce07a71073866b6868eaf353f3d9304366ea6714",
+        "kind": "alarm"
+      },
+      {
+        "label": "misreporting protocol, false claim 2 of 2",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 706,
+        "tx": "0x57c80a6adee46434779e475562d8527eb3ea12d4b37417ee646af5b126294f60",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, false timing claim 1 of 4",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 119,
+        "tx": "0x2e4961c78e00d6f3cde67987b822a83eab1d88fbab5087b076b7ebfce2bc23a6",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, false timing claim 2 of 4",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 53,
+        "tx": "0x0fe21b14be16d27690e18331a63eca77aff1d8e8b82f55b4018902e415f2959e",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, false timing claim 3 of 4",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 78,
+        "tx": "0x32aef1abe7f5e58ee4e384eef06c6bd7eb192b382fa42c9e28e004dfbfc6344a",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, false timing claim 4 of 4",
+        "expect": "REFUSED",
+        "outcome": "UPHELD",
+        "matched": false,
+        "seconds": 60,
+        "tx": "0xbfe02f7974616fbcd57b31869fc3f0b51dca65876d6eb1ccdbd8f84d8326e265",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, invented withdrawal 1 of 2",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 66,
+        "tx": "0x32036d7d79204568fe035a78d79cb1d353e43fb2801a3e58302973bc41ad6fc9",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, invented withdrawal 2 of 2",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 72,
+        "tx": "0xcdf41f9d8a2110cf1768a825c0fdaa1b59f9aaf2e78c7a006ffc02114e8aa8f5",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, true actor claim 1 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 40,
+        "tx": "0x35ef9e709a6c4dd7d96a0df4bad00ce87d5a8e469fa73e816723ea8366900af9",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, true actor claim 2 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 173,
+        "tx": "0x2587aa5a66cb7d35fd267f887a96a52eb9d0d2fbdde942dd73cc20f396f8030f",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, true actor claim 3 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 40,
+        "tx": "0x7a270b11d9d9e593cfc015609c959abb4474a41d349899660fd1768bc939a5cc",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, true numeric claim 1 of 2",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 59,
+        "tx": "0x4e2a256cb7d4100080a1723d8b80eb3f5aded1616421e85f7d222eedcd728b0f",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, true numeric claim 2 of 2",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 49,
+        "tx": "0x5409b2a70b4dcc01d89b999baebe948e9dff70b9a92ec243477fc41fd667632c",
+        "kind": "alarm"
+      },
+      {
+        "label": "misreporting protocol, true claim 1 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 65,
+        "tx": "0x21bb2641f3d790e91dcba02bddc7148d9d1a93d6f27e0d47c2866ff8b9ab754d",
+        "kind": "alarm"
+      },
+      {
+        "label": "misreporting protocol, true claim 2 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 71,
+        "tx": "0x8dfb2a9c628b11462f00b6ebcb97e8630577739c40aa1fd37f56a69a542a8d4c",
+        "kind": "alarm"
+      },
+      {
+        "label": "misreporting protocol, true claim 3 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 117,
+        "tx": "0x47671c2a6704a38e04275e3d77e0d506807b465015f0d79527af84c231773104",
+        "kind": "alarm"
+      },
+      {
+        "label": "misreporting protocol, false claim 1 of 2",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 59,
+        "tx": "0xe03d1b1c3f040f2d376157c3a15acc00dab3a75a5b7069476fea700d7f7836a4",
+        "kind": "alarm"
+      },
+      {
+        "label": "misreporting protocol, false claim 2 of 2",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 65,
+        "tx": "0xd6eda957774b401ee2488a225942bd6509ab7b3f690702b7644cc22fd5bdb649",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, false timing claim 1 of 4",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 59,
+        "tx": "0x894d2e1172a40b1561de3fe8f749e0356c1b8296abc9f24d02c8405a99dc680e",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, false timing claim 2 of 4",
+        "expect": "REFUSED",
+        "outcome": "UPHELD",
+        "matched": false,
+        "seconds": 142,
+        "tx": "0x821a97b4c54195691f5cdf3137a23fccf811e8d0a69a04caa024f45b9da6d484",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, false timing claim 3 of 4",
+        "expect": "REFUSED",
+        "outcome": "UPHELD",
+        "matched": false,
+        "seconds": 197,
+        "tx": "0xddd5f3294705969e47b7a23472afb3b77039c49a2e61d633d4f5c1c4ac18c3b5",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, false timing claim 4 of 4",
+        "expect": "REFUSED",
+        "outcome": "UPHELD",
+        "matched": false,
+        "seconds": 93,
+        "tx": "0xb71a37c1a14d37d9ee284481195a356af96a41e825691f4fdf5cddf868ecd31c",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, invented withdrawal 1 of 2",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 54,
+        "tx": "0x84b50c4c07d1333cc71cb1dec6325ed3b8c6e35609158d8a30dc768433ad5328",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, invented withdrawal 2 of 2",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 53,
+        "tx": "0x4cfd4fdbe5e6682b796326d9603d251779bc92a47074f1a81535a5535d9ce6d2",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, true actor claim 1 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 61,
+        "tx": "0xcfb5c2407d6b5ea2c25dd37487b1d0e012f581d3f6b435fa738b01c7bbbc3f5d",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, true actor claim 2 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 81,
+        "tx": "0x99740b5c71296a2d66249f8581db27c8fee30bf65b6ea56e6fe44670a9df95dd",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, true actor claim 3 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 42,
+        "tx": "0xa0e918e80892bae8419e9307e7707557b0f50e95165b1035d5a0bf86d7ad75a9",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, true numeric claim 1 of 2",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 62,
+        "tx": "0x96dbdd37cfa245e692defe8291f5a1aa95f592f46012ddb476316c327ecd37a9",
+        "kind": "alarm"
+      },
+      {
+        "label": "honest report, true numeric claim 2 of 2",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 74,
+        "tx": "0x1c8d53fe8319a364ceb266502fd59c2d6d4ad6f39284f171f4e537ed75c1dd3d",
+        "kind": "alarm"
+      },
+      {
+        "label": "quieter prompt, false timing claim 1 of 6",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 53,
+        "tx": "0x1a5b5bf2bec25d943737ecdde2773137708b5c56c49242b685a0f3c77160555a",
+        "kind": "alarm"
+      },
+      {
+        "label": "quieter prompt, false timing claim 2 of 6",
+        "expect": "REFUSED",
+        "outcome": "UPHELD",
+        "matched": false,
+        "seconds": 92,
+        "tx": "0xa162b2ee6a0b84e261e6c2dee856f7c35c498779dd43b44da3a3d6b7180e1fdb",
+        "kind": "alarm"
+      },
+      {
+        "label": "quieter prompt, false timing claim 3 of 6",
+        "expect": "REFUSED",
+        "outcome": "UPHELD",
+        "matched": false,
+        "seconds": 86,
+        "tx": "0xb1b80b54d60c9dec75195c31ea678278ee41aea3d820a20a6c6e98d788c231c9",
+        "kind": "alarm"
+      },
+      {
+        "label": "quieter prompt, false timing claim 4 of 6",
+        "expect": "REFUSED",
+        "outcome": "UPHELD",
+        "matched": false,
+        "seconds": 113,
+        "tx": "0x6714460baab3da098e26dd3c620548ecc5ea0ee0987d7775c197c6cce5023480",
+        "kind": "alarm"
+      },
+      {
+        "label": "quieter prompt, false timing claim 5 of 6",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 66,
+        "tx": "0x1c626fecad4a3172502a9239e132b3f50d1b0f318c6fd302b590f3dd36d50806",
+        "kind": "alarm"
+      },
+      {
+        "label": "quieter prompt, false timing claim 6 of 6",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 117,
+        "tx": "0x850a6ca56bc557f9f1583edfa8c44bad91c26860b353a028145519089edd4e39",
+        "kind": "alarm"
+      },
+      {
+        "label": "quieter prompt, misreporting protocol 1 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 79,
+        "tx": "0x64713a35232340115a89c8c74c4bc8649d17a027b0978214c87065c346e465b6",
+        "kind": "alarm"
+      },
+      {
+        "label": "quieter prompt, misreporting protocol 2 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 53,
+        "tx": "0x6f0ecb98895f9dd515728fd4936eec47c59aaf4277c35ab83b2bfae9c17ef025",
+        "kind": "alarm"
+      },
+      {
+        "label": "quieter prompt, misreporting protocol 3 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 53,
+        "tx": "0x8ecbac9aba3c80543648347a873e1cea248360c5872c36b91a7f3e616c903342",
+        "kind": "alarm"
+      },
+      {
+        "label": "quieter prompt, true actor claim 1 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 65,
+        "tx": "0x88d31a3b4eaf677ac5ed64e5e11c52d24ad9e5fb48595b9623df1d62f1527642",
+        "kind": "alarm"
+      },
+      {
+        "label": "quieter prompt, true actor claim 2 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 54,
+        "tx": "0x5290a286dcf588f90a3a40bb820f79beac61ff9b35299957f0e9b63945c02258",
+        "kind": "alarm"
+      },
+      {
+        "label": "quieter prompt, true actor claim 3 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 61,
+        "tx": "0x82e9a7568b3d199c19887b8835cabf89fd01085317b993ea8cae9b026b20bd18",
+        "kind": "alarm"
+      },
+      {
+        "label": "chronological ledger, false timing claim 1 of 6",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 182,
+        "tx": "0xa6ee5fa7e7d5cda12e45575cc1c46f2903f8e9259102bccb401dc0d26d1e0ec3",
+        "kind": "alarm"
+      },
+      {
+        "label": "chronological ledger, false timing claim 2 of 6",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 166,
+        "tx": "0x9683d1d6082009e53ffb49dd3cd3103dd411003e447bdc44906e48da648eec48",
+        "kind": "alarm"
+      },
+      {
+        "label": "chronological ledger, false timing claim 3 of 6",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 81,
+        "tx": "0xb51e988dd6d59b7e7b187fffbf88fb99751443802b170f46f47d19080184e3bd",
+        "kind": "alarm"
+      },
+      {
+        "label": "chronological ledger, false timing claim 4 of 6",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 74,
+        "tx": "0xe914310c06fc41dd4af3faa40742a605c0bc06139fe0283e27e8a00517ffe604",
+        "kind": "alarm"
+      },
+      {
+        "label": "chronological ledger, false timing claim 5 of 6",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 182,
+        "tx": "0x4b4b67fe1461bc2808f3138b49c468565b2f0d403f8de33e8874d690814ac3ad",
+        "kind": "alarm"
+      },
+      {
+        "label": "chronological ledger, false timing claim 6 of 6",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 84,
+        "tx": "0xb053436053cf8c1de709609bc3ac1c8c08fde2221c0714948aedfd43185d3726",
+        "kind": "alarm"
+      },
+      {
+        "label": "chronological ledger, true actor claim 1 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 53,
+        "tx": "0xb5726f7fee4dbd5ccadad6e138c0b842502683ee767abf7ab7af9f84234d83c8",
+        "kind": "alarm"
+      },
+      {
+        "label": "chronological ledger, true actor claim 2 of 3",
+        "expect": "UPHELD",
+        "outcome": "REFUSED",
+        "matched": false,
+        "seconds": 65,
+        "tx": "0x2995876dac517e9942757a3cb4e3bbbe8977aaec630ef31939f4bfc7935bcbd3",
+        "kind": "alarm"
+      },
+      {
+        "label": "chronological ledger, true actor claim 3 of 3",
+        "expect": "UPHELD",
+        "outcome": "REFUSED",
+        "matched": false,
+        "seconds": 73,
+        "tx": "0x1c3c76fc0f681d2fd5a6b3fac03efd100139f576675026547e53fa13bb9ee58f",
+        "kind": "alarm"
+      },
+      {
+        "label": "chronological ledger, misreporting protocol 1 of 2",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 55,
+        "tx": "0x26f226a55f9b133dfd21b6942dd4e87dd435c1d2d2de87a0e196627e58e08b18",
+        "kind": "alarm"
+      },
+      {
+        "label": "chronological ledger, misreporting protocol 2 of 2",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 52,
+        "tx": "0x8865c7389393c708bdad095f1f3fa93d65d0dc46ba5e2eb38758b77b59b13e8e",
+        "kind": "alarm"
+      },
+      {
+        "label": "satisfiable line, true actor claim 1 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 54,
+        "tx": "0xd2135dd4795d4b1dae24885a1ae94aab02c91f7a21053224eb9ce85dcacddffe",
+        "kind": "alarm"
+      },
+      {
+        "label": "satisfiable line, true actor claim 2 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 66,
+        "tx": "0xdff31a30f0d56b0294763a60665aa2b8bc209749cf6cba6802f9016d8d4a0dd7",
+        "kind": "alarm"
+      },
+      {
+        "label": "satisfiable line, true actor claim 3 of 3",
+        "expect": "UPHELD",
+        "outcome": "UPHELD",
+        "matched": true,
+        "seconds": 54,
+        "tx": "0x6d4d7483252904c61be3fc66beaee8e0ec095c01264cf45511a331b3ea935bdf",
+        "kind": "alarm"
+      },
+      {
+        "label": "satisfiable line, false timing claim 1 of 3",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 59,
+        "tx": "0xc649f0c45a94c5f503d76b549f93c93f0682302d88232e8aed611df946743f6c",
+        "kind": "alarm"
+      },
+      {
+        "label": "satisfiable line, false timing claim 2 of 3",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 59,
+        "tx": "0x99e41cd4a319f76b6506401fdefb7cfa7130734eccf9b8acb9b7bca155fae418",
+        "kind": "alarm"
+      },
+      {
+        "label": "satisfiable line, false timing claim 3 of 3",
+        "expect": "REFUSED",
+        "outcome": "REFUSED",
+        "matched": true,
+        "seconds": 52,
+        "tx": "0x6849652eadc3b82fc2416598081d37ba0b1fbd52a770756250c1635b5c284a5b",
+        "kind": "alarm"
       }
     ]
+  },
+  "speed": {
+    "judged": {
+      "runs": 5,
+      "refusing_median": 41,
+      "refusing_range": [
+        23.8,
+        50
+      ],
+      "finalized_median": 68
+    },
+    "floor": {
+      "runs": 4,
+      "refusing_median": 9,
+      "refusing_range": [
+        7.2,
+        10.4
+      ],
+      "finalized_median": 36
+    }
   },
   "battery": {
     "halt": "0x7368D52E76123e2bcD22bF1702229a581179C2cE",

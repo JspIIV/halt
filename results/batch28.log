@@ -1,0 +1,13 @@
+20:15:41 three true claims, on a line a chain can actually satisfy
+20:20:36 ok       satisfiable line, true actor claim 1 of 3 -> UPHELD
+GenLayer RPC error (eth_getTransactionCount): Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+20:24:39 raise_alarm hit the network, retry 1
+20:26:05 ok       satisfiable line, true actor claim 2 of 3 -> UPHELD
+20:30:54 ok       satisfiable line, true actor claim 3 of 3 -> UPHELD
+20:30:54 
+20:30:54 three false ones on the same line, which must still be refused
+20:37:51 ok       satisfiable line, false timing claim 1 of 3 -> REFUSED
+20:44:49 ok       satisfiable line, false timing claim 2 of 3 -> REFUSED
+20:51:42 ok       satisfiable line, false timing claim 3 of 3 -> REFUSED
+20:51:42 
+20:51:42 6 of 6 as predicted

@@ -1,0 +1,41 @@
+16:17:54 the protocol that misreports its own figures, three times
+16:21:38 ok       misreporting protocol, true claim 1 of 3 -> UPHELD
+16:25:47 ok       misreporting protocol, true claim 2 of 3 -> UPHELD
+16:30:21 ok       misreporting protocol, true claim 3 of 3 -> UPHELD
+16:30:21 
+two false claims against a protocol whose report has been discredited
+16:34:05 ok       misreporting protocol, false claim 1 of 2 -> REFUSED
+16:37:51 ok       misreporting protocol, false claim 2 of 2 -> REFUSED
+16:37:51 
+four false claims where the report is honest and must still protect
+16:44:49 ok       honest report, false timing claim 1 of 4 -> REFUSED
+16:53:05 SURPRISE honest report, false timing claim 2 of 4 -> UPHELD
+16:53:05          The protocol’s own record shows two positions funded minutes apart and withdrawn in the same funded order within the same ten-minute window, so under the published line they read as one acto
+GenLayer RPC error (eth_getTransactionByHash): fetch failed
+16:53:31 deploy retry 1
+GenLayer RPC error (eth_getTransactionCount): fetch failed
+16:53:51 deploy retry 2
+17:03:43 SURPRISE honest report, false timing claim 3 of 4 -> UPHELD
+17:03:43          The protocol's own record shows two addresses deposited in lockstep (50000000000000000 at 16:55:53 and 20000000000000000 at 16:57:27) and withdrew in lockstep in the same order (800000000000
+17:11:11 SURPRISE honest report, false timing claim 4 of 4 -> UPHELD
+17:11:11          The two addresses acted together as one actor, withdrawing 28000000000000000 wei (40%) within ten minutes, exceeding the red line limit of one-third.
+17:11:11 
+two claims of a withdrawal that never happened
+17:13:59 ok       honest report, invented withdrawal 1 of 2 -> REFUSED
+17:16:54 ok       honest report, invented withdrawal 2 of 2 -> REFUSED
+17:16:54 
+three true claims on the actor line
+17:21:48 ok       honest report, true actor claim 1 of 3 -> UPHELD
+17:27:06 ok       honest report, true actor claim 2 of 3 -> UPHELD
+GenLayer RPC error (eth_getTransactionByHash): Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+17:32:15 raise_alarm hit the network, retry 1
+17:33:18 ok       honest report, true actor claim 3 of 3 -> UPHELD
+17:33:18 
+two true claims on the numeric line
+GenLayer RPC error (eth_getTransactionByHash): fetch failed
+17:34:17 protect hit the network, retry 1
+17:37:43 ok       honest report, true numeric claim 1 of 2 -> UPHELD
+17:41:42 ok       honest report, true numeric claim 2 of 2 -> UPHELD
+17:41:42 
+15 of 16 as predicted
+17:41:42   honest report, false timing claim 4 of 4 -> UPHELD

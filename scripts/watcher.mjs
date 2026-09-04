@@ -23,6 +23,7 @@ import { Wallet } from 'ethers';
 import { createClient, createAccount } from 'genlayer-js';
 import { studionet } from 'genlayer-js/chains';
 import fs from 'fs';
+import { KS, PASS } from './keys.mjs';
 
 const HALT = process.argv[2];
 const VAULT = process.argv[3];
@@ -30,8 +31,6 @@ const EVERY = Number(process.argv[4] || 20) * 1000;
 const MAX_ALARMS = Number(process.argv[5] || 1);
 // A bounded run, for recording what the threshold rule does and does not see.
 const MAX_LOOKS = Number(process.argv[6] || 0);
-const KS = String.raw`C:\Users\ysfym\.genlayer\keystores`;
-
 // Which account the watcher runs as. Anyone may watch; in the recorded run it
 // was the protocol's own operator, which the contract does not require and the
 // write up says plainly.

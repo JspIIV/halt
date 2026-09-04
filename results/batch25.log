@@ -1,0 +1,51 @@
+14:41:21 the protocol that misreports its own figures, three times
+14:45:13 ok       misreporting protocol, true claim 1 of 3 -> UPHELD
+14:48:49 ok       misreporting protocol, true claim 2 of 3 -> UPHELD
+14:52:22 ok       misreporting protocol, true claim 3 of 3 -> UPHELD
+14:52:22 
+two false claims against a protocol whose report has been discredited
+GenLayer RPC error (eth_getTransactionByHash): Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+14:55:52 raise_alarm hit the network, retry 1
+14:57:17 ok       misreporting protocol, false claim 1 of 2 -> REFUSED
+15:11:43 ok       misreporting protocol, false claim 2 of 2 -> REFUSED
+15:11:43 
+four false claims where the report is honest and must still protect
+GenLayer RPC error (eth_getTransactionByHash): Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+15:12:47 protect hit the network, retry 1
+15:20:27 ok       honest report, false timing claim 1 of 4 -> REFUSED
+GenLayer RPC error (eth_getTransactionByHash): Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+15:21:28 protect hit the network, retry 1
+GenLayer RPC error (eth_getTransactionByHash): fetch failed
+15:26:48 withdraw hit the network, retry 1
+15:28:40 ok       honest report, false timing claim 2 of 4 -> REFUSED
+15:35:50 ok       honest report, false timing claim 3 of 4 -> REFUSED
+GenLayer RPC error (eth_getTransactionByHash): fetch failed
+15:42:20 raise_alarm hit the network, retry 1
+15:43:40 SURPRISE honest report, false timing claim 4 of 4 -> ERROR
+15:43:40          that guard is already up
+15:43:40 
+two claims of a withdrawal that never happened
+15:46:47 ok       honest report, invented withdrawal 1 of 2 -> REFUSED
+GenLayer RPC error (eth_getTransactionByHash): fetch failed
+15:47:21 deploy retry 1
+15:50:50 ok       honest report, invented withdrawal 2 of 2 -> REFUSED
+15:50:50 
+three true claims on the actor line
+GenLayer RPC error (eth_getTransactionByHash): Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+15:55:09 raise_alarm hit the network, retry 1
+15:56:08 SURPRISE honest report, true actor claim 1 of 3 -> ERROR
+15:56:08          that guard is already up
+16:03:08 ok       honest report, true actor claim 2 of 3 -> UPHELD
+GenLayer RPC error (eth_getTransactionByHash): fetch failed
+16:07:34 raise_alarm hit the network, retry 1
+16:08:34 SURPRISE honest report, true actor claim 3 of 3 -> ERROR
+16:08:34          that guard is already up
+16:08:34 
+two true claims on the numeric line
+16:12:18 ok       honest report, true numeric claim 1 of 2 -> UPHELD
+16:15:46 ok       honest report, true numeric claim 2 of 2 -> UPHELD
+16:15:46 
+13 of 16 as predicted
+16:15:46   honest report, false timing claim 4 of 4 -> null
+16:15:46   honest report, true actor claim 1 of 3 -> null
+16:15:46   honest report, true actor claim 3 of 3 -> null

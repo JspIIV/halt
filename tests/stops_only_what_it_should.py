@@ -76,6 +76,17 @@ class _Target:
             raise RuntimeError("no such contract")
         return self._gl.target_answers
 
+    @property
+    def balance(self):
+        """What the chain says it holds, which the protocol does not write.
+
+        None means the guard cannot read it at all, and the contract has to
+        carry on without it rather than treat unknown as zero.
+        """
+        if self._gl.target_balance is None:
+            raise RuntimeError("no balance for that address")
+        return int(self._gl.target_balance)
+
 
 class _Write:
     def __call__(self, fn): return fn
@@ -101,6 +112,7 @@ class _GL:
         self.nondet = _Nondet()
         self.eq_principle = _EqPrinciple()
         self.target_answers = None
+        self.target_balance = None
         self.get_contract_at = lambda address: _Target(self)
 
 
@@ -332,6 +344,68 @@ def main():
     check("what was read is recorded with the alarm, so it can be audited",
           "50000000000000000" in str(json.loads(c.alarm_at(str(read_back["alarm"])))["reported_by_target"]))
 
+    print("\nthe arithmetic is done on the whole answer, not on the part that fits")
+    LONG = "0xfba0000000000000000000000000000000000000"
+    gl.target_balance = 42
+    # An honest report: two positions holding 30 and 12, which is the 42 the
+    # chain says it holds. Deposits and withdrawals are history and do not add
+    # up to the balance, and must not be read as though they should.
+    padding = [{"kind": "withdraw", "who": "0x%040d" % n, "amount": "1",
+                "at": "2026-09-04T15:39:14.429599+00:00"} for n in range(12)]
+    gl.target_answers = json.dumps({
+        "held": "42",
+        "positions": [{"who": OWNER, "holds": "30", "deposited": "50", "withdrawn": "20"},
+                      {"who": OTHER, "holds": "12", "deposited": "20", "withdrawn": "8"}],
+        "recent": padding})
+    check("the report used here is longer than the prompt will carry",
+          len(gl.target_answers) > 1800)
+
+    as_(OWNER, 5000)
+    c.protect(LONG, LINE)
+    as_(OTHER, 600)
+    answers('{"reading": "NOT_CROSSED", "why": "the record does not bear it out"}')
+    json.loads(c.raise_alarm(LONG, REAL))
+    long_task = " ".join(gl.nondet.last_task.split())
+    check("the guardian still adds the positions up",
+          "Its report says 42 wei is still owed" in long_task)
+    check("and says they fit inside the balance",
+          "which fits inside that" in long_task)
+    check("a report the guardian cannot add up says so, rather than nothing",
+          "unknown is not a finding" in " ".join(
+              module._chain_facts(42, -1, "", -1).split()))
+    check("and an honest long report does not stop the protocol", not c.halted(LONG))
+
+    # An instruction about a failure that is not in front of the reader is not a
+    # safeguard. Three false claims in four were upheld while the prompt argued
+    # about whether an honest report could be trusted, so where there is nothing
+    # wrong with the report the prompt does not raise the subject at all.
+    check("an honest report is not argued about",
+          "false about its own figures" not in long_task)
+    check("and the rule about checking the claim keeps no exception",
+          "That rule assumes the account is true" not in long_task)
+
+    print("\nand where the report really is overstated, it is said plainly")
+    SHORT = "0xfbb0000000000000000000000000000000000000"
+    gl.target_balance = 10
+    gl.target_answers = json.dumps({
+        "held": "10",
+        "positions": [{"who": OWNER, "holds": "40", "deposited": "40", "withdrawn": "0"}],
+        "recent": []})
+    as_(OWNER, 5000)
+    c.protect(SHORT, LINE)
+    as_(OTHER, 600)
+    answers('{"reading": "NOT_CROSSED", "why": "nothing here"}')
+    json.loads(c.raise_alarm(SHORT, REAL))
+    short_task = " ".join(gl.nondet.last_task.split())
+    check("the guardian names the gap",
+          "40 wei is still owed to the people it lists, which is 30 wei more than it holds"
+          in short_task)
+    check("and calls the report false",
+          "So this report is false about its own figures" in short_task)
+    check("and lifts the rule that would have shielded it",
+          "That rule assumes the account is true, and here it is not" in short_task)
+    gl.target_balance = None
+
     print("\na protocol that will not answer is not punished for it")
     gl.target_answers = None
     as_(OTHER, 600)
@@ -411,12 +485,136 @@ def main():
     check("the alarm is recorded as overturned rather than deleted",
           any(json.loads(raw).get("outcome") == "OVERTURNED" for raw in c.alarms))
 
+
+    # ------------------------------------------------ the part with no round
+
+    print("\na floor is published by its owner, in numbers, or not at all")
+    FLOORED = "0xfaa0000000000000000000000000000000000000"
+    gl.target_answers = "{}"
+    gl.target_balance = 1000
+    as_(OWNER, 5000)
+    c.protect(FLOORED, LINE)
+    as_(OTHER)
+    check("a stranger cannot publish a floor",
+          not json.loads(c.promise(FLOORED, "50", "600"))["ok"])
+    as_(OWNER)
+    check("nor can one be published on an unprotected address",
+          not json.loads(c.promise(ELSEWHERE, "50", "600"))["ok"])
+    check("a fall of 0 percent is refused",
+          not json.loads(c.promise(FLOORED, "0", "600"))["ok"])
+    check("so is one of 99",
+          not json.loads(c.promise(FLOORED, "99", "600"))["ok"])
+    check("and a window of five seconds",
+          not json.loads(c.promise(FLOORED, "50", "5"))["ok"])
+    check("a floor inside the bounds is published",
+          json.loads(c.promise(FLOORED, "50", "600"))["ok"])
+
+    print("\nchecking a floor takes no deposit, no claim and no round")
+    gl.nondet.last_task = None
+    as_(WATCHER)
+    out = json.loads(c.check(FLOORED))
+    check("anyone may check", out["ok"] and out["watching"])
+    check("and it asks no validator anything", gl.nondet.last_task is None)
+    check("the guard is not up on a balance that has not moved", not c.halted(FLOORED))
+
+    gl.target_balance = 800
+    as_(WATCHER)
+    out = json.loads(c.check(FLOORED))
+    check("a fall short of the floor is watched and not stopped",
+          out["ok"] and out.get("fallen_percent") == 20 and not c.halted(FLOORED))
+
+    gl.evm.transfers.clear()
+    gl.target_balance = 400
+    as_(WATCHER)
+    out = json.loads(c.check(FLOORED))
+    check("a fall past the floor stops the protocol",
+          out.get("halted") and c.halted(FLOORED) and out["fallen_percent"] == 60)
+    check("and pays the bounty to whoever noticed",
+          gl.evm.transfers == [(WATCHER, 5000)])
+    check("the stop is recorded as an alarm like any other",
+          any(json.loads(raw).get("kind") == "floor" and json.loads(raw)["outcome"] == "UPHELD"
+              for raw in c.alarms))
+    check("a stopped guard cannot be checked again",
+          not json.loads(c.check(FLOORED))["ok"])
+
+    print("\nwhat a floor must not do")
+    QUIET = "0xfab0000000000000000000000000000000000000"
+    as_(OWNER, 5000)
+    c.protect(QUIET, LINE)
+    gl.target_balance = 1000
+    as_(WATCHER)
+    check("a guard with no floor is watched and never stopped by arithmetic",
+          json.loads(c.check(QUIET))["floor"] is None)
+    gl.target_balance = 1
+    check("even when its balance falls to almost nothing",
+          json.loads(c.check(QUIET))["ok"] and not c.halted(QUIET))
+
+    UNREADABLE = "0xfac0000000000000000000000000000000000000"
+    as_(OWNER, 5000)
+    c.protect(UNREADABLE, LINE)
+    gl.target_balance = None
+    as_(WATCHER)
+    check("a balance that cannot be read stops nothing",
+          not json.loads(c.check(UNREADABLE))["ok"] and not c.halted(UNREADABLE))
+
+    RISING = "0xfad0000000000000000000000000000000000000"
+    gl.target_balance = 1000
+    as_(OWNER, 5000)
+    c.protect(RISING, LINE)
+    as_(OWNER)
+    c.promise(RISING, "50", "600")
+    for balance in (2000, 4000, 8000):
+        gl.target_balance = balance
+        as_(WATCHER)
+        c.check(RISING)
+    gl.target_balance = 5000
+    as_(WATCHER)
+    out = json.loads(c.check(RISING))
+    check("the high point follows the balance up",
+          out.get("fallen_percent") == 37 and not c.halted(RISING))
+    gl.target_balance = 3000
+    as_(WATCHER)
+    check("and a fall is measured from the high point, not from the last look",
+          json.loads(c.check(RISING)).get("halted") and c.halted(RISING))
+
+    SPAM = "0xfae0000000000000000000000000000000000000"
+    gl.target_balance = 1000
+    as_(OWNER, 5000)
+    c.protect(SPAM, LINE)
+    as_(OWNER)
+    c.promise(SPAM, "50", "600")
+    for _ in range(30):
+        as_(OTHER)
+        c.check(SPAM)
+    gl.target_balance = 300
+    as_(OTHER)
+    check("checking in a loop cannot flush the high point",
+          json.loads(c.check(SPAM)).get("halted") and c.halted(SPAM))
+
+    OWNED = "0xfaf0000000000000000000000000000000000000"
+    gl.target_balance = 1000
+    as_(OWNER, 5000)
+    c.protect(OWNED, LINE)
+    as_(OWNER)
+    c.promise(OWNED, "50", "600")
+    c.check(OWNED)
+    gl.evm.transfers.clear()
+    gl.target_balance = 100
+    as_(OWNER)
+    out = json.loads(c.check(OWNED))
+    check("an owner may stop its own protocol on its own floor",
+          out.get("halted") and c.halted(OWNED))
+    check("and collects nothing for doing it",
+          gl.evm.transfers == [] and out["paid"] == "0")
+
+    gl.target_balance = None
+
     failed = [label for label, ok in RESULTS if not ok]
     print()
     if failed:
         print("%d of %d checks failed" % (len(failed), len(RESULTS)))
         return 1
-    print("%d checks, all through protect, raise_alarm, lower, retire and the views"
+    print("%d checks, all through protect, raise_alarm, promise, check, lower, retire"
           % len(RESULTS))
     return 0
 

@@ -1,0 +1,22 @@
+19:01:41 six false timing claims, against a ledger that reads in the order it happened
+19:10:43 ok       chronological ledger, false timing claim 1 of 6 -> REFUSED
+19:19:17 ok       chronological ledger, false timing claim 2 of 6 -> REFUSED
+19:26:38 ok       chronological ledger, false timing claim 3 of 6 -> REFUSED
+19:33:36 ok       chronological ledger, false timing claim 4 of 6 -> REFUSED
+19:42:38 ok       chronological ledger, false timing claim 5 of 6 -> REFUSED
+19:50:11 ok       chronological ledger, false timing claim 6 of 6 -> REFUSED
+19:50:11 
+19:50:11 three true claims on the actor line
+19:55:04 ok       chronological ledger, true actor claim 1 of 3 -> UPHELD
+20:00:09 SURPRISE chronological ledger, true actor claim 2 of 3 -> REFUSED
+20:00:09          record shows deposits 40 s apart and withdrawals 40 s apart, so 'funded at the same time' condition for treating them as one actor is not met by the timestamps
+20:05:22 SURPRISE chronological ledger, true actor claim 3 of 3 -> REFUSED
+20:05:22          The protocol record shows two separate deposits and withdrawals, but it does not support the claim that they are one actor acting in lockstep or that the red line’s grouped-withdrawal condit
+20:05:22 
+20:05:22 two on the protocol that misreports, which must stay caught
+20:08:59 ok       chronological ledger, misreporting protocol 1 of 2 -> UPHELD
+20:12:25 ok       chronological ledger, misreporting protocol 2 of 2 -> UPHELD
+20:12:25 
+20:12:25 9 of 11 as predicted
+20:12:25   chronological ledger, true actor claim 2 of 3 -> REFUSED
+20:12:25   chronological ledger, true actor claim 3 of 3 -> REFUSED

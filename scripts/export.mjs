@@ -17,6 +17,10 @@ const HALT = process.argv[2];
 const VAULT = process.argv[3];
 const PAIRED = process.argv[4];
 const UNTOUCHED = process.argv[5];
+// The coordination case is a historical run and lives on the guardian it was
+// run against. Reading it off a later one would say nothing is protected there,
+// which is true and useless. Defaults to the guardian under test.
+const CO_HALT = process.argv[6] || HALT;
 const c = createClient({ chain: studionet });
 const parse = v => JSON.parse(typeof v === 'string' ? v : String(v));
 
@@ -35,8 +39,8 @@ const ledger = VAULT ? parse(await c.readContract({ address: VAULT, functionName
  */
 let coordination = null;
 if (PAIRED) {
-  const paired = parse(await c.readContract({ address: HALT, functionName: 'guard', args: [PAIRED] }));
-  const raised = parse(await c.readContract({ address: HALT, functionName: 'history', args: [PAIRED] }));
+  const paired = parse(await c.readContract({ address: CO_HALT, functionName: 'guard', args: [PAIRED] }));
+  const raised = parse(await c.readContract({ address: CO_HALT, functionName: 'history', args: [PAIRED] }));
   const state = parse(await c.readContract({ address: PAIRED, functionName: 'status', args: [] }));
   let silent = null;
   if (UNTOUCHED) {
@@ -69,7 +73,7 @@ if (PAIRED) {
   }
 
   coordination = {
-    vault: PAIRED, guard: paired.guard ?? null, watched,
+    vault: PAIRED, halt: CO_HALT, guard: paired.guard ?? null, watched,
     alarms: raised.alarms ?? [], status: state, threshold: silent,
     seconds: run ? run.seconds_from_alarm_to_halted : null,
     first_attempt: run ? run.the_first_attempt : null,
@@ -84,7 +88,7 @@ if (PAIRED) {
 let findings = null;
 try {
   const trials = JSON.parse(fs.readFileSync('results/trials.json', 'utf8'));
-  const at = label => trials.find(t => t.label === label) || null;
+  const at = (label, batch) => trials.filter(t => t.label === label && (!batch || t.batch === batch)).pop() || null;
   const put = (title, what, before, after) => ({
     title, what,
     before: before ? { outcome: before.outcome, why: before.why, tx: before.tx } : null,
@@ -105,6 +109,23 @@ try {
         + 'not have followed even if the premise were true.',
         at('redenomination: the protocol supplies an off chain exchange rate'),
         at('redenomination, after the report-is-not-argument fix')),
+    put('A protocol reported false numbers and the guard believed it',
+        'It did not argue and it did not instruct. It paid out correctly, moved the real money, '
+        + 'and reported the position as though nothing had left. The guard\u2019s only source of '
+        + 'ground truth was a method the accused had written, so a true alarm was refused and the '
+        + 'person telling the truth lost their deposit. The guardian now reads the protocol\u2019s '
+        + 'balance off the chain and adds up the positions its report claims are still owed.',
+        at('a protocol that simply misreports its own figures'),
+        at('misreporting protocol, true claim 1 of 3', 'balance_read_whole')),
+    put('And closing that broke the centrepiece',
+        'The new arithmetic was being run on the copy of the report clipped to fit the prompt, and '
+        + 'a clipped JSON object does not parse. The sentence the guardian was meant to contribute '
+        + 'went missing and the round filled the gap itself, comparing the report\u2019s deposits '
+        + 'against its balance and calling an honest report false. Raising the clip limit then '
+        + 'uncovered a ledger this project had been publishing newest first without saying so, and '
+        + 'the round read the withdrawal order off it backwards.',
+        at('honest report, false timing claim 4 of 4', 'balance_read_whole'),
+        at('chronological ledger, false timing claim 1 of 6')),
   ];
 } catch {}
 
@@ -131,6 +152,35 @@ try {
   };
 } catch {}
 
+/**
+ * The only latency figure that means anything: how long the protocol keeps
+ * paying out after somebody raises the alarm.
+ *
+ * Everything published before this was measured to FINALIZED by the script that
+ * sent the transaction, polling every six seconds. A protected contract does
+ * not wait for finalisation. It reads the guard with view(), whose default is
+ * the latest non final state, so it starts refusing when the round decides.
+ */
+let speed = null;
+try {
+  const med = a => {
+    const v = a.slice().sort((x, y) => x - y);
+    return v.length ? (v.length % 2 ? v[(v.length - 1) / 2]
+                                    : (v[v.length / 2 - 1] + v[v.length / 2]) / 2) : null;
+  };
+  const load = f => { try { return JSON.parse(fs.readFileSync('results/' + f, 'utf8')); } catch { return []; } };
+  const judged = load('how_fast.json');
+  const floor = load('how_fast_floor.json');
+  const shape = rows => rows.length ? {
+    runs: rows.length,
+    refusing_median: Math.round(med(rows.map(r => r.protocol_refusing))),
+    refusing_range: [Math.min(...rows.map(r => r.protocol_refusing)),
+                     Math.max(...rows.map(r => r.protocol_refusing))],
+    finalized_median: Math.round(med(rows.map(r => r.finalized))),
+  } : null;
+  speed = { judged: shape(judged), floor: shape(floor) };
+} catch {}
+
 let battery = null;
 try { battery = JSON.parse(fs.readFileSync('results/battery.json', 'utf8')); } catch {}
 
@@ -140,8 +190,9 @@ fs.writeFileSync('docs/data.json', JSON.stringify({
   exported_at: new Date().toISOString(),
   size, guard: guard.guard ?? null, alarms: history.alarms ?? [],
   vault_status: vault, ledger: ledger?.entries ?? [],
-  coordination, findings, trials,
+  coordination, findings, trials, speed,
   battery: battery ? { halt: battery.halt, summary: battery.summary, refusals: battery.refusals, timings: battery.timings } : null,
 }, null, 2));
 console.log('coordination', coordination ? coordination.guard.state : 'not exported');
+console.log('speed', JSON.stringify(speed));
 console.log('guards', size.protected, 'alarms', size.alarms, JSON.stringify(size.outcomes));

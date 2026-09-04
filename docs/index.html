@@ -375,7 +375,7 @@ fetch("./data.json").then(r => r.json()).then(d => {
   if (tr) set("kpis",
     kpi(tr.total, "runs on chain")
     + kpi((d.findings || []).length, "faults found and closed")
-    + kpi((b ? b.median_seconds : "-") + "s", "median alarm to halted")
+    + kpi((d.speed && d.speed.judged ? d.speed.judged.refusing_median : (b ? b.median_seconds : "-")) + "s", "alarm to the protocol refusing")
     + kpi(tr.matched + " / " + tr.predicted, "came out as predicted"));
 
   /* -------------------------------------------------------------- the table */
@@ -386,7 +386,9 @@ fetch("./data.json").then(r => r.json()).then(d => {
       tr.predicted + " runs carried a prediction written down before they were sent, and "
       + tr.matched + " came out as predicted. " + surprises + " were genuine surprises. "
       + never + " never reached a verdict, because they met a guard an earlier run had already "
-      + "put up, which is a mistake in how we ordered them rather than an answer from the network."
+      + "put up. Three more were filed as network errors by a script that retried a send which had "
+      + "already gone through, and one of those was hiding a live protocol halted on a false claim; "
+      + "they were read back off the guardian and are counted here with the rest."
       + (auto ? " The agent's own catch, with nobody in the loop, took " + auto.seconds + " seconds." : "");
 
     const cut = 12;

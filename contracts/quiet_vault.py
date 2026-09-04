@@ -1,34 +1,20 @@
 # { "Depends": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6" }
-"""Vault: an ordinary protocol that asks the guard before it moves money.
+"""A vault that does not argue with the guard. It simply understates.
 
-This exists so the halt module can be shown stopping something real rather than
-something drawn for the occasion. It holds deposits, pays them out, and does one
-unusual thing: before every withdrawal it asks a guardian contract whether it is
-allowed to be running at all.
+The two lying vaults before this one tried rhetoric: `lying_vault.py` told the
+validator what to answer, and `rate_vault.py` supplied a currency and a rate so
+the same numbers would fall the right side of the line. Both are arguments, and
+the guard was taught to ignore arguments.
 
-The integration is the point
-----------------------------
+This one makes no argument at all. It reports figures, in exactly the shape the
+guard expects, and the figures are false. Nothing withdrew anything, says the
+protocol, while its own ledger records the withdrawal.
 
-Everything a protocol has to do to be protected is in `_guard_is_up`, and it is
-four lines. No inheritance, no proxy, no upgrade, no permission granted to
-anybody. The vault keeps its own keys and its own logic; the only thing it gives
-up is the right to keep paying out while a guard is up.
-
-    def _guard_is_up(self) -> bool:
-        try:
-            return bool(gl.get_contract_at(Address(self.guardian))
-                        .view().halted(gl.message.contract_address.as_hex))
-        except Exception:
-            return False
-
-**A guardian that cannot be reached does not stop the vault.** That is a
-deliberate choice and it is the uncomfortable one. Failing closed would mean any
-outage of the guard freezes every protocol that trusts it, which turns a safety
-device into the largest single point of failure in the system. Failing open
-means a broken guard protects nothing, which is bad, but it is bad in the way
-the world was before the guard existed.
-
-Nothing else about this contract is clever, on purpose. It is a vault.
+That is the position the whole design rests on. The guard checks a claim against
+what the protocol reports about itself, so a protocol willing to misreport is
+checking its own homework. There is no rhetoric to detect here and nothing for a
+reader to see through: the only tell is that the numbers do not match a ledger
+the guard never reads.
 """
 
 from genlayer import *
@@ -76,7 +62,7 @@ def _amount(value, ceiling: int) -> int:
     return min(wanted, ceiling)
 
 
-class Vault(gl.Contract):
+class QuietVault(gl.Contract):
     owner: str
     guardian: str
     balances: TreeMap[str, u256]
@@ -219,11 +205,14 @@ class Vault(gl.Contract):
         for who in self.holders:
             held = int(self.balances[who])
             total += held
-            positions.append({"who": who, "holds": str(held),
-                              "deposited": str(int(self.deposited[who]) if who in self.deposited else 0),
-                              "withdrawn": str(int(self.taken[who]) if who in self.taken else 0),
+            # The lie, and the whole of it: what went out is reported as nothing,
+            # and the balance is reported as though it were never touched.
+            put_in = int(self.deposited[who]) if who in self.deposited else 0
+            positions.append({"who": who, "holds": str(put_in),
+                              "deposited": str(put_in),
+                              "withdrawn": "0",
                               "first_deposit_at": first_in.get(who, ""),
-                              "last_withdrawal_at": last_out.get(who, "")})
+                              "last_withdrawal_at": ""})
 
         # Oldest first, and the report says which way round it is. Written newest
         # first and unlabelled, this list was measured turning a correct reading
@@ -237,7 +226,8 @@ class Vault(gl.Contract):
         recent = []
         for position in range(max(0, len(self.ledger) - 8), len(self.ledger)):
             entry = json.loads(self.ledger[position])
-            if entry.get("kind") in ("deposit", "withdraw"):
+            # withdrawals are simply left out of the report
+            if entry.get("kind") == "deposit":
                 recent.append({"kind": entry["kind"], "who": entry.get("who"),
                                "amount": str(entry.get("amount")), "at": entry.get("at")})
 

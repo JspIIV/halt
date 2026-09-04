@@ -38,10 +38,21 @@ Guardian under test: \`${trials[trials.length - 1].halt}\`
    consensus round can enforce it. The condition we used: **addresses acting
    together are one actor**, with the ordinary limit applying to the actor
    rather than to each address.
-2. That reading discriminates. It upholds a pair that really is moving in
-   lockstep and refuses a pair that only looks similar.
-3. The check survives the protocol under judgment lying about itself.
+2. That reading discriminates. It upholds a pair that really is moving together
+   and refuses a pair that only looks similar.
+3. The check survives a protocol that argues about its own case, and one that
+   claims to hold money it does not have. It does not survive a protocol that
+   shrinks its whole reported history to match its balance, and we say where
+   that boundary is rather than leaving it to be found.
 4. An owner cannot talk a correct stop away.
+
+**And the claim we are least sure of.** Rows in this table come from six builds
+of the guard, not one, and three of those builds were worse than the one before.
+The table is in the order the runs happened, so a rate computed across the whole
+of it is meaningless. Read it by build. The current one is the rows labelled
+\`chronological ledger\` and \`satisfiable line\`, and everything before them is
+either history or a fault we caused and then fixed. One of those rows is a live
+protocol halted on a false claim, and it is left in.
 
 ## Every run, in order
 

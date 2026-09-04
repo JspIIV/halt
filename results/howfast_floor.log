@@ -1,0 +1,20 @@
+  floor   {"ok":true,"target":"0x4df81b6a86ffa0cd402abec514e9386746880a20","floor":"not more than 50 percent inside 600 seconds"}
+  watch   {"ok":true,"target":"0x4df81b6a86ffa0cd402abec514e9386746880a20","watching":true,"balance":"40000000000000000","high_point":"40000000000000000"}
+run 1: guard up 7.2s, protocol refusing 9s, finalized 37.6s
+  floor   {"ok":true,"target":"0x1d586b0adc6e432bf7b1cd85f23bf8bd2d0476f6","floor":"not more than 50 percent inside 600 seconds"}
+  watch   {"ok":true,"target":"0x1d586b0adc6e432bf7b1cd85f23bf8bd2d0476f6","watching":true,"balance":"40000000000000000","high_point":"40000000000000000"}
+run 2: guard up 7.1s, protocol refusing 8.9s, finalized 35.2s
+  floor   {"ok":true,"target":"0xc95dc4ba6a47359141f963e9c97b5c6c9f6a1776","floor":"not more than 50 percent inside 600 seconds"}
+  watch   {"ok":true,"target":"0xc95dc4ba6a47359141f963e9c97b5c6c9f6a1776","watching":true,"balance":"40000000000000000","high_point":"40000000000000000"}
+run 3: guard up 8.7s, protocol refusing 10.4s, finalized 37.9s
+  floor   {"ok":true,"target":"0x216d2ada02cb79d0a9a92e9eed101545cc14dce6","floor":"not more than 50 percent inside 600 seconds"}
+  watch   {"ok":true,"target":"0x216d2ada02cb79d0a9a92e9eed101545cc14dce6","watching":true,"balance":"40000000000000000","high_point":"40000000000000000"}
+run 4: guard up 5.5s, protocol refusing 7.2s, finalized 34.8s
+  floor   {"ok":true,"target":"0xf3d5910eb750fb0e6676273fed67e37f63a34813","floor":"not more than 50 percent inside 600 seconds"}
+  watch   {"ok":true,"target":"0xf3d5910eb750fb0e6676273fed67e37f63a34813","watching":true,"balance":"40000000000000000","high_point":"40000000000000000"}
+run 5: guard up 5.4s, protocol refusing 7.2s, finalized 35.2s
+
+median over 5 runs, the path with no round:
+  guard_up             7.1s   range 5.4s to 8.7s
+  protocol_refusing    8.9s   range 7.2s to 10.4s
+  finalized            35.2s   range 34.8s to 37.9s
