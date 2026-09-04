@@ -195,6 +195,25 @@ class Vault(gl.Contract):
         published here is the same shape as the line: who put in what, who has
         taken out what, and when they last did it.
         """
+        # When a position was first funded and last drawn on. A red line about
+        # several addresses turns on these two moments, and a reader given only
+        # a mixed list of entries has to reconstruct them by scanning. A round
+        # was measured getting that wrong: it read a withdrawal as the second
+        # deposit and concluded two positions were funded seconds apart when the
+        # ledger said a hundred. These are facts, not judgments. Whether two
+        # timestamps mean one actor is still nobody's business here.
+        first_in = {}
+        last_out = {}
+        for position in range(len(self.ledger)):
+            entry = json.loads(self.ledger[position])
+            who = entry.get("who")
+            if not who:
+                continue
+            if entry.get("kind") == "deposit" and who not in first_in:
+                first_in[who] = entry.get("at")
+            if entry.get("kind") == "withdraw":
+                last_out[who] = entry.get("at")
+
         total = 0
         positions = []
         for who in self.holders:
@@ -202,7 +221,9 @@ class Vault(gl.Contract):
             total += held
             positions.append({"who": who, "holds": str(held),
                               "deposited": str(int(self.deposited[who]) if who in self.deposited else 0),
-                              "withdrawn": str(int(self.taken[who]) if who in self.taken else 0)})
+                              "withdrawn": str(int(self.taken[who]) if who in self.taken else 0),
+                              "first_deposit_at": first_in.get(who, ""),
+                              "last_withdrawal_at": last_out.get(who, "")})
 
         recent = []
         for position in range(len(self.ledger) - 1, max(-1, len(self.ledger) - 9), -1):
