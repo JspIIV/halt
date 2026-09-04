@@ -173,6 +173,16 @@ was upheld, and so was one that rounded them off, because the protocol's record
 showed the breach without help. What loses a deposit is a figure the record
 denies. Contradiction, not imprecision.
 
+**How often it is wrong, measured rather than asserted.** The same false claim,
+sent over and over against a ledger that denies it: refused 3 of 4 by the guard
+as it stood, 3 of 10 after being told to cite the record, and 9 of 10 once the
+protocol reported `first_deposit_at` and `last_withdrawal_at` per position. The
+true claim was upheld 5 of 5 throughout. Telling the reader to show its working
+tripled the error rate, because it cited the wrong row and then believed itself;
+the failure was never judgment, it was picking two deposits out of four mixed
+entries. 89 runs are in `results/trials.json`, each with the prediction written
+down before it was sent.
+
 ## The attack we have not closed
 
 A halt is public the moment it lands. So an owner could publish a hair trigger

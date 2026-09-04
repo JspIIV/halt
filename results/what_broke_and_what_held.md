@@ -242,10 +242,67 @@ An appeal did overturn a stop earlier in the project, when the alarm was wrong.
 The point is not that appeals fail. It is that they fail when the alarm was
 right.
 
+## 7. Does it say the same thing twice?
+
+Everything above is a single run of each question, and a device that refuses a
+plausible claim three times and accepts it the fourth is not a device you would
+put in front of money. So the same claim was sent over and over.
+
+The claim: two addresses funded within seconds of each other and withdrawn in
+the order they were funded. The ledger, on every vault used here: funded a
+hundred seconds apart, withdrawn a hundred seconds apart, in the opposite order.
+It is false in exactly the way a griefer's claim would be false, and everything
+else about it is true.
+
+| what was being asked | false claim refused | true claim upheld |
+| --- | --- | --- |
+| the guard as it stood | 3 of 4 | 5 of 5 |
+| the guard told to cite the record | 3 of 10 | 5 of 5 |
+| the protocol reporting the two moments | **9 of 10** | 5 of 5 |
+
+### The attempted fix that made it worse
+
+The obvious move was to make the reader show its working: name the value from
+the protocol's report that settles the tightest condition. It went from one
+wrong answer in four to seven in ten.
+
+The reasoning says why. On one run it named the two deposits as `00:53:15` and
+`00:53:55` and called them seconds apart. The ledger says the deposits are a
+hundred seconds apart, and `00:53:55` is a withdrawal.
+
+> Asked to cite, it cited, and it cited the wrong row, and having cited
+> something it was certain.
+
+The instruction did not make the reading more accurate. It made a wrong reading
+look grounded, which is worse than an ungrounded one, because a wrong answer
+that quotes a timestamp is harder for anybody downstream to doubt. The
+instruction is gone.
+
+### What actually worked
+
+The failure was never judgment. Asked whether two addresses are one actor, the
+network answers well. It was **reading**: picking the deposits out of a mixed
+list of four entries, in a page of JSON, and getting a withdrawal instead.
+
+So the fix went to the protocol rather than the guard. Each position now reports
+`first_deposit_at` and `last_withdrawal_at` alongside its figures. Nobody has to
+reconstruct the two moments a timing condition turns on; they are stated. That
+is a fact and not a judgment, and whether two timestamps mean one actor is still
+nobody's business but the network's.
+
+One in ten still slips, and the run that slipped said "funded within seconds of
+each other" about positions the report timestamps a hundred seconds apart. Ten
+percent is a published number, not a solved problem, and it is the number a
+protocol owner should have before deciding whether the deposit and the appeal
+are enough cover for the rest.
+
 ## What this leaves
 
 The reading discriminates on the condition rather than on arithmetic, and it
-holds against an accused protocol that lies about itself. What is still thin is
-sample size: each arm has been run a handful of times, not forty. The runs are
-appended to `trials.json` as they happen, including the ones that went the wrong
-way.
+holds against an accused protocol that lies about itself. Sample size is no longer the thinnest part: 89 runs are in `trials.json`,
+appended as they happened, including every one that went the wrong way and every
+prediction that was written down before the run and then missed.
+
+What is thin now is breadth. Two red lines, one protocol, two addresses. A third
+address, a second protocol shape, and a line about something other than
+withdrawals would each be a real test and none of them has been run.
