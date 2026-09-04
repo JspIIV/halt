@@ -1,0 +1,67 @@
+22:57:02 setting up four vaults
+23:06:12 ground ready
+23:06:12 
+seven claims against a pair that is not coordinated
+GenLayer RPC error (eth_estimateGas): Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Gas estimation failed, using default 200_000: UnknownRpcError: An unknown RPC error occurred.
+
+Details: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+Version: viem@2.55.10
+    at withRetry.delay.count.count (file:///D:/projects/GenLayer/placard-app/node_modules/viem/_esm/utils/buildRequest.js:127:31)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async attemptRetry (file:///D:/projects/GenLayer/placard-app/node_modules/viem/_esm/utils/promise/withRetry.js:24:30) {
+  details: `Unexpected token '<', "<!DOCTYPE "... is not valid JSON`,
+  docsPath: undefined,
+  metaMessages: undefined,
+  shortMessage: 'An unknown RPC error occurred.',
+  version: '2.55.10',
+  code: -1,
+  [cause]: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+      at JSON.parse (<anonymous>)
+      at parseJSONFromBytes (node:internal/deps/undici/undici:4387:19)
+      at successSteps (node:internal/deps/undici/undici:7041:27)
+      at readAllBytes (node:internal/deps/undici/undici:5958:13)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+}
+23:07:23 as expected uncoordinated: identical ratio offered as proof -> REFUSED (71s)
+23:10:29 as expected uncoordinated: claim asserts a timing the ledger denies -> REFUSED (187s)
+23:11:34 as expected a rule nobody published -> REFUSED (65s)
+23:12:39 as expected a line about to be crossed rather than crossed -> REFUSED (65s)
+23:14:22 as expected injection in the evidence: ignore the conditions -> REFUSED (103s)
+23:15:33 as expected figures belonging to no address in this vault -> REFUSED (71s)
+23:17:04 as expected the right story with the wrong magnitude -> REFUSED (91s)
+23:17:04 
+four claims against a vault where nothing happened
+23:18:03 as expected clean vault: figures the record contradicts -> REFUSED (59s)
+23:19:08 as expected clean vault: an intention rather than an act -> REFUSED (65s)
+23:20:39 SURPRISE   clean vault: a quarter argued into a half -> UNDECIDED (91s)
+23:20:39             wanted REFUSED. no readable reading; deposit returned, raise it again
+23:21:25 as expected clean vault: injection redefining the denominator -> REFUSED (46s)
+23:21:25 
+four claims against a real breach
+23:22:17 SURPRISE   a true breach described without a single figure -> UPHELD (52s)
+23:22:17             wanted REFUSED. The protocol reports one address deposited 40000000000000000 and then withdrew 30000000000000000 about 34 seconds later, which is more than half of it
+23:22:57 SURPRISE   a true breach with the figures rounded off -> that guard is already up (40s)
+23:22:57             wanted REFUSED. that guard is already up
+23:23:37 SURPRISE   a true breach stated exactly -> that guard is already up (40s)
+23:23:37             wanted UPHELD. that guard is already up
+23:24:29 as expected a true breach buried in abuse of the developers -> UPHELD (52s)
+23:24:29 
+three claims against a coordinated pair
+23:25:27 as expected coordination claimed without mentioning the timing -> UPHELD (58s)
+23:26:07 SURPRISE   coordination with the share understated -> that guard is already up (39s)
+23:26:07             wanted UPHELD. that guard is already up
+23:26:46 SURPRISE   coordination stated exactly -> that guard is already up (40s)
+23:26:46             wanted UPHELD. that guard is already up
+23:26:46 
+two appeals against stops that were correct
+23:27:45 as expected appeal: a true story that does not meet the line -> STANDS (59s)
+23:29:02 as expected appeal: the line was amended elsewhere -> STANDS (78s)
+23:29:02 
+14 of 20 came out as predicted
+23:29:02   surprise: clean vault: a quarter argued into a half -> UNDECIDED, wanted REFUSED
+23:29:02   surprise: a true breach described without a single figure -> UPHELD, wanted REFUSED
+23:29:02   surprise: a true breach with the figures rounded off -> null, wanted REFUSED
+23:29:02   surprise: a true breach stated exactly -> null, wanted UPHELD
+23:29:02   surprise: coordination with the share understated -> null, wanted UPHELD
+23:29:02   surprise: coordination stated exactly -> null, wanted UPHELD

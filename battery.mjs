@@ -19,18 +19,18 @@ import { Wallet } from '../courtscan/node_modules/ethers/lib.esm/index.js';
 import { createClient, createAccount } from '../placard-app/node_modules/genlayer-js/dist/index.js';
 import { studionet } from '../placard-app/node_modules/genlayer-js/dist/chains/index.js';
 import fs from 'fs';
+import { KS, PASS } from './keys.mjs';
 
 const HALT = process.argv[2];
 const VAULT = process.argv[3];
 const TIMING_RUNS = Number(process.argv[4] || 4);
-const KS = String.raw`C:\Users\ysfym\.genlayer\keystores`;
 const load = async (n, p) => {
   const w = await Wallet.fromEncryptedJson(fs.readFileSync(`${KS}/${n}.json`, 'utf8'), p);
   return createClient({ chain: studionet, account: createAccount(w.privateKey) });
 };
 
-const owner = await load('padv', 'placard-test-adv-2026');
-const watcher = await load('ppub', 'placard-test-pub-2026');
+const owner = await load('padv', PASS.padv);
+const watcher = await load('ppub', PASS.ppub);
 
 const GEN = 10n ** 18n;
 const DEPOSIT = GEN / 500n;   // 0.002 GEN behind each alarm

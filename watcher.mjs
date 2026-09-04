@@ -36,7 +36,7 @@ const KS = String.raw`C:\Users\ysfym\.genlayer\keystores`;
 // was the protocol's own operator, which the contract does not require and the
 // write up says plainly.
 const WHO = process.env.WATCHER || 'ppub';
-const KEYS = { ppub: 'placard-test-pub-2026', padv: 'placard-test-adv-2026' };
+const KEYS = PASS;
 const w = await Wallet.fromEncryptedJson(
   fs.readFileSync(`${KS}/${WHO}.json`, 'utf8'), KEYS[WHO]);
 const me = createClient({ chain: studionet, account: createAccount(w.privateKey) });

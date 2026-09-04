@@ -4,8 +4,8 @@ import { Wallet } from '../courtscan/node_modules/ethers/lib.esm/index.js';
 import { createClient, createAccount } from '../placard-app/node_modules/genlayer-js/dist/index.js';
 import { studionet } from '../placard-app/node_modules/genlayer-js/dist/chains/index.js';
 import fs from 'fs';
-const KS = String.raw`C:\Users\ysfym\.genlayer\keystores`;
-const w = await Wallet.fromEncryptedJson(fs.readFileSync(`${KS}/padv.json`, 'utf8'), 'placard-test-adv-2026');
+import { KS, PASS } from './keys.mjs';
+const w = await Wallet.fromEncryptedJson(fs.readFileSync(`${KS}/padv.json`, 'utf8'), PASS.padv);
 const c = createClient({ chain: studionet, account: createAccount(w.privateKey) });
 const hash = await c.deployContract({
   code: fs.readFileSync(process.argv[2]),

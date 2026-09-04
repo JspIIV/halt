@@ -178,6 +178,13 @@ results/                  every run, every log, and the write ups
 docs/                     the page, and the export it reads
 ```
 
+The scripts open two throwaway Studionet keystores. Point them at yours:
+
+```bash
+export HALT_KEYSTORES=~/.genlayer/keystores
+export HALT_KS_PADV=... HALT_KS_PPUB=...
+```
+
 Reproducing a single run:
 
 ```bash

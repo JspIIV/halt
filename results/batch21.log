@@ -1,0 +1,52 @@
+23:29:04 building the ground for the second batch
+23:31:43 stability vault 1: 0xBe4729f291e78F6F63bBD053892b0d61C1099D2e
+23:34:21 stability vault 2: 0x6f481ED975f24e46195eCd48b561208EeA9c504C
+23:36:40 stability vault 3: 0xc6F1Bd01305E4C63779b646C7303e563840E8817
+GenLayer RPC error (eth_getTransactionByHash): Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+23:37:31 protect hit the network, retry 1
+23:39:49 stability vault 4: 0xCd8b5bf3c882E39dA32B964387aC8386AF29Cf3C
+23:42:26 stability vault 5: 0x7B14678F368D5019E33f48C2e62382D428cAD3B1
+23:50:21 exactly half 0x14c5721284317d6A47bE5F8eC5434e80D7c3a7c3 | hair over 0x3BaFE489f34Ea07088EB6CbEf35736413Ec11dd7 | turkish 0xE0252ecC19eA5a47Da1E2bbA5c395322FF0aA77C
+GenLayer RPC error (eth_sendRawTransaction): Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+23:53:39 withdraw hit the network, retry 1
+23:54:39 cumulative vault 0x9d05F4EB00E3CF67c56704917DE962d39b849940
+23:58:36 under the third 0x998c04E570c982F7370cC0f51119687dDb9e361e
+00:01:53 ground ready
+00:01:53 
+the same true claim, five times, on five identical vaults
+00:02:46 as expected stability, true claim, run 1 of 5 -> UPHELD (53s)
+00:03:38 as expected stability, true claim, run 2 of 5 -> UPHELD (52s)
+00:04:31 as expected stability, true claim, run 3 of 5 -> UPHELD (52s)
+00:05:35 as expected stability, true claim, run 4 of 5 -> UPHELD (65s)
+00:06:28 as expected stability, true claim, run 5 of 5 -> UPHELD (52s)
+00:06:28 
+the same false claim, five more times, on the pair that is not coordinated
+00:07:52 as expected stability, false claim, run 1 of 5 -> REFUSED (84s)
+00:09:29 as expected stability, false claim, run 2 of 5 -> REFUSED (97s)
+00:10:27 SURPRISE   stability, false claim, run 3 of 5 -> UPHELD (58s)
+00:10:27             wanted REFUSED. The protocol's report shows two addresses funded and withdrawn in lockstep within ten minutes, exceeding the one-third limit of the vault's holdings.
+00:11:06 SURPRISE   stability, false claim, run 4 of 5 -> ERROR (39s)
+00:11:06             wanted REFUSED. that guard is already up
+00:11:46 SURPRISE   stability, false claim, run 5 of 5 -> ERROR (40s)
+00:11:46             wanted REFUSED. that guard is already up
+00:11:46 
+the edges of the arithmetic
+00:12:45 as expected exactly half, and the line forbids more than half -> REFUSED (59s)
+00:13:43 as expected a hair over half -> UPHELD (58s)
+00:14:49 as expected every condition met, the share a whisker short -> REFUSED (65s)
+00:14:49 
+three lawful withdrawals that add up to one unlawful one
+00:15:47 as expected a breach spread over three transactions -> UPHELD (59s)
+00:16:40 as expected appeal: the line speaks of a withdrawal, not a total -> STANDS
+00:16:40 
+and the things that should never reach a round at all
+00:17:38 as expected the same true claim, written in Turkish -> UPHELD (58s)
+00:18:18 as expected evidence too short for the contract to accept -> ERROR (40s)
+00:18:58 as expected a true claim against a guard that was retired -> ERROR (40s)
+00:19:37 as expected a claim against an address nobody protected -> ERROR (40s)
+00:20:17 as expected the owner raising an alarm on its own protocol -> ERROR (40s)
+00:20:17 
+17 of 20 came out as predicted
+00:20:17   surprise: stability, false claim, run 3 of 5 -> UPHELD, wanted REFUSED
+00:20:17   surprise: stability, false claim, run 4 of 5 -> null, wanted REFUSED
+00:20:17   surprise: stability, false claim, run 5 of 5 -> null, wanted REFUSED

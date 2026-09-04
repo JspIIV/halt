@@ -1,0 +1,9 @@
+00:20:18 four vaults, one question each
+00:24:03 SURPRISE   a true breach with the figures rounded off -> UPHELD (65s)
+00:24:03             wanted REFUSED. Address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c withdrew 30000000000000000 units within one minute of depositing 40000000000000000 units, which is 75% of its
+00:27:47 as expected a true breach stated exactly -> UPHELD (65s)
+00:34:01 as expected coordination with the share understated -> UPHELD (142s)
+00:41:24 SURPRISE   coordination stated exactly -> REFUSED (212s)
+00:41:24             wanted UPHELD. The protocol report shows two separate positions with deposits and withdrawals, but it does not support that they acted together as one actor within the ten-min
+00:41:24 
+first batch now complete: 16 of 24 as predicted

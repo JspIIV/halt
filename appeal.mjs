@@ -10,9 +10,9 @@ import { Wallet } from '../courtscan/node_modules/ethers/lib.esm/index.js';
 import { createClient, createAccount } from '../placard-app/node_modules/genlayer-js/dist/index.js';
 import { studionet } from '../placard-app/node_modules/genlayer-js/dist/chains/index.js';
 import fs from 'fs';
+import { KS, PASS } from './keys.mjs';
 const [HALT, VAULT, FILE, LABEL] = process.argv.slice(2);
-const KS = String.raw`C:\Users\ysfym\.genlayer\keystores`;
-const w = await Wallet.fromEncryptedJson(fs.readFileSync(`${KS}/padv.json`,'utf8'), 'placard-test-adv-2026');
+const w = await Wallet.fromEncryptedJson(fs.readFileSync(`${KS}/padv.json`,'utf8'), PASS.padv);
 const owner = createClient({ chain: studionet, account: createAccount(w.privateKey) });
 
 const answer = fs.readFileSync(FILE, 'utf8').trim();

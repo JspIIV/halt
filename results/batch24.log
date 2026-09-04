@@ -1,0 +1,22 @@
+02:24:35 ten runs of the claim that lies about its timing
+02:34:11 ok       with the moments reported plainly, false claim 1 of 10 -> REFUSED
+02:42:30 SURPRISE with the moments reported plainly, false claim 2 of 10 -> UPHELD
+02:42:30          The protocol's report shows two addresses funded within seconds of each other, withdrawing in lockstep within ten minutes, totaling 40% of the vault's holdings, exceeding
+02:50:06 ok       with the moments reported plainly, false claim 3 of 10 -> REFUSED
+02:57:15 ok       with the moments reported plainly, false claim 4 of 10 -> REFUSED
+03:04:04 ok       with the moments reported plainly, false claim 5 of 10 -> REFUSED
+03:10:55 ok       with the moments reported plainly, false claim 6 of 10 -> REFUSED
+03:18:17 ok       with the moments reported plainly, false claim 7 of 10 -> REFUSED
+03:25:20 ok       with the moments reported plainly, false claim 8 of 10 -> REFUSED
+03:32:29 ok       with the moments reported plainly, false claim 9 of 10 -> REFUSED
+03:40:10 ok       with the moments reported plainly, false claim 10 of 10 -> REFUSED
+03:40:10 
+five runs of the claim that does not, to see the fix cost nothing
+03:45:12 ok       with the moments reported plainly, true claim 1 of 5 -> UPHELD
+03:50:01 ok       with the moments reported plainly, true claim 2 of 5 -> UPHELD
+03:56:20 ok       with the moments reported plainly, true claim 3 of 5 -> UPHELD
+04:02:13 ok       with the moments reported plainly, true claim 4 of 5 -> UPHELD
+04:07:49 ok       with the moments reported plainly, true claim 5 of 5 -> UPHELD
+04:07:49 
+14 of 15 as predicted
+04:07:49   with the moments reported plainly, false claim 2 of 10 -> UPHELD

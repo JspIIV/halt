@@ -13,7 +13,7 @@ import { studionet } from '../placard-app/node_modules/genlayer-js/dist/chains/i
 import fs from 'fs';
 const [HALT, VAULT, FILE, LABEL, WHO = 'ppub'] = process.argv.slice(2);
 const KS = String.raw`C:\Users\ysfym\.genlayer\keystores`;
-const KEYS = { ppub: 'placard-test-pub-2026', padv: 'placard-test-adv-2026' };
+const KEYS = PASS;
 const w = await Wallet.fromEncryptedJson(fs.readFileSync(`${KS}/${WHO}.json`, 'utf8'), KEYS[WHO]);
 const me = createClient({ chain: studionet, account: createAccount(w.privateKey) });
 const GEN = 10n ** 18n;
