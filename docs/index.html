@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Halt · GenLayer Guardian</title>
+<link rel="icon" href="./favicon.svg" type="image/svg+xml" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -20,6 +21,7 @@
     --mono: "DM Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body { margin: 0; background: var(--bg); color: var(--text);
          font: 400 16px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
   .wrap { max-width: 1240px; margin: 0 auto; padding: 0 40px; }
@@ -214,6 +216,32 @@
                     font: 400 12px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; }
   details summary:hover { color: var(--text); }
 
+  /* Every run, with the prediction beside the verdict. A project that grades its
+     own homework has to show the marking. */
+  .ledger { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+            overflow: hidden; }
+  .ledger .scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 720px; }
+  thead th { text-align: left; font: 400 11px/1 var(--mono); letter-spacing: 0.14em;
+             text-transform: uppercase; color: var(--faint); font-weight: 400;
+             padding: 18px 20px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  tbody td { padding: 15px 20px; border-bottom: 1px solid var(--line); color: var(--dim);
+             vertical-align: top; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr.off { display: none; }
+  tbody tr.miss td:first-child { box-shadow: inset 3px 0 0 var(--hold); }
+  td.what { color: var(--text); max-width: 44ch; }
+  td.mono { font: 400 12.5px/1.5 var(--mono); white-space: nowrap; }
+  td.agreed { font: 500 12px/1 var(--mono); letter-spacing: 0.06em; white-space: nowrap; }
+  .agreed.yes { color: var(--go); } .agreed.no { color: var(--hold); }
+  .ledger footer { display: flex; justify-content: space-between; align-items: center;
+                   gap: 20px; padding: 18px 20px; font: 400 12px/1.6 var(--mono);
+                   letter-spacing: 0.06em; color: var(--faint); flex-wrap: wrap; }
+  .more { background: none; border: 1px solid var(--line); border-radius: 999px;
+          color: var(--dim); padding: 10px 18px; font: 500 11.5px/1 var(--mono);
+          letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; }
+  .more:hover { color: var(--text); border-color: var(--red); }
+
   .limits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .limit { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
            padding: 30px 32px; }
@@ -350,6 +378,29 @@
       approve. One break we found ourselves. The other we did not.</p>
     </div>
     <div class="broke" id="findings"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="middle">
+      <p class="eyebrow">The trials</p>
+      <h2>Every run, beside what we <em>predicted</em>.</h2>
+      <p id="trialnote"></p>
+    </div>
+    <div class="ledger">
+      <div class="scroll">
+        <table>
+          <thead><tr>
+            <th>What was tested</th><th>Predicted</th><th>Came back</th>
+            <th>Agreed</th><th>Time</th><th>Transaction</th>
+          </tr></thead>
+          <tbody id="trialrows"></tbody>
+        </table>
+      </div>
+      <footer><span id="trialfoot"></span>
+        <button class="more" id="showall" type="button">Show every run</button></footer>
+    </div>
   </div>
 </section>
 
@@ -598,6 +649,47 @@ fetch("./data.json").then(r => r.json()).then(d => {
         + '</q><span class="out good">' + esc(f.after.outcome) + " · " + f.after.seconds
         + "s</span></div>" : "")
     + "</div></div>").join(""));
+
+  /* The prediction was written into the run before it was sent, so a surprise
+     cannot be reread afterwards as something we meant all along. */
+  const tr = d.trials;
+  if (tr) {
+    const never = tr.rows.filter(r => !r.matched && r.outcome === null).length;
+    const surprises = tr.predicted - tr.matched - never;
+    document.getElementById("trialnote").textContent =
+      tr.predicted + " runs carried a prediction written down before they were sent, and "
+      + tr.matched + " came out as predicted. " + surprises + " were genuine surprises and are "
+      + "why this page has a section about what broke. " + never + " never reached a verdict at "
+      + "all: they met a guard an earlier run had already put up, which is a mistake in how we "
+      + "ordered them rather than an answer from the network.";
+
+    const cut = 12;
+    document.getElementById("trialrows").innerHTML = tr.rows.slice().reverse().map((r, i) => {
+      const agreed = r.matched;
+      const got = r.outcome || "no verdict";
+      return '<tr class="' + (agreed ? "" : "miss ") + (i < cut ? "" : "off") + '">'
+        + '<td class="what">' + esc(r.label) + "</td>"
+        + '<td class="mono">' + esc(r.expect) + "</td>"
+        + '<td class="mono">' + esc(got) + "</td>"
+        + '<td class="agreed ' + (agreed ? "yes" : "no") + '">'
+        + (agreed ? "yes" : "no") + "</td>"
+        + '<td class="mono">' + (r.seconds !== null ? r.seconds + "s" : "") + "</td>"
+        + '<td class="mono">' + (r.tx
+            ? '<a href="https://explorer-studio.genlayer.com/tx/' + r.tx + '">'
+              + r.tx.slice(0, 10) + "…</a>" : "") + "</td></tr>";
+    }).join("");
+
+    document.getElementById("trialfoot").textContent =
+      "Showing the last " + Math.min(cut, tr.rows.length) + " of " + tr.rows.length
+      + ". The ones that did not agree are marked down the left.";
+    document.getElementById("showall").addEventListener("click", event => {
+      const rows = document.querySelectorAll("#trialrows tr.off");
+      rows.forEach(row => row.classList.remove("off"));
+      document.getElementById("trialfoot").textContent =
+        "All " + tr.rows.length + " runs. The ones that did not agree are marked down the left.";
+      event.target.remove();
+    });
+  }
 
   const guard = d.guard || {};
   const up = guard.state === "HALTED";

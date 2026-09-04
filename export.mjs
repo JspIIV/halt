@@ -108,6 +108,29 @@ try {
   ];
 } catch {}
 
+/**
+ * The trial record, trimmed to what a reader needs to check us.
+ *
+ * The evidence texts are long and already in the repository, so the page carries
+ * the verdicts only: what we predicted before sending, what came back, and
+ * whether those agreed. That last column is the point. A project that grades its
+ * own homework should show the marking, including the runs it got wrong.
+ */
+let trials = null;
+try {
+  const all = JSON.parse(fs.readFileSync('results/trials.json', 'utf8'));
+  const decided = all.filter(t => t.expect);
+  trials = {
+    total: all.length,
+    predicted: decided.length,
+    matched: decided.filter(t => t.matched).length,
+    rows: decided.map(t => ({
+      label: t.label, expect: t.expect, outcome: t.outcome, matched: !!t.matched,
+      seconds: t.seconds ?? null, tx: t.tx ?? null, kind: t.kind,
+    })),
+  };
+} catch {}
+
 let battery = null;
 try { battery = JSON.parse(fs.readFileSync('results/battery.json', 'utf8')); } catch {}
 
@@ -117,7 +140,7 @@ fs.writeFileSync('docs/data.json', JSON.stringify({
   exported_at: new Date().toISOString(),
   size, guard: guard.guard ?? null, alarms: history.alarms ?? [],
   vault_status: vault, ledger: ledger?.entries ?? [],
-  coordination, findings,
+  coordination, findings, trials,
   battery: battery ? { halt: battery.halt, summary: battery.summary, refusals: battery.refusals, timings: battery.timings } : null,
 }, null, 2));
 console.log('coordination', coordination ? coordination.guard.state : 'not exported');
