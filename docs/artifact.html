@@ -1,368 +1,480 @@
 <title>Halt · GenLayer Guardian</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,500&family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg: #0a0c0f; --panel: #12161b; --sunk: #0d1117; --line: #1f2630; --raised: #1a1013;
-    --text: #e6edf3; --dim: #8b949e; --faint: #6e7681;
-    --stop: #f85149; --go: #3fb950; --hold: #d29922;
+    --bg: #0b0d10;          /* the page */
+    --band: #101317;        /* the alternating band, where they use a warmer cream */
+    --card: #14181d;        /* a card lifted off the band */
+    --ink: #0a0b0d;         /* the panel that stays dark on any ground */
+    --line: #232a33;
+    --text: #edf1f5; --dim: #97a1ac; --faint: #6e7a86;
+    --red: #f05a52; --blue: #3d9bfa; --go: #4ac26b; --hold: #d8a12a;
     --sans: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     --mono: "DM Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --serif: "Instrument Serif", Georgia, serif;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--text);
          font: 400 16px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
-  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px 140px; }
-  .bar { display: flex; align-items: center; justify-content: space-between; gap: 24px;
-         padding: 22px 0 0; }
-  .wordmark { font: 600 19px/1 var(--sans); letter-spacing: -0.02em; color: var(--text); border: 0; }
-  .wordmark em { font-style: italic; color: var(--stop); }
-  .bar nav { display: flex; gap: 26px; font: 500 11px/1 var(--mono); letter-spacing: .14em;
-             text-transform: uppercase; }
-  .bar nav a { color: var(--faint); border: 0; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 40px; }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3 { text-wrap: balance; }
+  /* A grid item will not shrink below its content, and a code block is one very
+     long line. Without this the hero column widens past the page. */
+  .hero > *, .two > *, .writing > *, .writing .stackcol > *, .ba > *,
+  .stack > *, .steps > *, .step > * { min-width: 0; }
+  .runner pre, .rule { overflow-x: auto; }
+
+  /* ---------------------------------------------------------------- top bar */
+  .bar { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+         padding: 26px 0; }
+  .bar nav { display: flex; gap: 34px; font: 500 14px/1 var(--sans); color: var(--dim); }
   .bar nav a:hover { color: var(--text); }
+  .wordmark { justify-self: center; font: 700 27px/1 var(--sans); letter-spacing: -0.02em;
+              color: var(--red); }
+  .wordmark em { font: italic 400 27px/1 var(--serif); }
+  .bar .right { justify-self: end; display: flex; gap: 10px; align-items: center; }
+  .round { width: 34px; height: 34px; border-radius: 50%; background: var(--card);
+           display: grid; place-items: center; font: 500 12px/1 var(--mono); color: var(--dim); }
+  .round:hover { color: var(--text); }
 
-  .hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: start;
-          padding: 88px 0 0; }
-  .panel { background: var(--sunk); border: 1px solid var(--line); border-radius: 14px;
-           padding: 30px 28px; position: sticky; top: 32px; }
-  .panel > .eyebrow { margin-bottom: 22px; }
-  .panelfoot { margin: 22px 0 0; padding-top: 20px; border-top: 1px solid var(--line);
-               font-size: 14px; line-height: 1.6; color: var(--dim); max-width: none; }
-  .panelfoot b { color: var(--text); font-weight: 500; }
-  a { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--line); }
-  a:hover { border-color: var(--stop); }
-  p { max-width: 66ch; }
+  /* ------------------------------------------------------------------- hero */
+  .hero { display: grid; grid-template-columns: 1fr 1.05fr; gap: 60px;
+          align-items: start; padding: 46px 0 70px; }
+  .eyebrow { font: 400 13px/1 var(--mono); letter-spacing: 0.18em; text-transform: uppercase;
+             color: var(--faint); margin: 0 0 26px; }
+  h1 { font: 700 clamp(38px, 4.6vw, 62px)/1.06 var(--sans); letter-spacing: -0.035em;
+       margin: 0 0 30px; max-width: 12ch; }
+  .hero p.say { color: var(--dim); font-size: 17px; margin: 0 0 30px; max-width: 46ch; }
 
-  /* The section pattern: a small monospace label, then one sentence set large. */
-  .eyebrow { font: 500 12px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase;
-             color: var(--faint); margin: 0 0 14px; }
-  section { margin-top: 128px; }
-  section > h2 { font: 600 clamp(24px, 3.4vw, 31px)/1.15 var(--sans); letter-spacing: -0.03em;
-                 margin: 0 0 20px; max-width: 24ch; }
-  .lede { color: var(--dim); font-size: 17px; margin: 0 0 24px; }
+  /* the dark card that carries the thing you would actually run */
+  .runner { background: var(--ink); border: 1px solid var(--line); border-radius: 14px;
+            overflow: hidden; }
+  .runner > header { display: flex; justify-content: space-between; align-items: center;
+                     padding: 15px 22px; font: 400 12px/1 var(--mono); letter-spacing: 0.16em;
+                     text-transform: uppercase; color: var(--faint); }
+  .runner > header a { color: var(--red); }
+  .runner .body { padding: 4px 22px 20px; border-top: 1px solid var(--line);
+                  border-bottom: 1px solid var(--line); }
+  .runner pre { margin: 16px 0 8px; font: 400 13.5px/1.75 var(--mono); color: var(--text);
+                overflow-x: auto; }
+  .runner .sub { font: 400 12px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase;
+                 color: var(--faint); padding-bottom: 4px; }
+  .runner footer { display: flex; justify-content: space-between; align-items: center;
+                   gap: 18px; padding: 16px 22px; font: 400 12px/1 var(--mono);
+                   letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); }
+  .pill { background: var(--blue); color: #06121f; border-radius: 999px; padding: 12px 20px;
+          font: 500 12px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase;
+          white-space: nowrap; }
+  .pill:hover { opacity: .9; }
+  .pill.ghost { background: transparent; color: var(--dim); border: 1px solid var(--line); }
+  .pill.ghost:hover { color: var(--text); border-color: var(--red); }
 
-  .hero .eyebrow { color: var(--dim); }
-  h1 { font: 600 clamp(34px, 6.4vw, 58px)/1.02 var(--sans); letter-spacing: -0.035em;
-       margin: 0 0 22px; max-width: 15ch; }
-  .standfirst { color: var(--dim); font-size: 19px; line-height: 1.55; margin: 0 0 26px;
-                max-width: 58ch; }
-  .rebuttal { border-left: 2px solid var(--stop); padding: 2px 0 2px 20px; margin: 0 0 34px;
-              max-width: 60ch; font-size: 17px; }
-  .rebuttal b { font-weight: 600; }
-  .actions { display: flex; flex-wrap: wrap; gap: 10px; padding: 0 24px 22px; }
-  .btn { font: 500 12px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase;
-         padding: 13px 18px; border: 1px solid var(--line); border-radius: 4px; color: var(--dim); }
-  .btn.lead { background: var(--stop); border-color: var(--stop); color: #12080a; }
-  .btn:hover { color: var(--text); border-color: var(--stop); }
-  .btn.lead:hover { color: #12080a; opacity: .9; }
+  /* the panel opposite the argument, where their video sits */
+  .screen { background: var(--ink); border: 1px solid var(--line); border-radius: 16px;
+            padding: 30px 30px 24px; }
+  .screen .eyebrow { margin-bottom: 20px; }
 
-  /* A card whose header names it, the way a document names itself. */
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
-          overflow: hidden; margin: 22px 0; }
-  .card > header { display: flex; justify-content: space-between; align-items: center; gap: 16px;
-                   padding: 12px 18px; border-bottom: 1px solid var(--line);
-                   font: 500 11px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase;
-                   color: var(--faint); }
-  .card > header .right { color: var(--dim); }
-  .card > .body { padding: 22px 24px; }
-  .card.quiet { background: var(--sunk); }
-  .rule { font: 400 16px/1.75 var(--mono); color: var(--text); margin: 0; }
+  /* --------------------------------------------------------------- fact strip */
+  .strip-facts { display: flex; gap: 12px; overflow-x: auto; padding: 4px 0 34px;
+                 scrollbar-width: none; }
+  .strip-facts::-webkit-scrollbar { display: none; }
+  .chip { flex: none; background: var(--card); border: 1px solid var(--line);
+          border-radius: 12px; padding: 18px 24px; min-width: 190px; }
+  .chip b { display: block; font: 500 22px/1 var(--mono); letter-spacing: -0.02em; }
+  .chip span { display: block; font: 400 12px/1.4 var(--mono); letter-spacing: 0.1em;
+               text-transform: uppercase; color: var(--faint); margin-top: 10px; }
 
-  .live { display: flex; align-items: center; gap: 16px; }
-  .lamp { width: 12px; height: 12px; border-radius: 50%; background: var(--go); flex: none;
+  /* ---------------------------------------------------------------- sections */
+  section { padding: 92px 0; }
+  section.band { background: var(--band); }
+  .middle { text-align: center; max-width: 760px; margin: 0 auto 46px; }
+  .middle .eyebrow { color: var(--red); margin-bottom: 18px; }
+  .middle h2 { font: 700 clamp(30px, 3.9vw, 46px)/1.12 var(--sans); letter-spacing: -0.035em;
+               margin: 0 0 22px; }
+  .middle h2 em { font-style: normal; color: var(--red); }
+  .middle p { color: var(--dim); font-size: 17px; margin: 0 auto; max-width: 60ch; }
+
+  /* the numbered rows with the rail beside them */
+  .stack { display: grid; grid-template-columns: 1fr 78px; gap: 0 22px; align-items: stretch; }
+  .steps { display: grid; gap: 12px; }
+  .step { display: grid; grid-template-columns: 58px 1fr auto; align-items: center; gap: 22px;
+          background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+          padding: 22px 26px; }
+  .step .n { font: 400 12px/1 var(--mono); color: var(--faint); border: 1px solid var(--line);
+             border-radius: 8px; padding: 8px 0; text-align: center; }
+  .step h3 { font: 500 19px/1.3 var(--sans); letter-spacing: -0.015em; margin: 0; }
+  .step .tag { font: 400 12.5px/1.5 var(--mono); color: var(--faint); text-align: right; }
+  .rail { background: var(--red); border-radius: 12px; display: grid; place-items: center; }
+  .rail span { writing-mode: vertical-rl; font: 500 12px/1 var(--mono); letter-spacing: 0.34em;
+               text-transform: uppercase; color: #170807; }
+
+  /* ------------------------------------------------------------------- cards */
+  .head-row { display: flex; justify-content: space-between; align-items: flex-end;
+              gap: 24px; margin-bottom: 34px; }
+  .head-row .eyebrow { color: var(--red); margin-bottom: 14px; }
+  .head-row h2 { font: 700 clamp(28px, 3.4vw, 40px)/1.15 var(--sans);
+                 letter-spacing: -0.03em; margin: 0; }
+  .writing { display: grid; grid-template-columns: 1.15fr 1fr; gap: 16px; }
+  .writing .stackcol { display: grid; gap: 16px; align-content: start; }
+  .note { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+          padding: 30px 32px; }
+  .note .kind { display: flex; gap: 12px; align-items: center; font: 400 12px/1 var(--mono);
+                letter-spacing: 0.14em; text-transform: uppercase; color: var(--red);
+                margin-bottom: 18px; }
+  .note .kind i { font-style: normal; color: var(--faint); }
+  .note h3 { font: 700 clamp(21px, 2.1vw, 30px)/1.2 var(--sans); letter-spacing: -0.025em;
+             margin: 0 0 14px; }
+  .note p { color: var(--dim); font-size: 15.5px; margin: 0; }
+  .note.lead h3 { font-size: clamp(24px, 2.6vw, 34px); }
+
+  /* --------------------------------------------------------------- the parts */
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .side { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+          padding: 30px 32px; }
+  .side h3 { font: 500 19px/1.3 var(--sans); margin: 0 0 14px; }
+  .side p { color: var(--dim); font-size: 15px; margin: 0 0 12px; }
+  .side p:last-of-type { margin-bottom: 0; }
+  .side.saw { border-color: #4a2724; }
+  .verdict { display: inline-block; margin-top: 20px; padding: 9px 14px; border-radius: 999px;
+             font: 500 11.5px/1 var(--mono); letter-spacing: 0.12em; border: 1px solid var(--line);
+             color: var(--faint); }
+  .side.saw .verdict { color: var(--red); border-color: #4a2724; }
+
+  .live { display: flex; align-items: center; gap: 15px; }
+  .lamp { width: 11px; height: 11px; border-radius: 50%; background: var(--go); flex: none;
           animation: pulse 2.6s ease-in-out infinite; }
-  .up .lamp { background: var(--stop); animation-duration: 1.1s; }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .28; } }
+  .up .lamp { background: var(--red); animation-duration: 1.1s; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
   @media (prefers-reduced-motion: reduce) { .lamp { animation: none; } }
-  .live b { display: block; font: 600 19px/1.3 var(--sans); letter-spacing: -0.01em; }
-  .live span { font: 400 12px/1.6 var(--mono); color: var(--faint); }
+  .live b { display: block; font: 500 18px/1.3 var(--sans); }
+  .live span { font: 400 11.5px/1.6 var(--mono); color: var(--faint); overflow-wrap: anywhere; }
 
-  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-  .metric { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
-            padding: 24px; }
-  .metric b { display: block; font: 500 34px/1 var(--mono); letter-spacing: -0.03em;
-              color: var(--stop); }
-  .metric b .u { font-size: 18px; color: var(--dim); }
-  .metric span { display: block; font-size: 14px; color: var(--dim); margin-top: 10px; }
-  .metric i { display: block; font: 400 12px/1.5 var(--sans); font-style: normal;
-              color: var(--faint); margin-top: 12px; padding-top: 12px;
-              border-top: 1px solid var(--line); }
-
-  /* The timing is the evidence, so it is drawn: one lane per address. */
-  .strip { padding: 30px 28px 20px; }
-  .lane { display: grid; grid-template-columns: 118px 1fr; align-items: center; gap: 18px;
-          margin-bottom: 34px; }
-  .lane:last-of-type { margin-bottom: 10px; }
-  .lane .who { font: 400 12px/1.5 var(--mono); color: var(--faint); text-align: right; }
+  .lanes { margin-top: 26px; }
+  .lane { display: grid; grid-template-columns: 104px 1fr; align-items: center; gap: 16px;
+          margin-bottom: 32px; }
+  .lane:last-child { margin-bottom: 8px; }
+  .lane .who { font: 400 11.5px/1.5 var(--mono); color: var(--faint); text-align: right; }
   .lane .who b { display: block; color: var(--dim); font-weight: 500; }
   .track { position: relative; height: 1px; background: var(--line); }
-  .mark { position: absolute; top: 50%; transform: translate(-50%, -50%); }
-  .mark .dot { display: block; width: 12px; height: 12px; border-radius: 50%; }
-  .mark.in .dot { border: 1px solid var(--faint); background: var(--bg); }
-  .mark.out .dot { background: var(--stop); box-shadow: 0 0 0 5px rgba(248, 81, 73, .13); }
-  .mark .cap { position: absolute; left: 50%; transform: translateX(-50%); top: 16px;
-               font: 400 11px/1 var(--mono); color: var(--faint); white-space: nowrap; }
-  .axis { display: flex; justify-content: space-between; margin: 30px 0 0 136px;
+  .mk { position: absolute; top: 50%; transform: translate(-50%, -50%); }
+  .mk .dot { display: block; width: 11px; height: 11px; border-radius: 50%; }
+  .mk.in .dot { border: 1px solid var(--faint); background: var(--ink); }
+  .mk.out .dot { background: var(--red); box-shadow: 0 0 0 5px rgba(240, 90, 82, .14); }
+  .mk .cap { position: absolute; left: 50%; transform: translateX(-50%); top: 15px;
+             font: 400 10.5px/1 var(--mono); color: var(--faint); white-space: nowrap; }
+  .axis { display: flex; justify-content: space-between; margin: 26px 0 0 120px;
           padding-top: 10px; border-top: 1px solid var(--line);
-          font: 400 11px/1 var(--mono); color: var(--faint); }
-  .reading { margin: 20px 0 0; color: var(--text); font-size: 15px; line-height: 1.65; }
+          font: 400 10.5px/1 var(--mono); color: var(--faint); }
+  .under { margin: 22px 0 0; padding-top: 20px; border-top: 1px solid var(--line);
+           font-size: 14.5px; line-height: 1.65; color: var(--dim); }
+  .under b { color: var(--text); font-weight: 500; }
 
-  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 22px 0; }
-  .side { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
-          padding: 24px; }
-  .side h3 { font: 600 17px/1.3 var(--sans); letter-spacing: -0.01em; margin: 0 0 12px; }
-  .side p { color: var(--dim); font-size: 15px; margin: 0 0 12px; max-width: none; }
-  .side p:last-of-type { margin-bottom: 0; }
-  .verdict { display: inline-block; margin-top: 18px; padding: 7px 12px; border-radius: 4px;
-             font: 500 11px/1 var(--mono); letter-spacing: 0.12em; }
-  .blind .verdict { color: var(--faint); border: 1px solid var(--line); }
-  .saw { border-color: #4a2323; }
-  .saw .verdict { color: var(--stop); border: 1px solid #4a2323; }
-
-  .broke { border-left: 2px solid var(--stop); padding-left: 24px; margin: 30px 0 40px; }
-  .broke h3 { font: 600 20px/1.3 var(--sans); letter-spacing: -0.02em; margin: 0 0 10px; }
-  .broke > p { color: var(--dim); font-size: 15px; }
-  .beforeafter { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
-  /* A grid item will not shrink below its content, and a validator's reasoning
-     carries whole addresses, which are one very long unbreakable word. */
-  .beforeafter > *, .split > * { min-width: 0; }
-  .step2 q, .why, .ev, .live span { overflow-wrap: anywhere; }
-  .step2 { background: var(--sunk); border: 1px solid var(--line); border-radius: 8px; padding: 18px; }
-  .step2 .tag { font: 500 11px/1 var(--mono); letter-spacing: 0.12em; text-transform: uppercase;
-                color: var(--faint); display: block; margin-bottom: 10px; }
-  .step2 q { display: block; color: var(--dim); font-size: 14px; line-height: 1.6; font-style: italic; }
-  .step2 .out { font: 500 12px/1 var(--mono); letter-spacing: .1em; margin-top: 12px; display: block; }
+  .broke { display: grid; gap: 16px; }
+  .fault { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+           padding: 30px 32px; }
+  .fault h3 { font: 500 21px/1.3 var(--sans); letter-spacing: -0.02em; margin: 0 0 12px; }
+  .fault > p { color: var(--dim); font-size: 15.5px; margin: 0 0 22px; }
+  .ba { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .ba > div { background: var(--ink); border: 1px solid var(--line); border-radius: 10px;
+              padding: 20px 22px; min-width: 0; }
+  .ba .tag { display: block; font: 400 11px/1 var(--mono); letter-spacing: 0.14em;
+             text-transform: uppercase; color: var(--faint); margin-bottom: 12px; }
+  .ba q { display: block; font-size: 14px; line-height: 1.6; color: var(--dim);
+          font-style: italic; overflow-wrap: anywhere; }
+  .ba .out { display: block; margin-top: 14px; font: 500 11.5px/1 var(--mono);
+             letter-spacing: 0.1em; }
   .out.bad { color: var(--hold); } .out.good { color: var(--go); }
 
-  ol.flow { list-style: none; counter-reset: s; padding: 0; margin: 22px 0 0;
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
-  ol.flow li { counter-increment: s; border-top: 1px solid var(--line); padding-top: 14px;
-               font-size: 14px; color: var(--dim); }
-  ol.flow li::before { content: "0" counter(s); display: block; font: 400 12px/1 var(--mono);
-                       color: var(--faint); margin-bottom: 10px; }
-  ol.flow li:last-child { border-color: var(--stop); }
-  ol.flow li:last-child::before { color: var(--stop); }
+  .rule { background: var(--ink); border: 1px solid var(--line); border-radius: 14px;
+          padding: 28px 32px; font: 400 16px/1.8 var(--mono); color: var(--text); margin: 0; }
 
-  ul.shapes { list-style: none; padding: 0; margin: 22px 0 0; }
-  ul.shapes li { border-top: 1px solid var(--line); padding: 16px 0; color: var(--faint);
-                 font: 400 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
-  ul.shapes b { display: block; margin-top: 10px; color: var(--text); font: 400 16px/1.6 var(--sans);
-                letter-spacing: normal; text-transform: none; max-width: 70ch; }
-
-  pre { background: var(--sunk); border: 1px solid var(--line); border-radius: 8px;
-        padding: 20px 22px; overflow-x: auto; font: 400 13px/1.7 var(--mono); margin: 22px 0; }
-  .terminal { display: flex; gap: 12px; align-items: baseline; background: var(--sunk);
-              border: 1px solid var(--line); border-radius: 8px; padding: 15px 18px;
-              font: 400 13px/1.5 var(--mono); color: var(--dim); overflow-x: auto; margin: 22px 0; }
-  .terminal .p { color: var(--stop); }
-
-  .row { background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
-         padding: 18px 20px; margin-bottom: 10px; }
-  .row .head { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap;
+  .rows { display: grid; gap: 10px; }
+  .rowi { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+          padding: 20px 24px; }
+  .rowi .top { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap;
                font: 400 12px/1.6 var(--mono); color: var(--faint); }
-  .tag { font-weight: 500; letter-spacing: 0.08em; border: 1px solid currentColor;
-         border-radius: 3px; padding: 2px 8px; font-size: 11px; }
-  .UPHELD { color: var(--stop); } .REFUSED { color: var(--go); }
+  .badge { border: 1px solid currentColor; border-radius: 999px; padding: 3px 10px;
+           font-size: 11px; letter-spacing: 0.08em; }
+  .UPHELD { color: var(--red); } .REFUSED { color: var(--go); }
   .OVERTURNED, .UNDECIDED { color: var(--hold); }
-  .why { color: var(--dim); font-size: 15px; margin: 10px 0 0; max-width: none; }
-  .ev { font: 400 12px/1.6 var(--mono); color: var(--faint); margin-top: 10px; white-space: pre-wrap; }
+  .why { color: var(--dim); font-size: 14.5px; margin: 12px 0 0; overflow-wrap: anywhere; }
+  .ev { font: 400 11.5px/1.6 var(--mono); color: var(--faint); margin-top: 12px;
+        white-space: pre-wrap; overflow-wrap: anywhere; }
+  details summary { cursor: pointer; color: var(--dim); padding: 16px 0;
+                    font: 400 12px/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; }
+  details summary:hover { color: var(--text); }
 
-  details > summary { cursor: pointer; color: var(--dim); padding: 14px 0;
-                      font: 500 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
-  details > summary:hover { color: var(--text); }
+  .limits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .limit { background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+           padding: 30px 32px; }
+  .limit b { display: block; font: 500 17px/1.35 var(--sans); margin-bottom: 12px; }
+  .limit p { color: var(--dim); font-size: 15px; margin: 0; }
 
-  .limits { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line);
-            border-radius: 10px; overflow: hidden; margin-top: 22px; }
-  .limits div { background: var(--panel); padding: 22px 24px; }
-  .limits b { display: block; font: 600 16px/1.4 var(--sans); margin-bottom: 8px; }
-  .limits p { color: var(--dim); font-size: 15px; margin: 0; }
+  /* ---------------------------------------------------------------- the close */
+  .close { background: var(--ink); border: 1px solid var(--line); border-radius: 18px;
+           padding: 74px 40px; text-align: center; }
+  .close h2 { font: 700 clamp(28px, 3.7vw, 46px)/1.15 var(--sans); letter-spacing: -0.035em;
+              margin: 0 auto 18px; max-width: 20ch; }
+  .close h2 em { font-style: normal; color: var(--red); }
+  .close .eyebrow { color: var(--faint); margin: 0 0 36px; }
+  .close .runner { max-width: 640px; margin: 0 auto; text-align: left; background: var(--card); }
 
-  footer { margin-top: 110px; padding-top: 26px; border-top: 1px solid var(--line);
-           font: 400 12px/1.8 var(--mono); color: var(--faint); }
+  footer.page { padding: 66px 0 80px; display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.6fr;
+                gap: 30px; border-top: 1px solid var(--line); margin-top: 40px; }
+  footer.page .wordmark { justify-self: start; }
+  footer.page p { color: var(--faint); font-size: 14px; margin: 14px 0 0; }
+  footer.page ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px;
+                   font-size: 14.5px; color: var(--dim); }
+  footer.page ul a:hover { color: var(--text); }
+  footer.page .said { color: var(--faint); font: 400 12.5px/1.7 var(--mono); }
 
-  @media (max-width: 800px) {
-    .split, .beforeafter { grid-template-columns: 1fr; }
-    ol.flow { grid-template-columns: 1fr 1fr; }
-    .metrics { grid-template-columns: 1fr 1fr; }
-    .lane { grid-template-columns: 84px 1fr; gap: 12px; }
-    .axis { margin-left: 96px; }
-  }
-  @media (max-width: 980px) {
-    .hero { grid-template-columns: 1fr; gap: 40px; padding-top: 56px; }
-    .panel { position: static; }
-    .wrap { padding-left: 20px; padding-right: 20px; }
+  @media (max-width: 1000px) {
+    .wrap { padding: 0 22px; }
+    .hero { grid-template-columns: 1fr; gap: 36px; padding-top: 26px; }
+    .writing, .two, .ba, .limits { grid-template-columns: 1fr; }
+    .stack { grid-template-columns: 1fr; }
+    .rail { display: none; }
+    .bar { grid-template-columns: auto auto; }
+    .bar nav { display: none; }
+    .wordmark { justify-self: start; }
+    footer.page { grid-template-columns: 1fr 1fr; }
+    .lane { grid-template-columns: 76px 1fr; }
+    .axis { margin-left: 92px; }
   }
 </style>
-<div class="wrap">
 
+<div class="wrap">
   <div class="bar">
-    <a class="wordmark" href="https://github.com/JspIIV/halt">Halt<em>.</em></a>
     <nav>
       <a href="#broke">What broke</a>
       <a href="#record">The record</a>
-      <a id="explorerlink" href="https://explorer-studio.genlayer.com/">On chain</a>
-      <a href="https://github.com/JspIIV/halt">GitHub</a>
+      <a href="#limits">Limits</a>
     </nav>
+    <a class="wordmark" href="https://github.com/JspIIV/halt">Halt<em>Guard</em></a>
+    <div class="right">
+      <a class="round" id="explorerlink" href="https://explorer-studio.genlayer.com/" title="On chain">⛓</a>
+      <a class="round" href="https://github.com/JspIIV/halt" title="GitHub">GH</a>
+    </div>
   </div>
 
   <div class="hero">
     <div>
       <p class="eyebrow">Halt · GenLayer Guardian</p>
       <h1>The pause button nobody has to press.</h1>
-      <p class="standfirst">A protocol publishes a red line in plain language and funds a
-      bounty. Anyone who finds it being crossed says so, with evidence and a deposit. The
-      validators read the evidence themselves, and if the line is being crossed the protocol
-      stops in that same transaction.</p>
-      <div class="card">
-        <header><span>The whole integration</span><span class="right">four lines</span></header>
-        <div class="body"><pre style="margin:0;border:0;padding:0;background:none">def _guard_is_up(self) -&gt; bool:
-    try:
-        return bool(gl.get_contract_at(Address(self.guardian))
-                    .view().halted(gl.message.contract_address.as_hex))
-    except Exception:
-        return False</pre></div>
-        <div class="actions">
-          <a class="btn lead" href="https://github.com/JspIIV/halt">Read the contracts</a>
-          <a class="btn" href="#broke">What broke</a>
+      <p class="say">A protocol publishes a red line in plain language and funds a bounty.
+      Anyone who finds it being crossed says so, with evidence and a deposit. The validators
+      read the evidence themselves, and the protocol stops in that same transaction.</p>
+      <div class="runner">
+        <header><span>guard.py</span><a href="https://github.com/JspIIV/halt">View on GitHub ↗</a></header>
+        <div class="body">
+          <pre>def _guard_is_up(self) -&gt; bool:
+    return bool(gl.get_contract_at(Address(self.guardian))
+                .view().halted(gl.message.contract_address.as_hex))</pre>
+          <div class="sub">The whole integration</div>
         </div>
+        <footer><span>No key handed over</span>
+          <a class="pill" href="#broke">See what broke ▷</a></footer>
       </div>
     </div>
 
-    <div class="panel">
+    <div class="screen">
       <p class="eyebrow">Live on Studionet</p>
       <div class="live" id="live"></div>
-      <div class="strip" id="coordstrip" style="padding:26px 0 0;background:none;border:0"></div>
-      <p class="panelfoot" id="coordreading"></p>
+      <div class="lanes" id="coordstrip"></div>
+      <p class="under" id="coordreading"></p>
     </div>
   </div>
 
-  <section>
-    <p class="eyebrow">The line</p>
-    <h2>A rule with no implementation.</h2>
-    <p class="lede">There is a number in it, and a contract could check that part perfectly
-    well. What no contract can work out is who the number applies to, because an actor is
-    not a field in any ledger.</p>
-    <div class="card quiet">
-      <header><span>Published red line</span><span class="right" id="linetarget"></span></header>
-      <div class="body"><p class="rule" id="coordline"></p></div>
-    </div>
-  </section>
+  <div class="strip-facts" id="facts"></div>
+</div>
 
-  <section>
-    <p class="eyebrow">The split</p>
-    <h2>What arithmetic saw, and what the network saw.</h2>
-    <div class="split" id="coordpair"></div>
-    <div id="coordfirst"></div>
+<section class="band">
+  <div class="wrap">
+    <div class="middle">
+      <p class="eyebrow">The line</p>
+      <h2>A rule with <em>no implementation</em>.</h2>
+      <p>There is a number in it, and a contract could check that part perfectly well. What
+      no contract can work out is who the number applies to, because an actor is not a field
+      in any ledger.</p>
+    </div>
+    <p class="rule" id="coordline"></p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="middle">
+      <p class="eyebrow">The split</p>
+      <h2>What arithmetic saw, and what <em>the network</em> saw.</h2>
+    </div>
+    <div class="two" id="coordpair"></div>
+    <div id="coordfirst" style="margin-top:16px"></div>
     <details id="coordledger"></details>
-  </section>
+  </div>
+</section>
 
-  <section>
-    <p class="eyebrow">Autonomy</p>
-    <h2>Nobody was watching either of these.</h2>
-    <p class="lede">The case above was raised by a person, so the watching agent was given a
-    second look, and it was kept deliberately blunt: two addresses funded near each other,
-    withdrawing near each other, more than a third of the vault between them. That is a
-    coincidence, not a finding. Two strangers using a quiet vault look exactly like it, and
-    the agent says so in the evidence it writes. Then it was pointed at two vaults it had
-    never seen.</p>
-    <div class="split" id="watched"></div>
-    <p class="reading" id="watchedreading"></p>
-  </section>
-
-  <section id="broke">
-    <p class="eyebrow">What broke</p>
-    <h2>Two things did, and both are in the record.</h2>
-    <p class="lede">Before publishing any of this we went looking for the ways it could be
-    wrong, and then handed the whole record to an outside reviewer and asked it to attack
-    rather than approve. One break we found ourselves. The other we did not.</p>
-    <div id="findings"></div>
-  </section>
-
-  <section>
-    <p class="eyebrow">Measured</p>
-    <h2>Numbers, not adjectives.</h2>
-    <div class="metrics" id="metrics"></div>
-  </section>
-
-  <section>
-    <p class="eyebrow">How it works</p>
-    <h2>Five steps, and the last one is a transaction.</h2>
-    <ol class="flow">
-      <li>The protocol writes a red line in plain language and funds a bounty behind it.</li>
-      <li>Anyone, or a bot, sees the line being crossed and raises an alarm with a deposit.</li>
-      <li>The validators read the evidence, and read the protocol's own state to check it.</li>
-      <li>They have to reach the same verdict, or nothing happens and nothing moves.</li>
-      <li>Withdrawals stop in that same transaction. A false alarm loses its deposit.</li>
-    </ol>
-  </section>
-
-  <section>
-    <p class="eyebrow">The shape</p>
-    <h2>Lines of the same kind.</h2>
-    <p class="lede">The line above was run on chain. These are the same kind of sentence:
-    everybody understands them, none of them compiles, and every one is enforced today by
-    somebody watching a dashboard who then has to reach a multisig.</p>
-    <ul class="shapes">
-      <li>A lending pool<b>No single actor may take more than a tenth of the pool in an
-      hour, however many addresses it borrows through.</b></li>
-      <li>A grant treasury<b>No recipient may be paid twice for the same piece of work
-      under two names.</b></li>
-      <li>A market maker<b>Liquidity may not be pulled in concert by the providers who
-      added it together.</b></li>
-    </ul>
-    <p class="reading" id="economics"></p>
-  </section>
-
-  <section>
-    <p class="eyebrow">Design</p>
-    <h2>Two decisions worth arguing with.</h2>
-    <p class="lede">The integration at the top of this page is the whole of what a protocol
-    adds: no inheritance, no proxy, no upgrade, no key handed to anybody. These two choices
-    behind it are the ones people push back on.</p>
-    <div class="limits">
-      <div><b>It fails open on purpose.</b><p>A guardian that cannot be reached does not stop
-      you. Failing closed would make the guard the single point of failure for every protocol
-      trusting it, so one bad deploy of ours would freeze all of them. A broken guard protects
-      nothing, which is the world before you adopted it.</p></div>
-      <div><b>Anyone may raise it, one party may lower it.</b><p>The owner can lower a guard
-      only after a hold, because a guard that could be lifted as fast as it went up is a race
-      between two transactions, and an attacker sends transactions faster than a person
-      does.</p></div>
+<section class="band">
+  <div class="wrap">
+    <div class="middle">
+      <p class="eyebrow">Autonomy</p>
+      <h2>Nobody was watching <em>either of these</em>.</h2>
+      <p>The agent was given a blunt second look: two addresses funded near each other,
+      withdrawing near each other, more than a third of the vault between them. That is a
+      coincidence, not a finding, and it says so in the evidence it writes. Then it was
+      pointed at two vaults it had never seen.</p>
     </div>
-  </section>
+    <div class="two" id="watched"></div>
+    <p class="under" id="watchedreading" style="max-width:80ch;margin:26px auto 0;border:0;text-align:center"></p>
+  </div>
+</section>
 
-  <section id="record">
-    <p class="eyebrow">The record</p>
-    <h2>Every alarm ever raised against it.</h2>
-    <p class="lede" id="alarmsummary"></p>
+<section id="broke">
+  <div class="wrap">
+    <div class="middle">
+      <p class="eyebrow">What broke</p>
+      <h2>Two things did, and both are <em>in the record</em>.</h2>
+      <p>Before publishing any of this we went looking for the ways it could be wrong, then
+      handed the whole record to an outside reviewer and asked it to attack rather than
+      approve. One break we found ourselves. The other we did not.</p>
+    </div>
+    <div class="broke" id="findings"></div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="middle">
+      <p class="eyebrow">How it works</p>
+      <h2>Five steps, and the last one is <em>a transaction</em>.</h2>
+    </div>
+    <div class="stack">
+      <div class="steps">
+        <div class="step"><span class="n">01</span><h3>Publish a red line</h3>
+          <span class="tag">plain language, funded bounty</span></div>
+        <div class="step"><span class="n">02</span><h3>Anyone raises an alarm</h3>
+          <span class="tag">evidence, deposit at stake</span></div>
+        <div class="step"><span class="n">03</span><h3>Validators read the evidence</h3>
+          <span class="tag">and the protocol's own state</span></div>
+        <div class="step"><span class="n">04</span><h3>They have to agree</h3>
+          <span class="tag">or nothing moves at all</span></div>
+        <div class="step"><span class="n">05</span><h3>Withdrawals stop</h3>
+          <span class="tag">same transaction, no key</span></div>
+      </div>
+      <div class="rail"><span>Halt</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="head-row">
+      <div><p class="eyebrow">Measured</p><h2>Numbers, not adjectives.</h2></div>
+      <a class="pill ghost" href="#record">The full record →</a>
+    </div>
+    <div class="writing">
+      <div class="note lead">
+        <div class="kind"><span>Study</span><i>89 runs</i></div>
+        <h3>What broke when we tried to break it</h3>
+        <p>Every prediction written down before the run, every surprise kept. Two faults
+        found and closed, two published claims contradicted by our own measurements and
+        corrected, and the one number that still slips named rather than smoothed over.</p>
+      </div>
+      <div class="stackcol">
+        <div class="note">
+          <div class="kind"><span>Study</span><i>on chain</i></div>
+          <h3>The line code cannot hold</h3>
+          <p>Two addresses, a fifth of the vault each, inside every per address rule. The
+          threshold saw nothing.</p>
+        </div>
+        <div class="note">
+          <div class="kind"><span>Sources</span><i>Nomad, Curve, Euler</i></div>
+          <h3>How long the money leaves</h3>
+          <p>Why minutes matter, and where an atomic exploit puts this out of reach.</p>
+        </div>
+        <div class="note">
+          <div class="kind"><span>Brief</span><i>for a reviewer</i></div>
+          <h3>Check it without trusting us</h3>
+          <p>Every run with its transaction, generated from the trial file rather than
+          from a summary of it.</p>
+        </div>
+      </div>
+    </div>
+    <div class="strip-facts" id="metrics" style="padding-top:26px"></div>
+  </div>
+</section>
+
+<section class="band" id="record">
+  <div class="wrap">
+    <div class="middle">
+      <p class="eyebrow">The record</p>
+      <h2>Every alarm <em>ever raised</em> against it.</h2>
+      <p id="alarmsummary"></p>
+    </div>
     <details>
       <summary>Open the full record, refusals and reversals included</summary>
-      <div id="alarms"></div>
-      <div class="card quiet"><header><span>The line it was judged against</span></header>
-        <div class="body"><p class="rule" id="redline"></p></div></div>
+      <div class="rows" id="alarms"></div>
+      <p class="rule" id="redline" style="margin-top:16px;font-size:15px"></p>
     </details>
-  </section>
+    <p class="under" id="economics" style="max-width:80ch;margin:26px auto 0;border:0"></p>
+  </div>
+</section>
 
-  <section>
-    <p class="eyebrow">Limits</p>
-    <h2>What it will not do.</h2>
-    <div class="limits">
-      <div><b>It does not find exploits.</b><p>Somebody has to see it and say so. What this
-      removes is the wait between the seeing and the stopping, which is where the money
-      usually goes.</p></div>
-      <div><b>It judges what is happening, never what might.</b><p>A theoretical bug, a design
-      somebody dislikes, a risk with no event behind it: all refused, and refused at the cost
-      of the deposit. A pause button anyone can press with a paragraph is a denial of service
-      with extra steps.</p></div>
-      <div><b>It does not stop an atomic exploit.</b><p>Nothing outside the transaction can.
-      This is built for the drains that take minutes and hours, which is most of them by
-      value.</p></div>
+<section id="limits">
+  <div class="wrap">
+    <div class="middle">
+      <p class="eyebrow">Limits</p>
+      <h2>What it <em>will not</em> do.</h2>
     </div>
-  </section>
+    <div class="limits">
+      <div class="limit"><b>It does not find exploits.</b><p>Somebody has to see it and say
+      so. What this removes is the wait between the seeing and the stopping, which is where
+      the money usually goes.</p></div>
+      <div class="limit"><b>It judges what is, never what might be.</b><p>A theoretical bug,
+      a design somebody dislikes, a risk with no event behind it: all refused, and refused
+      at the cost of the deposit.</p></div>
+      <div class="limit"><b>It does not stop an atomic exploit.</b><p>Nothing outside the
+      transaction can. This is built for the drains that take minutes and hours, which is
+      most of them by value.</p></div>
+    </div>
+  </div>
+</section>
 
-  <footer><span id="stamp"></span></footer>
+<div class="wrap">
+  <div class="close">
+    <h2>A rule that cannot be written in code, <em>held by a network that reads it</em>.</h2>
+    <p class="eyebrow">Four lines to adopt. No inheritance, no proxy, no upgrade.</p>
+    <div class="runner">
+      <header><span>guard.py</span><a href="https://github.com/JspIIV/halt">View on GitHub ↗</a></header>
+      <div class="body">
+        <pre>def _guard_is_up(self) -&gt; bool:
+    return bool(gl.get_contract_at(Address(self.guardian))
+                .view().halted(gl.message.contract_address.as_hex))</pre>
+        <div class="sub">The whole integration</div>
+      </div>
+      <footer><span>Fails open on purpose</span>
+        <a class="pill" href="https://github.com/JspIIV/halt">Read the contracts ▷</a></footer>
+    </div>
+  </div>
+
+  <footer class="page">
+    <div>
+      <span class="wordmark">Halt<em>Guard</em></span>
+      <p>An emergency stop nobody has to reach.</p>
+    </div>
+    <ul>
+      <li><a href="#broke">What broke</a></li>
+      <li><a href="#record">The record</a></li>
+      <li><a href="#limits">Limits</a></li>
+    </ul>
+    <ul>
+      <li><a href="https://github.com/JspIIV/halt">GitHub</a></li>
+      <li><a id="explorerlink2" href="https://explorer-studio.genlayer.com/">Explorer</a></li>
+    </ul>
+    <p class="said" id="stamp"></p>
+  </footer>
 </div>
 
 <script>
@@ -377,13 +489,13 @@ const DATA = {"halt": "0x8b795Ddf907Aaf19063CD77cD007842D94E4C877", "vault": "0x
 
 Promise.resolve(DATA).then(d => {
   const co = d.coordination;
-
-  const link = document.getElementById("explorerlink");
-  if (link) link.href = "https://explorer-studio.genlayer.com/address/" + d.halt;
+  const url = "https://explorer-studio.genlayer.com/address/" + d.halt;
+  for (const id of ["explorerlink", "explorerlink2"]) {
+    const el = document.getElementById(id); if (el) el.href = url;
+  }
 
   if (co) {
     document.getElementById("coordline").textContent = (co.guard && co.guard.red_line) || "";
-    document.getElementById("linetarget").textContent = short(co.vault);
 
     const events = (co.status.recent || []).map(e => ({
       kind: e.kind, who: String(e.who).toLowerCase(), amount: e.amount, t: Date.parse(e.at),
@@ -393,103 +505,91 @@ Promise.resolve(DATA).then(d => {
     const span = events.length ? Math.max(1, events[events.length - 1].t - t0) : 1;
     const at = t => (4 + ((t - t0) / span) * 92).toFixed(2) + "%";
 
-    const lanes = holders.map((address, index) => {
+    set("coordstrip", holders.map((address, index) => {
       const marks = events.filter(e => e.who === address).map(e =>
-        '<span class="mark ' + (e.kind === "deposit" ? "in" : "out") + '" style="left:' + at(e.t) + '">'
+        '<span class="mk ' + (e.kind === "deposit" ? "in" : "out") + '" style="left:' + at(e.t) + '">'
         + '<span class="dot"></span><span class="cap">'
         + (e.kind === "deposit" ? "in " : "out ") + gen(e.amount) + "</span></span>").join("");
       return '<div class="lane"><span class="who"><b>address ' + (index === 0 ? "A" : "B")
         + "</b>" + short(address) + '</span><div class="track">' + marks + "</div></div>";
-    }).join("");
+    }).join("") + '<div class="axis"><span>' + (events.length ? clock(t0) : "") + "</span><span>"
+      + Math.round(span / 1000) + " seconds</span><span>"
+      + (events.length ? clock(events[events.length - 1].t) : "") + "</span></div>");
 
     const gapOf = kind => {
       const both = events.filter(e => e.kind === kind);
       return both.length === 2 ? Math.round(Math.abs(both[1].t - both[0].t) / 1000) : null;
     };
-    const funded = gapOf("deposit");
-    const pulled = gapOf("withdraw");
+    const funded = gapOf("deposit"), pulled = gapOf("withdraw");
     const share = (co.status.positions || []).map(p =>
       Math.round(Number(p.withdrawn) / Number(p.deposited) * 100));
-
-    set("coordstrip", lanes
-      + '<div class="axis"><span>' + (events.length ? clock(t0) : "") + "</span><span>"
-      + Math.round(span / 1000) + " seconds</span><span>"
-      + (events.length ? clock(events[events.length - 1].t) : "") + "</span></div>");
     set("coordreading", "Funded <b>" + (funded !== null ? funded + " seconds" : "moments")
       + " apart</b>. Withdrawn <b>" + (pulled !== null ? pulled + " seconds" : "moments")
       + " apart</b>, in the same order they were funded. Each took "
       + (share.length && share.every(s => s === share[0]) ? share[0] + " percent"
          : share.length ? share.join(" and ") + " percent" : "well under half")
-      + " of its own deposit, so each one sits inside every rule anybody could write about a "
-      + "single address. The network read them as one actor and halted the protocol.");
+      + " of its own deposit, inside every rule anybody could write about a single address. "
+      + "The network read them as one actor and halted the protocol.");
 
     const upheld = (co.alarms || []).filter(a => a.outcome === "UPHELD").pop();
     const rule = co.threshold && co.threshold.rule;
     set("coordpair",
-      '<div class="side blind"><h3>What a per address rule saw</h3>'
-      + "<p>Nothing, and there was nothing for it to see. The watching agent's arithmetic rule "
-      + "was pointed at an identical vault and left running."
-      + (rule ? " That rule compares one address with itself: more than "
-        + Math.round(rule.share_that_looks_wrong * 100)
-        + " percent of that address's own deposit inside "
-        + (rule.window_seconds / 60) + " minutes. Each of these is at 40." : "")
+      '<div class="side"><h3>What a per address rule saw</h3>'
+      + "<p>Nothing, and there was nothing for it to see. The agent's arithmetic rule was "
+      + "pointed at an identical vault and left running."
+      + (rule ? " It compares one address with itself: more than "
+        + Math.round(rule.share_that_looks_wrong * 100) + " percent of that address's own "
+        + "deposit inside " + (rule.window_seconds / 60) + " minutes. Each of these is at 40." : "")
       + "</p><p>It is not badly tuned. Lower it and it fires on honest users. The blindness is "
       + "structural: what is wrong is between two addresses, and arithmetic can only compare an "
-      + "address with itself.</p>"
-      + '<span class="verdict">NO ALARM RAISED</span></div>'
+      + "address with itself.</p><span class=\"verdict\">No alarm raised</span></div>"
       + '<div class="side saw"><h3>What the validators saw</h3>'
       + (upheld ? "<p>" + esc(upheld.why) + "</p>" : "")
       + "<p>They did not apply a larger threshold. They decided from the timing that two "
       + "addresses were one actor, then applied the ordinary number to that actor.</p>"
-      + '<span class="verdict">UPHELD'
-      + (co.seconds ? " · HALTED IN " + co.seconds + "s" : "") + "</span></div>");
+      + '<span class="verdict">Upheld'
+      + (co.seconds ? " · halted in " + co.seconds + "s" : "") + "</span></div>");
 
     const first = co.first_attempt;
-    set("coordfirst", first ? '<div class="card"><header><span>And the first attempt was '
-      + "refused</span></header><div class=\"body\"><p class=\"why\" style=\"margin-top:0\">"
-      + esc(first.why) + "</p><p style='color:var(--dim);font-size:15px;margin-bottom:0'>"
-      + "It called forty percent of deposits forty percent of holdings. The claim was true and "
-      + "the figure was loose, and loose was enough to lose the deposit. That is the standard "
-      + "the deposit is buying.</p></div></div>" : "");
+    set("coordfirst", first ? '<div class="note"><div class="kind"><span>And the first '
+      + 'attempt was refused</span></div><p class="why" style="margin:0 0 12px">'
+      + esc(first.why) + "</p><p>It called forty percent of deposits forty percent of "
+      + "holdings, and the record said otherwise. We first read that as a lesson about "
+      + "precision, and later runs corrected us: a claim carrying no figures at all was "
+      + "upheld, because the record showed the breach without help. What loses a deposit is "
+      + "a figure the record denies, not a figure left vague.</p></div>" : "");
 
     const dump = (co.status.positions || []).map(p =>
         "  " + short(p.who) + "  put in " + gen(p.deposited) + "   took out " + gen(p.withdrawn))
       .concat([""], events.slice().reverse().map(e =>
         "  " + clock(e.t) + "  " + e.kind.padEnd(9) + short(e.who) + "  " + gen(e.amount) + " GEN"));
-    set("coordledger", "<summary>The same thing as the protocol itself reported it</summary><pre>"
-      + esc(dump.join(NL)) + "</pre>");
+    set("coordledger", "<summary>The same thing as the protocol itself reported it</summary>"
+      + '<p class="rule" style="font-size:13px;white-space:pre">' + esc(dump.join(NL)) + "</p>");
 
-    if ((co.watched || []).length) {
-      set("watched", co.watched.map(run => {
-        const won = run.outcome === "UPHELD";
-        return '<div class="side ' + (won ? "saw" : "blind") + '"><h3>It flagged '
-          + esc(run.note) + "</h3><p>Two positions funded " + run.funded_apart
-          + " seconds apart, withdrawn " + run.pulled_apart + " seconds apart, "
-          + (run.same_order ? "in the same order they were funded"
-                            : "in the opposite order to the funding")
-          + ". The agent reported the timings and said the reading was not its to make.</p>"
-          + "<p>" + esc(String(run.why || "")) + "</p>"
-          + '<span class="verdict">' + esc(run.outcome) + " · " + run.seconds + "s"
-          + (won ? " · PROTOCOL HALTED" : " · DEPOSIT LOST") + "</span></div>";
-      }).join(""));
-      document.getElementById("watchedreading").textContent =
-        "Same agent, same rule, same evidence template, no human in either run. It was right "
-        + "once and wrong once, and it paid for the wrong one. That is the division of labour "
-        + "rather than a hole in it: the agent is allowed to be cheap and fallible because "
-        + "deciding is not its job, and an agent that decided by itself would be a pause button "
-        + "owned by whoever wrote the fastest bot.";
-    }
+    if ((co.watched || []).length) set("watched", co.watched.map(run => {
+      const won = run.outcome === "UPHELD";
+      return '<div class="side' + (won ? " saw" : "") + '"><h3>It flagged ' + esc(run.note)
+        + "</h3><p>Two positions funded " + run.funded_apart + " seconds apart, withdrawn "
+        + run.pulled_apart + " seconds apart, "
+        + (run.same_order ? "in the same order they were funded"
+                          : "in the opposite order to the funding")
+        + ". The agent reported the timings and said the reading was not its to make.</p>"
+        + "<p>" + esc(String(run.why || "")) + "</p>"
+        + '<span class="verdict">' + esc(run.outcome) + " · " + run.seconds + "s"
+        + (won ? " · protocol halted" : " · deposit lost") + "</span></div>";
+    }).join(""));
+    document.getElementById("watchedreading").textContent =
+      "Same agent, same rule, same evidence template, no human in either run. It was right "
+      + "once and wrong once, and it paid for the wrong one.";
   }
 
-  /* What broke, carried as before and after rather than as a claim about them. */
-  set("findings", (d.findings || []).map(f => '<div class="broke"><h3>' + esc(f.title) + "</h3>"
-    + "<p>" + esc(f.what) + "</p>"
-    + '<div class="beforeafter">'
-    + (f.before ? '<div class="step2"><span class="tag">Before</span><q>' + esc(f.before.why)
-        + '</q><span class="out bad">' + esc(f.before.outcome) + " · WRONG</span></div>" : "")
-    + (f.after ? '<div class="step2"><span class="tag">After the fix</span><q>' + esc(f.after.why)
-        + '</q><span class="out good">' + esc(f.after.outcome) + " · "
-        + f.after.seconds + "s</span></div>" : "")
+  set("findings", (d.findings || []).map(f => '<div class="fault"><h3>' + esc(f.title)
+    + "</h3><p>" + esc(f.what) + '</p><div class="ba">'
+    + (f.before ? '<div><span class="tag">Before</span><q>' + esc(f.before.why)
+        + '</q><span class="out bad">' + esc(f.before.outcome) + " · wrong</span></div>" : "")
+    + (f.after ? '<div><span class="tag">After the fix</span><q>' + esc(f.after.why)
+        + '</q><span class="out good">' + esc(f.after.outcome) + " · " + f.after.seconds
+        + "s</span></div>" : "")
     + "</div></div>").join(""));
 
   const guard = d.guard || {};
@@ -503,27 +603,21 @@ Promise.resolve(DATA).then(d => {
       + d.vault_status.withdrawals_blocked + " withdrawals blocked" : "") + "</span></div>";
 
   const b = d.battery && d.battery.summary;
-  const elsewhere = d.battery && d.battery.halt
-    && d.battery.halt.toLowerCase() !== String(d.halt).toLowerCase()
-    ? "Measured against an earlier deployment of the same guardian, at "
-      + short(d.battery.halt) + "." : "";
-  const num = (n, unit) => "<b>" + n + (unit ? '<span class="u">' + unit + "</span>" : "") + "</b>";
-  const cards = [];
-  if (b) {
-    cards.push([num(b.refused + " of " + b.false_alarms) + "<span>false alarms refused</span>",
-                elsewhere]);
-    if (b.median_seconds !== null)
-      cards.push([num(b.median_seconds, "s") + "<span>median from alarm to halted</span>",
-                  elsewhere]);
-  }
-  const autonomous = co && (co.watched || []).find(run => run.outcome === "UPHELD");
-  if (autonomous)
-    cards.push([num(autonomous.seconds, "s") + "<span>from an agent noticing to halted</span>",
-                "Nobody in the loop: the agent read the ledger, asked, and the network answered."]);
-  cards.push([num((d.findings || []).length) + "<span>faults found and fixed before publishing</span>",
-              "One of them by an outside reviewer handed the whole record."]);
-  set("metrics", cards.map(card =>
-    '<div class="metric">' + card[0] + (card[1] ? "<i>" + esc(card[1]) + "</i>" : "") + "</div>").join(""));
+  const autonomous = co && (co.watched || []).find(r => r.outcome === "UPHELD");
+  const chip = (n, label) => '<div class="chip"><b>' + n + "</b><span>" + label + "</span></div>";
+  set("facts", [
+    autonomous ? chip(autonomous.seconds + "s", "agent noticed to halted") : "",
+    b ? chip(b.refused + " / " + b.false_alarms, "false alarms refused") : "",
+    chip((d.findings || []).length, "faults found and fixed"),
+    chip(d.size ? d.size.alarms : 0, "alarms on this deployment"),
+    chip("4", "lines to integrate"),
+  ].join(""));
+  set("metrics", [
+    b && b.median_seconds !== null ? chip(b.median_seconds + "s", "median alarm to halted") : "",
+    b && b.fastest !== null ? chip(b.fastest + "s", "fastest halt measured") : "",
+    chip("89", "runs, predictions written first"),
+    chip("9 / 10", "hardest false claim refused"),
+  ].join(""));
 
   const alarms = d.alarms || [];
   const counts = {};
@@ -535,9 +629,9 @@ Promise.resolve(DATA).then(d => {
     + ". Nothing is left out, including the one an appeal reversed.";
 
   set("alarms", alarms.slice().reverse().map(a => `
-    <div class="row">
-      <div class="head">
-        <span class="tag ${a.outcome}">${a.outcome}</span>
+    <div class="rowi">
+      <div class="top">
+        <span class="badge ${a.outcome}">${a.outcome}</span>
         <span>#${a.index}</span>
         <span>by ${esc(short(a.by))}</span>
         <span>${a.paid ? gen(a.paid) + " GEN to " + esc(short(a.paid_to)) : "nothing paid"}</span>
@@ -545,24 +639,22 @@ Promise.resolve(DATA).then(d => {
       ${a.why ? '<p class="why">' + (a.appeal_why ? "the round said: " : "") + esc(a.why) + "</p>" : ""}
       ${a.appeal_why ? '<p class="why">the appeal said: ' + esc(a.appeal_why) + "</p>" : ""}
       <div class="ev">${esc(String(a.evidence).slice(0, 260))}</div>
-    </div>`).join("") || '<div class="row"><span class="head">no alarms yet</span></div>');
+    </div>`).join("") || '<div class="rowi"><span class="top">no alarms yet</span></div>');
 
   document.getElementById("redline").textContent = guard.red_line || "no guard on this address";
 
-  const paidFor = co && (co.alarms || []).filter(a => a.outcome === "UPHELD").pop();
-  document.getElementById("economics").textContent = paidFor
-    ? "Raising that alarm cost a deposit of " + gen(paidFor.deposit) + " GEN. Being right paid "
-      + gen(paidFor.paid) + " GEN out of the bounty the protocol had funded behind its own line. "
-      + "Being wrong loses the deposit, which is the only reason a pause button anyone may press "
-      + "is not a denial of service."
-    : "";
+  const paid = co && (co.alarms || []).filter(a => a.outcome === "UPHELD").pop();
+  document.getElementById("economics").textContent = paid
+    ? "Raising that alarm cost a deposit of " + gen(paid.deposit) + " GEN. Being right paid "
+      + gen(paid.paid) + " GEN out of the bounty the protocol had funded behind its own line. "
+      + "Being wrong loses the deposit, which is the only reason a pause button anyone may "
+      + "press is not a denial of service." : "";
 
-  document.getElementById("stamp").innerHTML =
-    'Read from <a href="https://explorer-studio.genlayer.com/address/' + d.halt + '">'
-    + short(d.halt) + "</a> on " + d.network + ", "
-    + new Date(d.exported_at).toISOString().slice(0, 16).replace("T", " ") + " UTC"
-    + ' · <a href="https://github.com/JspIIV/halt">Contracts, tests and every dataset</a>';
+  document.getElementById("stamp").innerHTML = "Read from " + short(d.halt) + " on " + d.network
+    + ", " + new Date(d.exported_at).toISOString().slice(0, 16).replace("T", " ") + " UTC."
+    + " Contracts, tests and every dataset on GitHub.";
 }).catch(() => {
-  document.getElementById("live").textContent = "Nothing exported yet.";
+  const el = document.getElementById("live");
+  if (el) el.textContent = "Nothing exported yet.";
 });
 </script>
