@@ -6,7 +6,8 @@ Reading GenLayer Studionet. No account, no transaction, nothing spent.
 
 Studionet has stopped answering: its five hundred requests an hour are used
 up for this address. That is the network rationing rather than this project
-failing, and the budget refills over the following hour.
+failing. It refills on its own, though after a heavy day we have watched it
+stay closed for well over the hour the message promises.
 
 Everything asked for here is public state, readable meanwhile at
 https://explorer-studio.genlayer.com/address/0x280eff6e765C5d72C97F8ee406ED838257C89DfB

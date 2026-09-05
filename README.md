@@ -357,6 +357,34 @@ python tests/stops_only_what_it_should.py
 the runtime. Testing the parser alone would prove nothing: it can be right while
 `raise_alarm` still halts a healthy protocol or pays the wrong party.
 
+## Licence
+
+GNU Affero General Public License v3.0 or later. The full text is in
+[LICENSE](LICENSE).
+
+Permissive would have been the easier choice and this is not permissive, so
+the reason is worth a sentence. A guard is only worth trusting if you can read
+what it does, and the AGPL is the licence that keeps that true downstream: use
+this, change it, run it as a service, and the people relying on your version
+get to read it the same way you read this one. A halt module nobody can audit
+is the thing this project exists to replace.
+
+    Halt, an emergency stop that nobody has to reach.
+    Copyright (C) 2026 Yusuf Ferman
+
+    This program is free software: you can redistribute it and/or modify it
+    under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
+
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+    General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+
 ## Built for
 
 The GenLayer Agent Tank hackathon, Autonomous Protocols track, against the brief

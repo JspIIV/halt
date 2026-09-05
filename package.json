@@ -4,7 +4,7 @@
   "private": true,
   "description": "An emergency stop that nobody has to reach: a GenLayer guardian that halts a protocol when a plain-language red line is crossed",
   "type": "module",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "repository": {
     "type": "git",
     "url": "https://github.com/JspIIV/halt.git"
