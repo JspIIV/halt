@@ -46,6 +46,54 @@ ordinary number to that actor, and halted the protocol.
 Written up with the transcripts in
 [results/the_line_code_cannot_hold.md](results/the_line_code_cannot_hold.md).
 
+## The case: a DAO that lost twenty million dollars legally
+
+In July 2026 BonkDAO's treasury was emptied of about twenty million dollars and
+**nothing was broken**.
+
+Somebody spent about four and a half million dollars buying a little over one
+percent of the supply, staked it, opened a proposal, and voted for it. Quorum
+needed 879.95 billion tokens and the proposal drew 882.38 billion, clearing by
+less than a third of a percent, with that one holder casting 99.878 percent of
+the votes and six other wallets making up the rest. There was no timelock, so it
+executed at once.
+
+Read that list and find the rule that was broken. Buying is allowed. Staking is
+allowed. Opening a proposal is allowed. Voting your own stake is allowed. Meeting
+quorum is the requirement rather than a violation of it, and the transfer went
+out because the contract was told to send it.
+
+A quorum minimum would not have caught it, because quorum was met. A cap on
+voting power would have been beaten by a second wallet. What was wrong was not
+any number in the ledger but what the numbers were **for**:
+
+> Voting power assembled in order to pass a single proposal is not voting power,
+> and the address that funded those votes is the same actor as the address they
+> pay.
+
+No contract can evaluate *in order to*. It is intent, and intent is not a field.
+But the evidence for it is on chain and readable: when the stake arrived, when
+the proposal opened, what share one holder held, how narrowly quorum cleared.
+
+[`contracts/dao.py`](contracts/dao.py) is a treasury of that shape, protected by
+the same four lines the vault uses, called first in `execute`. It publishes what
+the line turns on and nothing it decides: each member's stake and the moment it
+first appeared, and for each proposal who opened it and when, who it pays, how
+the votes fell, and how narrowly quorum cleared. Whether a stake that arrived
+the day before a proposal was assembled in order to pass it is not its business.
+
+The rehearsal is in [`tests/a_dao_that_asks_first.py`](tests/a_dao_that_asks_first.py):
+buy just over quorum, stake, propose, vote, watch it pass on its own rules, and
+then watch `execute` refuse while a guard is up. The proposal deliberately pays
+an address other than the one that opened it, because if it paid the proposer a
+contract could refuse it with one comparison and none of this would be needed.
+
+Figures as reported by
+[CoinDesk](https://www.coindesk.com/markets/2026/07/07/bonk-faces-usd20-million-treasury-drain-after-attacker-spends-usd4-million-to-pass-malicious-proposal),
+[The Defiant](https://thedefiant.io/news/hacks/bonkdao-treasury-drained-of-20m-via-malicious-proposal),
+[Halborn](https://www.halborn.com/blog/post/explained-the-bonkdao-hack-july-2026)
+and [rekt.news](https://rekt.news/bonkdao-rekt), July 2026.
+
 ## Two speeds, and knowing which question needs which
 
 Not everything needs an opinion. A protocol may publish a floor in numbers next
@@ -252,11 +300,13 @@ that closes it.
 contracts/halt.py          the guardian: protect, promise, raise_alarm, check,
                            appeal, lower, retire
 contracts/vault.py         an ordinary protocol that asks the guard before it pays
+contracts/dao.py           a treasury that pays out what its members vote for, and
+                           asks the guard before it does
 contracts/lying_vault.py   the same, reporting an instruction to the validator
 contracts/rate_vault.py    the same, reporting a currency and a rate instead
 contracts/quiet_vault.py   the same, reporting figures that are simply false
 contracts/silent_vault.py  the same, false and consistent with its own balance
-tests/                     116 checks, through the real methods
+tests/                     145 checks in two suites, through the real methods
 scripts/setup.mjs          makes the two accounts, needs no account
 scripts/verify.mjs         checks every claim here, needs no account
 scripts/watcher.mjs        the agent that notices and asks
@@ -351,11 +401,13 @@ Tests need no network and no account:
 
 ```bash
 python tests/stops_only_what_it_should.py
+python tests/a_dao_that_asks_first.py
 ```
 
-116 checks, through the real methods rather than the helpers, against a stub of
-the runtime. Testing the parser alone would prove nothing: it can be right while
-`raise_alarm` still halts a healthy protocol or pays the wrong party.
+116 checks on the guardian and 29 on a protected DAO, through the real methods
+rather than the helpers, against a stub of the runtime. Testing the parser alone
+would prove nothing: it can be right while `raise_alarm` still halts a healthy
+protocol or pays the wrong party.
 
 ## Licence
 
