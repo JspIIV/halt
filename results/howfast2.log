@@ -1,0 +1,41 @@
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+GenLayer RPC error (gen_call): Rate limit exceeded: 5000 requests per day
+=== FLOOR ===
+  details: 'Rate limit exceeded: 5000 requests per day',
+  docsPath: undefined,
+  metaMessages: undefined,
+  shortMessage: 'An unknown RPC error occurred.',
+  version: '2.56.3',
+  code: -1,
+  [cause]: {
+    code: -32029,
+    message: 'Rate limit exceeded: 5000 requests per day',
+    data: {
+      bucket: 'standard',
+      window: 'day',
+      limit: 5000,
+      current: 5000,
+      retry_after_seconds: 3046
+    }
+  }
+}
+
+Node.js v24.18.0

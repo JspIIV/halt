@@ -16,7 +16,7 @@ Live on Studionet. Every number on this page comes from a transaction.
 | --- | --- |
 | Guardian | [`0x280eff6e765C5d72C97F8ee406ED838257C89DfB`](https://explorer-studio.genlayer.com/address/0x280eff6e765C5d72C97F8ee406ED838257C89DfB) |
 | A protocol it stopped | [`0x06fCC2D9D213d4c8977ab583b2508702F4E35610`](https://explorer-studio.genlayer.com/address/0x06fCC2D9D213d4c8977ab583b2508702F4E35610) |
-| On chain right now | 39 protected, 38 alarms, 24 upheld and 14 refused |
+| On chain right now | 42 protected, 42 alarms, 27 upheld and 15 refused |
 | Page | [docs/index.html](docs/index.html), reading [docs/data.json](docs/data.json) straight from chain |
 
 ---
