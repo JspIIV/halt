@@ -294,6 +294,25 @@ public from the moment protection opens, the owner cannot raise alarms on its ow
 protocol, and the minimum hold stops it being flicked around a trade. None of
 that closes it.
 
+**A protocol that lies consistently is not caught, and this is a platform limit
+rather than a gap in this design.** `contracts/silent_vault.py` reports a smaller
+history than the real one, in exact step with its real balance: understated
+deposits, no withdrawals shown, holdings that match what is actually there. The
+balance check finds nothing wrong because nothing published is inconsistent with
+it. What would close this is a fact about the protocol's **past** that the
+protocol itself did not choose to record.
+
+We asked whether GenVM has one, directly, rather than assuming. It does not.
+There is no deterministic way to read a contract's balance at a past block the
+way `gl.get_contract_at(address).balance` reads it now, and the two workarounds
+on offer both put the data back in the wrong hands: an event the vault itself
+emits is still authored by the vault, and an external indexer or oracle moves
+the trust outside the network's own consensus, which is the thing this project
+is built to avoid needing. Published as an open limit rather than a solved
+problem, because it is one.
+[results/asked_mochi_about_history.md](results/asked_mochi_about_history.md)
+has the exchange.
+
 ## The repository
 
 ```
