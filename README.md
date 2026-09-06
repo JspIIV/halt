@@ -382,8 +382,17 @@ export HALT_KEYSTORES=~/.genlayer/keystores
 export HALT_KS_PADV=... HALT_KS_PPUB=...
 ```
 
-With balance in both, the shortest run that proves the path works, about four
-minutes:
+With balance in both, one command runs the whole path end to end: deploys a
+guardian, deploys a vault, publishes the red line, breaches it, raises a true
+alarm, and confirms the halt, printing PASS or FAIL at the end. Real Studionet,
+no simulation, about four to five minutes:
+
+```bash
+node scripts/onecommand.mjs
+```
+
+Or the same five steps by hand, useful if one of them needs inspecting on its
+own:
 
 ```bash
 node scripts/deploy.mjs contracts/halt.py

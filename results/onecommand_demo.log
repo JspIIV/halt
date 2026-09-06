@@ -1,0 +1,30 @@
+
+[2s] deploying the guardian
+  guardian 0x2010463fb46f9123D69715a4D2bF2D776d9B0fED
+
+[43s] deploying a vault that will ask it before paying out
+  vault    0x9bE3e4368be122ffb8aB39eD934dbC70ab29Cf7A
+
+[84s] the owner publishes the red line and funds the bounty
+  {"ok":true,"target":"0x9be3e4368be122ffb8ab39ed934dbc70ab29cf7a","bounty":"10000000000000000","state":"OPEN","_tx":"0xd921fdb13e71f26e483ccc9e8b3ffd9f3bce10cc358e5ab2d1ca6727af94bcb4"} 
+  tx 0xd921fdb13e71f26e483ccc9e8b3ffd9f3bce10cc358e5ab2d1ca6727af94bcb4
+
+[124s] a user deposits, then withdraws three quarters of it inside the window
+  deposit  {"ok":true,"balance":"40000000000000000","_tx":"0x330a7d75c98b45d425f02bafe55827483e23533f7daab4c68fb442fb928b3f2d"}
+  withdraw {"ok":true,"withdrew":"30000000000000000","left":"10000000000000000","_tx":"0x30a2ad94ad145a104e41830acb5c89fef1d55774b274e2724199531470f26ca9"} 
+  tx 0x30a2ad94ad145a104e41830acb5c89fef1d55774b274e2724199531470f26ca9
+
+[203s] someone else raises a true alarm, with a deposit behind it
+   {"ok":true,"alarm":0,"outcome":"UPHELD","state":"HALTED","why":"The protocol's own record shows address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c deposited 40000000000000000 and withdrew 30000000000000000 within a 40-second window, which exceeds the red line's maximum of half the deposited amount inside any ten minute window.","paid":"12000000000000000","paid_to":"0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c","_tx":"0x706830bd747f812c1f37656810c14e108dfcc5f1ce786c216a7c330a5193b8c2"} 
+  tx 0x706830bd747f812c1f37656810c14e108dfcc5f1ce786c216a7c330a5193b8c2
+
+[268s] checking the guard
+
+============================================================
+PASS: the alarm was upheld and the vault is halted
+  outcome         UPHELD
+  why             The protocol's own record shows address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c deposited 40000000000000000 and withdrew 30000000000000000 within a 40-second window, which exceeds the red line's maximum of half the deposited amount inside any ten minute window.
+  halted()        true
+  vault reports   true
+  total time      271s
+============================================================
