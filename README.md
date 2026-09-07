@@ -192,6 +192,45 @@ It has a boundary and [`contracts/silent_vault.py`](contracts/silent_vault.py)
 is on the other side of it: a protocol that shrinks its whole history to match
 its balance is consistent with everything the guard can check.
 
+### What the validators are asked, and what they are not
+
+Worth being exact about, because it is easy to read this the wrong way round.
+GenLayer's own assistant, given the description above, concluded that the
+equivalence principle was being used to verify a ledger balance. It is not, and
+if that reading is available then this page was not clear enough.
+
+**The balance and the arithmetic are deterministic and happen before the round.**
+`_balance_of` reads the chain, `_accounted_for` adds up the protocol's own
+positions, and `_overstated` compares the two. All ordinary Python, all outside
+any non-deterministic block, all settled before a validator is asked anything.
+Their result goes into the round as a plain local fact, alongside the red line
+and the evidence.
+
+**The round is asked exactly one thing**, and it is the thing no arithmetic can
+settle:
+
+> is this red line being crossed: `CROSSED` or `NOT_CROSSED`
+
+That single word is bound in `eq_principle.prompt_comparative`. Nothing else is:
+not the reasoning sentence, not the figures, not who gets paid. Which protocol
+stops, whose deposit moves and how much are all worked out afterwards in
+deterministic code from the one word the validators agreed on.
+
+The reason for that split is the whole design. Every extra field bound into an
+equivalence rule is another thing two validators can differ about, and a rule
+that binds a sentence is a rule that fails whenever two readers word the same
+judgement differently. Arithmetic does not need a jury, and a jury should not be
+asked to do arithmetic.
+
+There is a non-comparative principle in the SDK,
+`eq_principle.prompt_non_comparative(fn, task=…, criteria=…)`, where the leader
+performs a task and the other validators judge whether the result meets stated
+criteria. It is the right tool for open-ended output that validators could never
+match word for word. It is the wrong tool here: `CROSSED` is a word every
+validator can reach independently, and for a decision that stops a live protocol
+and moves somebody's deposit, each validator reaching it independently is
+stronger than each validator rating the leader's answer.
+
 ## The agent
 
 `watcher.mjs` reads a protected protocol and raises alarms itself. It notices
