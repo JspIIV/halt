@@ -238,10 +238,30 @@ and asks; it does not decide. That separation is the design and not a shortcut:
 an agent that decided by itself would be a pause button owned by whoever wrote
 the fastest bot.
 
-Pointed at two vaults it had never seen, with nobody in the loop, it flagged a
-coordinated pair and the network halted the protocol sixty seconds later, then
-flagged a coincidence and the network refused it, costing the agent its deposit.
-It was right once and wrong once and it paid for the wrong one.
+Four runs are recorded, in `results/watcher*.json`, against vaults it had never
+seen with nobody in the loop.
+
+| what was in front of it | what it did | what the network said |
+| --- | --- | --- |
+| one address over the line | raised | **upheld** |
+| two addresses in lockstep | raised | **upheld** |
+| two addresses that only looked alike | raised | **refused**, and it paid |
+| a fourth vault | **said nothing** | |
+
+The two that matter are the last two, and neither is the kind of result an agent
+is usually shown doing.
+
+It was wrong once and the round said exactly how: *"the deposits were 100
+seconds apart and the withdrawals were in the opposite order, contradicting
+'funded at the same time'"*. The watcher's rule of thumb is a share and a
+window; it cannot see order, and order is what the red line turns on. It lost
+its deposit for the difference, which is the arrangement working rather than
+failing.
+
+And once it looked at a vault and raised nothing at all. An agent that flags
+everything looks vigilant and is worthless, because every alarm it raises costs
+somebody the time to read it. Staying quiet is the harder half and it is the
+half nobody publishes.
 
 ## How well it works, including where it does not
 
