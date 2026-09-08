@@ -38,6 +38,25 @@ author controls.
 | what the protocol actually holds | nobody, it is the chain |
 | the claim | whoever raised the alarm |
 
+### There is no fifth thing, and no link
+
+Worth stating plainly, because two reviewers assumed the opposite on air and
+that is a failure of this page rather than of their attention.
+
+**The alarm carries text and a deposit. Nothing here fetches anything.**
+`raise_alarm(target, evidence)` takes an address and a claim. There is no URL in
+the signature, no `gl.nondet.web` call anywhere in
+[`contracts/halt.py`](contracts/halt.py), and therefore no page for anybody to
+stand up and fill with invented figures. The often quoted attack on designs like
+this, *I will host my own explorer and point the contract at it*, has no surface
+here at all.
+
+That is a deliberate narrowing. Reading the open web is the thing GenLayer is
+best known for, and it would have made this contract able to judge far more. It
+also would have handed the one input the claimant already controls a second,
+larger mouth. What the round is given instead is a claim, and two readings this
+contract takes for itself from the protocol and the chain.
+
 The two middle ones are read in code, before the round opens, because nothing
 inside a nondet block may read state:
 
