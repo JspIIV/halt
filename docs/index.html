@@ -122,7 +122,7 @@
         <div class="flex flex-wrap items-end justify-between gap-4 mb-3">
             <div>
                 <p class="font-mono text-xs text-brand-orange tracking-widest mb-2">WATCH IT HAPPEN</p>
-                <h2 class="text-3xl sm:text-4xl font-bold text-white">Four minutes, on a Thursday night.</h2>
+                <h2 class="text-3xl sm:text-4xl font-bold text-white">Two things that actually happened.</h2>
             </div>
             <div class="flex items-center gap-3">
                 <button id="wtplay" class="px-5 py-2.5 bg-brand-orange text-white font-semibold rounded-xl hover:bg-orange-600 transition-all">Play ▷</button>
@@ -130,7 +130,9 @@
                 <button id="wtnext" class="px-4 py-2.5 bg-brand-card border border-brand-border text-slate-300 rounded-xl hover:border-slate-600 transition-all font-mono text-sm">Next</button>
             </div>
         </div>
-        <p class="text-slate-400 max-w-3xl leading-relaxed mb-8">
+        <div id="wttabs" class="flex flex-wrap gap-2 mb-4"></div>
+        <p id="wtsub" class="text-slate-300 max-w-3xl leading-relaxed mb-2"></p>
+        <p class="text-slate-500 text-sm max-w-3xl leading-relaxed mb-8">
             Not an illustration. Every line below is read from
             <a href="./data.json" class="text-brand-orange hover:underline">data.json</a>,
             which is exported from the chain, and every time is the time it actually happened.
@@ -353,37 +355,57 @@
 <script>
 /* The walkthrough.
  *
- * Every step is built from the record, not written out here. The times are the
- * times these things happened, the amounts are the amounts that moved, and the
- * validators' sentence is theirs. A guided tour of a scenario would have been
- * easier to write and would have been worth nothing: the whole claim of this
- * project is that it happened, so the tour has to be of the thing that happened.
+ * Two episodes, both replays. Nothing here is written out: the times are the
+ * times these things happened, the amounts are what moved, and every sentence
+ * in quotes is the validators'. If the record changes this changes with it,
+ * because there is no second copy of the story in the page.
  *
- * If the record ever changes, this changes with it. There is no copy of the
- * story anywhere in here.
+ * There are two rather than one because a tour that only ever shows a
+ * successful halt teaches the wrong thing. Ten false alarms are on record and
+ * every one was refused, and a visitor who only saw the halt would reasonably
+ * conclude the network says yes to whoever asks.
+ *
+ * The refusals are drawn fresh each time, so somebody coming back sees a
+ * different set of the ten rather than the same four again.
  */
 function walkthrough(d) {
-  const steps = buildSteps(d);
-  if (!steps.length) return;
+  const shows = episodes(d).filter(e => e.steps.length);
+  if (!shows.length) return;
 
+  // Which one opens is chosen at random, so a second visit is not the first
+  // visit again.
+  let showing = Math.floor(Math.random() * shows.length);
   let at = 0;
   let playing = false;
   let timer = null;
 
+  const tabs = document.getElementById("wttabs");
   const list = document.getElementById("wtsteps");
   const bar = document.getElementById("wtbar");
   const playBtn = document.getElementById("wtplay");
 
-  list.innerHTML = steps.map((s, i) => `
-    <li>
-      <button data-go="${i}" class="w-full text-left px-4 py-3 rounded-xl border transition-all
-        border-transparent hover:border-brand-border">
-        <span class="font-mono text-[11px] text-slate-500">${String(i + 1).padStart(2, "0")}</span>
-        <span class="ml-3 text-sm text-slate-400">${esc(s.title)}</span>
-      </button>
-    </li>`).join("");
+  function drawTabs() {
+    tabs.innerHTML = shows.map((e, i) => `
+      <button data-show="${i}" class="px-4 py-2 rounded-xl border text-sm transition-all ${
+        i === showing
+          ? "border-brand-orange/50 bg-brand-orange/10 text-white font-semibold"
+          : "border-brand-border text-slate-400 hover:border-slate-600"
+      }">${esc(e.name)}</button>`).join("");
+  }
+
+  function drawList() {
+    const steps = shows[showing].steps;
+    list.innerHTML = steps.map((s, i) => `
+      <li>
+        <button data-go="${i}" class="w-full text-left px-4 py-3 rounded-xl border transition-all border-transparent hover:border-brand-border">
+          <span class="font-mono text-[11px] text-slate-500">${String(i + 1).padStart(2, "0")}</span>
+          <span class="ml-3 text-sm text-slate-400">${esc(s.title)}</span>
+        </button>
+      </li>`).join("");
+  }
 
   function show(i) {
+    const steps = shows[showing].steps;
     at = (i + steps.length) % steps.length;
     const s = steps[at];
 
@@ -396,6 +418,7 @@ function walkthrough(d) {
         "ml-3 text-sm " + (on ? "text-white font-semibold" : "text-slate-400");
     });
 
+    document.getElementById("wtsub").textContent = shows[showing].subtitle;
     document.getElementById("wtclock").textContent = s.clock || "";
     document.getElementById("wttag").textContent = s.tag || "";
     document.getElementById("wthead").textContent = s.head;
@@ -432,9 +455,9 @@ function walkthrough(d) {
     clearInterval(timer);
     timer = setInterval(() => {
       // Stops at the end rather than looping. Somebody who has watched it
-      // through has finished, and a tour that starts over on its own takes the
-      // ending away from them.
-      if (at === steps.length - 1) return stop();
+      // through has finished, and starting over on its own takes the ending
+      // away from them.
+      if (at === shows[showing].steps.length - 1) return stop();
       show(at + 1);
     }, 5200);
   }
@@ -448,11 +471,21 @@ function walkthrough(d) {
     stop();
     show(Number(b.dataset.go));
   };
+  tabs.onclick = e => {
+    const b = e.target.closest("[data-show]");
+    if (!b) return;
+    stop();
+    showing = Number(b.dataset.show);
+    drawTabs();
+    drawList();
+    show(0);
+  };
 
+  drawTabs();
+  drawList();
   show(0);
 }
 
-/* Times as they were, in the reader's own zone, with the gap that matters. */
 function clockOf(iso) {
   if (!iso) return "";
   try {
@@ -470,7 +503,28 @@ function gapBetween(a, b) {
   return Math.round(seconds / 60) + " minutes later";
 }
 
-function buildSteps(d) {
+/** A few of the ten, chosen fresh, so a second visit is a different set. */
+function someOf(all, howMany) {
+  const left = [...all];
+  const out = [];
+  while (out.length < howMany && left.length) {
+    out.push(left.splice(Math.floor(Math.random() * left.length), 1)[0]);
+  }
+  return out;
+}
+
+function episodes(d) {
+  return [
+    { name: "The vault that was emptied",
+      subtitle: "One alarm, from the red line being published to a withdrawal refused two days later.",
+      steps: theHalt(d) },
+    { name: "The alarms that were refused",
+      subtitle: "Ten false alarms are on record and none of them got through. Here are four of them, drawn at random.",
+      steps: theRefusals(d) },
+  ];
+}
+
+function theHalt(d) {
   const guard = d.guard || {};
   const alarm = (d.alarms || [])[0];
   if (!alarm) return [];
@@ -545,10 +599,10 @@ function buildSteps(d) {
         + "applies to it. Between them they have taken " + share + " percent of "
         + "everything the vault holds, and the line says no more than a third. "
         + "No address broke a rule. The vault was emptied anyway.",
-      // Both numbers happen to be the same, and they are not the same fact: one
-      // is a share of a deposit and the other a share of the vault. Put side by
-      // side with the line they are measured against, because the whole case is
-      // the distance between them.
+      // Both numbers happen to be the same and they are not the same fact: one
+      // is a share of a deposit, the other a share of the vault. Side by side
+      // with the line they are measured against, because the distance between
+      // them is the argument.
       facts: [["each, of its own deposit", eachShare + "%"],
               ["the two together, of the vault", share + "%"],
               ["what the line allows", "a third"]],
@@ -596,6 +650,61 @@ function buildSteps(d) {
       note: "Read from the chain when this page was exported: " + (d.exported_at || ""),
     },
   ];
+}
+
+function theRefusals(d) {
+  const battery = d.battery || {};
+  const all = battery.refusals || [];
+  const sum = battery.summary || {};
+  if (!all.length) return [];
+
+  const picked = someOf(all, Math.min(4, all.length));
+
+  const steps = [{
+    title: "The other half of the job",
+    tag: "why this matters",
+    head: "Stopping a protocol on a false alarm is the worse failure.",
+    says: "A guard that upholds whatever it is handed is not protection, it is a "
+      + "button anyone can press to stop a competitor. So the alarms that were "
+      + "refused are kept and published alongside the ones that worked. Each of "
+      + "these was raised for real, cost its claimant a deposit, and has a "
+      + "transaction behind it.",
+    facts: [["false alarms raised", String(sum.false_alarms ?? all.length)],
+            ["refused", String(sum.refused ?? all.length)],
+            ["let through", String(sum.let_through ?? 0)]],
+  }];
+
+  for (const r of picked) {
+    steps.push({
+      title: r.label,
+      tag: r.outcome || "REFUSED",
+      head: "Refused: " + r.label + ".",
+      says: "The claimant put up a deposit and lost it. The round did not weigh "
+        + "whether this sounded serious; it asked whether the thing described is "
+        + "happening now, to this protocol, against the line that was published.",
+      quote: r.why,
+      quoteBy: "the round's own reason for refusing",
+      facts: [["outcome", r.outcome || "REFUSED"],
+              ["took", (r.seconds ? r.seconds + " seconds" : "")],
+              ["transaction", r.tx ? String(r.tx).slice(0, 18) + "…" : ""]],
+    });
+  }
+
+  steps.push({
+    title: "None of them got through",
+    tag: "the record",
+    head: (sum.refused ?? all.length) + " raised, " + (sum.let_through ?? 0) + " let through.",
+    says: "Every false alarm on record was refused, and the deposits are gone. "
+      + "That is the number worth checking before trusting any of this: not how "
+      + "often it stopped something, but how often it stopped something it "
+      + "should not have.",
+    facts: [["median to a verdict", (sum.median_seconds ?? "?") + " seconds"],
+            ["fastest", (sum.fastest ?? "?") + " seconds"],
+            ["slowest", (sum.slowest ?? "?") + " seconds"]],
+    note: "Four of " + all.length + " shown, drawn at random. Reload for a different set.",
+  });
+
+  return steps;
 }
 
 /* The design above is fixed. What follows only fills it with what is actually on
