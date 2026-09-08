@@ -86,7 +86,6 @@
             <div class="flex flex-wrap items-center gap-4 pt-4">
                 <a href="#watch" class="px-6 py-3.5 bg-brand-orange text-white font-semibold rounded-xl glow-box hover:bg-orange-600 transition-all">Watch It Happen ▷</a>
                 <a href="#broke" class="px-6 py-3.5 bg-brand-card border border-brand-border text-slate-200 font-semibold rounded-xl hover:border-slate-600 transition-all">See What Broke</a>
-                <a href="https://github.com/JspIIV/halt" target="_blank" class="px-6 py-3.5 bg-brand-card border border-brand-border text-slate-200 font-semibold rounded-xl hover:border-slate-600 transition-all">Read Contracts</a>
             </div>
         </div>
 
@@ -503,7 +502,7 @@ function gapBetween(a, b) {
   return Math.round(seconds / 60) + " minutes later";
 }
 
-/** A few of the ten, chosen fresh, so a second visit is a different set. */
+/** The same set, in a fresh order, so a second visit is not the first again. */
 function someOf(all, howMany) {
   const left = [...all];
   const out = [];
@@ -519,7 +518,7 @@ function episodes(d) {
       subtitle: "One alarm, from the red line being published to a withdrawal refused two days later.",
       steps: theHalt(d) },
     { name: "The alarms that were refused",
-      subtitle: "Ten false alarms are on record and none of them got through. Here are four of them, drawn at random.",
+      subtitle: "Every false alarm on record, and not one of them got through. The order changes each time you come back.",
       steps: theRefusals(d) },
   ];
 }
@@ -658,7 +657,10 @@ function theRefusals(d) {
   const sum = battery.summary || {};
   if (!all.length) return [];
 
-  const picked = someOf(all, Math.min(4, all.length));
+  // All of them, in a different order each time. Showing a handful kept the
+  // episode short and quietly made the strongest number unverifiable: "none of
+  // them got through" is worth more when a reader can count them.
+  const picked = someOf(all, all.length);
 
   const steps = [{
     title: "The other half of the job",
@@ -701,7 +703,7 @@ function theRefusals(d) {
     facts: [["median to a verdict", (sum.median_seconds ?? "?") + " seconds"],
             ["fastest", (sum.fastest ?? "?") + " seconds"],
             ["slowest", (sum.slowest ?? "?") + " seconds"]],
-    note: "Four of " + all.length + " shown, drawn at random. Reload for a different set.",
+    note: "All " + all.length + " are above, in a different order each visit.",
   });
 
   return steps;
