@@ -84,7 +84,8 @@
                 A protocol publishes a red line in plain language and funds a bounty. Anyone who finds it being crossed says so, with evidence and a deposit. The validators read the evidence themselves, and the protocol stops in that same transaction.
             </p>
             <div class="flex flex-wrap items-center gap-4 pt-4">
-                <a href="#broke" class="px-6 py-3.5 bg-brand-orange text-white font-semibold rounded-xl glow-box hover:bg-orange-600 transition-all">See What Broke ▷</a>
+                <a href="#watch" class="px-6 py-3.5 bg-brand-orange text-white font-semibold rounded-xl glow-box hover:bg-orange-600 transition-all">Watch It Happen ▷</a>
+                <a href="#broke" class="px-6 py-3.5 bg-brand-card border border-brand-border text-slate-200 font-semibold rounded-xl hover:border-slate-600 transition-all">See What Broke</a>
                 <a href="https://github.com/JspIIV/halt" target="_blank" class="px-6 py-3.5 bg-brand-card border border-brand-border text-slate-200 font-semibold rounded-xl hover:border-slate-600 transition-all">Read Contracts</a>
             </div>
         </div>
@@ -112,6 +113,52 @@
                     <span>No key handed over</span>
                     <span class="text-brand-orange">Four lines</span>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WALKTHROUGH: one alarm, replayed from the record -->
+    <section id="watch" class="max-w-7xl mx-auto px-6 py-16 border-t border-brand-border/60">
+        <div class="flex flex-wrap items-end justify-between gap-4 mb-3">
+            <div>
+                <p class="font-mono text-xs text-brand-orange tracking-widest mb-2">WATCH IT HAPPEN</p>
+                <h2 class="text-3xl sm:text-4xl font-bold text-white">Four minutes, on a Thursday night.</h2>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="wtplay" class="px-5 py-2.5 bg-brand-orange text-white font-semibold rounded-xl hover:bg-orange-600 transition-all">Play ▷</button>
+                <button id="wtback" class="px-4 py-2.5 bg-brand-card border border-brand-border text-slate-300 rounded-xl hover:border-slate-600 transition-all font-mono text-sm">Back</button>
+                <button id="wtnext" class="px-4 py-2.5 bg-brand-card border border-brand-border text-slate-300 rounded-xl hover:border-slate-600 transition-all font-mono text-sm">Next</button>
+            </div>
+        </div>
+        <p class="text-slate-400 max-w-3xl leading-relaxed mb-8">
+            Not an illustration. Every line below is read from
+            <a href="./data.json" class="text-brand-orange hover:underline">data.json</a>,
+            which is exported from the chain, and every time is the time it actually happened.
+        </p>
+
+        <div class="h-1 bg-brand-border/60 rounded-full overflow-hidden mb-8">
+            <div id="wtbar" class="h-full bg-brand-orange transition-all duration-500" style="width:0%"></div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- the steps -->
+            <ol id="wtsteps" class="lg:col-span-4 space-y-1"></ol>
+
+            <!-- the step being shown -->
+            <div class="lg:col-span-8">
+                <div class="bg-brand-card border border-brand-border rounded-2xl overflow-hidden">
+                    <div class="px-5 py-3 bg-brand-bg/60 border-b border-brand-border flex items-center justify-between font-mono text-xs">
+                        <span id="wtclock" class="text-slate-400"></span>
+                        <span id="wttag" class="text-slate-500"></span>
+                    </div>
+                    <div class="p-6 sm:p-8">
+                        <h3 id="wthead" class="text-2xl font-bold text-white mb-3"></h3>
+                        <p id="wtsays" class="text-slate-300 leading-relaxed mb-5"></p>
+                        <div id="wtfacts" class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5"></div>
+                        <div id="wtquote" class="hidden border-l-2 border-brand-orange/60 pl-4 py-1"></div>
+                    </div>
+                </div>
+                <p id="wtnote" class="text-xs text-slate-500 font-mono mt-4"></p>
             </div>
         </div>
     </section>
@@ -304,6 +351,253 @@
     </footer>
 
 <script>
+/* The walkthrough.
+ *
+ * Every step is built from the record, not written out here. The times are the
+ * times these things happened, the amounts are the amounts that moved, and the
+ * validators' sentence is theirs. A guided tour of a scenario would have been
+ * easier to write and would have been worth nothing: the whole claim of this
+ * project is that it happened, so the tour has to be of the thing that happened.
+ *
+ * If the record ever changes, this changes with it. There is no copy of the
+ * story anywhere in here.
+ */
+function walkthrough(d) {
+  const steps = buildSteps(d);
+  if (!steps.length) return;
+
+  let at = 0;
+  let playing = false;
+  let timer = null;
+
+  const list = document.getElementById("wtsteps");
+  const bar = document.getElementById("wtbar");
+  const playBtn = document.getElementById("wtplay");
+
+  list.innerHTML = steps.map((s, i) => `
+    <li>
+      <button data-go="${i}" class="w-full text-left px-4 py-3 rounded-xl border transition-all
+        border-transparent hover:border-brand-border">
+        <span class="font-mono text-[11px] text-slate-500">${String(i + 1).padStart(2, "0")}</span>
+        <span class="ml-3 text-sm text-slate-400">${esc(s.title)}</span>
+      </button>
+    </li>`).join("");
+
+  function show(i) {
+    at = (i + steps.length) % steps.length;
+    const s = steps[at];
+
+    [...list.querySelectorAll("button")].forEach((b, n) => {
+      const on = n === at;
+      b.className = "w-full text-left px-4 py-3 rounded-xl border transition-all "
+        + (on ? "border-brand-orange/50 bg-brand-orange/5"
+              : "border-transparent hover:border-brand-border");
+      b.querySelector("span:last-child").className =
+        "ml-3 text-sm " + (on ? "text-white font-semibold" : "text-slate-400");
+    });
+
+    document.getElementById("wtclock").textContent = s.clock || "";
+    document.getElementById("wttag").textContent = s.tag || "";
+    document.getElementById("wthead").textContent = s.head;
+    document.getElementById("wtsays").textContent = s.says;
+    document.getElementById("wtnote").textContent = s.note || "";
+
+    document.getElementById("wtfacts").innerHTML = (s.facts || []).map(f => `
+      <div class="bg-brand-bg/60 border border-brand-border rounded-xl px-4 py-3">
+        <p class="font-mono text-[10px] text-slate-500 tracking-wider uppercase mb-1">${esc(f[0])}</p>
+        <p class="font-mono text-sm text-slate-200 break-all">${esc(f[1])}</p>
+      </div>`).join("");
+
+    const quote = document.getElementById("wtquote");
+    if (s.quote) {
+      quote.className = "border-l-2 border-brand-orange/60 pl-4 py-1";
+      quote.innerHTML = `<p class="text-slate-300 italic leading-relaxed">${esc(s.quote)}</p>`
+        + (s.quoteBy ? `<p class="font-mono text-[11px] text-slate-500 mt-2">${esc(s.quoteBy)}</p>` : "");
+    } else {
+      quote.className = "hidden";
+    }
+
+    bar.style.width = Math.round(((at + 1) / steps.length) * 100) + "%";
+  }
+
+  function stop() {
+    playing = false;
+    clearInterval(timer);
+    playBtn.textContent = "Play ▷";
+  }
+
+  function play() {
+    playing = true;
+    playBtn.textContent = "Pause";
+    clearInterval(timer);
+    timer = setInterval(() => {
+      // Stops at the end rather than looping. Somebody who has watched it
+      // through has finished, and a tour that starts over on its own takes the
+      // ending away from them.
+      if (at === steps.length - 1) return stop();
+      show(at + 1);
+    }, 5200);
+  }
+
+  playBtn.onclick = () => (playing ? stop() : play());
+  document.getElementById("wtnext").onclick = () => { stop(); show(at + 1); };
+  document.getElementById("wtback").onclick = () => { stop(); show(at - 1); };
+  list.onclick = e => {
+    const b = e.target.closest("[data-go]");
+    if (!b) return;
+    stop();
+    show(Number(b.dataset.go));
+  };
+
+  show(0);
+}
+
+/* Times as they were, in the reader's own zone, with the gap that matters. */
+function clockOf(iso) {
+  if (!iso) return "";
+  try {
+    return new Date(iso).toLocaleString(undefined, {
+      month: "short", day: "numeric", hour: "2-digit",
+      minute: "2-digit", second: "2-digit",
+    });
+  } catch { return iso; }
+}
+
+function gapBetween(a, b) {
+  const seconds = Math.round((new Date(b) - new Date(a)) / 1000);
+  if (!isFinite(seconds)) return "";
+  if (seconds < 90) return seconds + " seconds later";
+  return Math.round(seconds / 60) + " minutes later";
+}
+
+function buildSteps(d) {
+  const guard = d.guard || {};
+  const alarm = (d.alarms || [])[0];
+  if (!alarm) return [];
+
+  // The ledger arrives newest first. Read it the way it happened.
+  const ledger = [...(d.ledger || [])].reverse();
+  const deposits = ledger.filter(e => e.kind === "deposit");
+  const withdrawals = ledger.filter(e => e.kind === "withdraw");
+  const blocked = ledger.filter(e => e.kind === "blocked").pop();
+  if (deposits.length < 2 || withdrawals.length < 2) return [];
+
+  const [d1, d2] = deposits;
+  const [w1, w2] = withdrawals;
+  const held = Number(((d.vault_status || {}).held) || 0);
+  const takenTogether = Number(w1.amount) + Number(w2.amount);
+  const wholeVault = held + takenTogether;
+  const share = wholeVault ? Math.round((takenTogether / wholeVault) * 100) : 0;
+  const eachShare = Number(d1.amount)
+    ? Math.round((Number(w1.amount) / Number(d1.amount)) * 100) : 0;
+
+  return [
+    {
+      title: "A protocol publishes its red line",
+      clock: clockOf(guard.opened_at),
+      tag: "protection opens",
+      head: "The rule is written before anything happens.",
+      says: "In plain language, on chain, where anybody can read it. It is not a "
+        + "threshold in somebody's code: it says what counts as one actor, which "
+        + "is the part no contract can work out for itself.",
+      quote: guard.red_line,
+      quoteBy: "the published red line",
+      facts: [["protocol", d.vault], ["guardian", d.halt], ["network", d.network]],
+    },
+    {
+      title: "One address takes a position",
+      clock: clockOf(d1.at),
+      tag: "ordinary",
+      head: "Nothing about this is unusual.",
+      says: "A deposit like any other. On its own there is nothing here to see, "
+        + "and there is not meant to be.",
+      facts: [["who", d1.who], ["deposited", gen(d1.amount) + " GEN"],
+              ["when", clockOf(d1.at)]],
+    },
+    {
+      title: "A second address does the same",
+      clock: clockOf(d2.at),
+      tag: "ordinary",
+      head: "The same amount, " + gapBetween(d1.at, d2.at) + ".",
+      says: "Still nothing a rule could object to. Two people are allowed to "
+        + "deposit the same amount a minute apart, and most of the time that is "
+        + "all it is.",
+      facts: [["who", d2.who], ["deposited", gen(d2.amount) + " GEN"],
+              ["after the first", gapBetween(d1.at, d2.at)]],
+    },
+    {
+      title: "The first withdraws, inside every rule",
+      clock: clockOf(w1.at),
+      tag: "permitted",
+      head: eachShare + " percent of its own deposit.",
+      says: "Every per address limit anybody could write is satisfied, with room "
+        + "to spare. A threshold watching addresses sees a small withdrawal and "
+        + "lets it through, correctly.",
+      facts: [["who", w1.who], ["withdrew", gen(w1.amount) + " GEN"],
+              ["of its own deposit", eachShare + "%"]],
+    },
+    {
+      title: "The second withdraws, in the same order",
+      clock: clockOf(w2.at),
+      tag: "the coincidence",
+      head: "Same share, " + gapBetween(w1.at, w2.at) + ", same order they funded.",
+      says: "Now both are out, and each one is still inside every limit that "
+        + "applies to it. Between them they have taken " + share + " percent of "
+        + "everything the vault holds, and the line says no more than a third. "
+        + "No address broke a rule. The vault was emptied anyway.",
+      // Both numbers happen to be the same, and they are not the same fact: one
+      // is a share of a deposit and the other a share of the vault. Put side by
+      // side with the line they are measured against, because the whole case is
+      // the distance between them.
+      facts: [["each, of its own deposit", eachShare + "%"],
+              ["the two together, of the vault", share + "%"],
+              ["what the line allows", "a third"]],
+    },
+    {
+      title: "Somebody says so, with money on it",
+      clock: clockOf(alarm.at),
+      tag: "alarm raised",
+      head: "An alarm costs the person raising it.",
+      says: "Anyone may raise one, and a false alarm loses the deposit. That is "
+        + "what keeps this from being a button anybody can press to stop a "
+        + "protocol they dislike.",
+      quote: alarm.evidence,
+      quoteBy: "the evidence submitted, by " + short(alarm.by),
+      facts: [["raised by", alarm.by], ["deposit at risk", gen(alarm.deposit) + " GEN"],
+              ["against", alarm.target]],
+    },
+    {
+      title: "The validators read it themselves",
+      clock: clockOf(alarm.at),
+      tag: alarm.outcome,
+      head: "They have to agree, or nothing moves.",
+      says: "They read the evidence, the protocol's own account of itself, and "
+        + "the balance the guardian read off the chain rather than from the "
+        + "report. One word goes to consensus. Everything after it is arithmetic.",
+      quote: alarm.why,
+      quoteBy: "the round's own reason for upholding it",
+      facts: [["outcome", alarm.outcome],
+              ["paid to the claimant", gen(alarm.paid) + " GEN"],
+              ["from the bounty", "not from anybody's deposit"]],
+    },
+    {
+      title: "The protocol stops",
+      clock: blocked ? clockOf(blocked.at) : clockOf(alarm.at),
+      tag: "still halted",
+      head: "And it is still stopped, right now.",
+      says: "Not a warning, not a score somebody has to act on. The next "
+        + "withdrawal is refused by the protocol itself, because it asks the "
+        + "guardian before it pays. No key was handed to anybody to make that "
+        + "happen.",
+      facts: blocked
+        ? [["refused", gen(blocked.wanted) + " GEN"], ["to", blocked.who],
+           ["when", clockOf(blocked.at)]]
+        : [["protocol", d.vault], ["state", "halted"]],
+      note: "Read from the chain when this page was exported: " + (d.exported_at || ""),
+    },
+  ];
+}
+
 /* The design above is fixed. What follows only fills it with what is actually on
    chain: the addresses, the amounts, the runs and their transactions. Nothing
    here is a sample row. */
@@ -313,6 +607,7 @@ const short = a => String(a).slice(0, 10) + "…";
 const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
 
 fetch("./data.json").then(r => r.json()).then(d => {
+  walkthrough(d);
   const co = d.coordination;
   const url = "https://explorer-studio.genlayer.com/address/" + d.halt;
   ["studiolink", "explorerlink"].forEach(id => {
