@@ -266,7 +266,7 @@ def _read_appeal(raw: str) -> str:
 
 
 def _appeal_task(line: str, evidence: str, answer: str, target: str, facts: str,
-                 chain: str, overstated: bool) -> str:
+                 chain: str, overstated: bool, record: str) -> str:
     """The second look, asked the other way round.
 
     Deliberately not a rerun of the first question. Asking "is the line crossed"
@@ -287,6 +287,19 @@ report that does not match its own balance has not met the alarm. The stop
     else:
         weighed = chain
 
+    # The same book the alarm was judged against, so the second look is not
+    # working from less than the first did.
+    if record:
+        ledger = f"""WHAT THE PROTOCOL RECORDS HAVING HAPPENED, movement by movement:
+{record}
+
+Settle it here. If these movements show what the alarm described, it was right
+whatever the owner says about it. If they do not show it, the alarm rested on
+figures the protocol's own book does not carry."""
+    else:
+        ledger = """THE PROTOCOL PUBLISHES NO MOVEMENT RECORD, so neither side's account of
+what moved can be checked against it here."""
+
     return f"""A protocol was stopped by an alarm. Its owner says the alarm was
 wrong and wants the stop lifted. Decide one thing only.
 
@@ -306,6 +319,8 @@ either side:
 {reported}
 
 {weighed}
+
+{ledger}
 
 Answer {WRONGLY_RAISED} if the alarm should not have been upheld: what it claimed
 is contradicted by what the protocol reports, or it described something that is
@@ -397,8 +412,90 @@ def _chain_facts(now: int, before: int, before_at: str, owed: int) -> str:
     return " ".join(lines)
 
 
+MAX_RECORD = 1400
+MOVEMENTS = 40
+
+
+MAX_WITNESS = 900
+
+
+def _witness_says(witness: str, target: str) -> str:
+    """What the protocol's own named agent reports about this accusation.
+
+    A reviewer put the gap plainly: the claim comes from outside and nothing
+    from inside the protocol answers it. Their suggestion was an agent internal
+    to the project, with read only access to the code and the data, producing
+    evidence the round could weigh against the outsider's claim.
+
+    This is that, in the only shape a contract can hold: the owner names an
+    address in advance, while nothing is happening, and the guardian reads one
+    view from it at the moment an alarm arrives. `report(target)` returning a
+    string. What sits behind that address is the protocol's business, and it can
+    be as clever as they like: an oracle, a monitor, a contract another agent
+    writes to.
+
+    **It is the accused's own witness and the round is told so.** That is not a
+    weakness as long as it is said: a witness the accused chose is worth a great
+    deal when it agrees with the accuser and very little when it agrees with the
+    accused. The prompt is explicit about that asymmetry, because the reverse
+    reading would hand every protocol a way to talk its way out.
+
+    It cannot be added or changed once an alarm is standing, and when it was
+    named goes into the round alongside what it says.
+    """
+    try:
+        return _clip(str(gl.get_contract_at(Address(witness)).view().report(target)),
+                     MAX_WITNESS)
+    except Exception:
+        return ""
+
+
+def _record_of(address: str) -> str:
+    """The movements a protocol says happened, one per line, newest last.
+
+    `status()` is a summary the protocol wrote about itself, and a summary
+    cannot corroborate a claim about particular movements. Somebody says an
+    address took three withdrawals in eight minutes; totals can say the vault
+    still holds what it should and nothing more, and a round with only totals
+    in front of it is deciding whether a story sounds plausible.
+
+    That is not a hypothetical failure. It is on record here: a **true** alarm
+    was refused because the claim named per address figures the protocol did
+    not report, so nothing in front of the round bore it out. Refusing was the
+    only defensible answer to what it was shown, and the person telling the
+    truth lost their deposit.
+
+    So the ledger is asked for as well. The convention is one more optional
+    view, `entries(count)`, returning the protocol's own record of what moved.
+    A protocol that does not have one is not punished for it: the round is told
+    the record is unavailable and judges on the summary alone, exactly as
+    before.
+
+    It is still the accused's own book. It is not proof of anything by itself,
+    and the arithmetic against the chain balance is what keeps it honest: a
+    protocol can leave a movement out of its ledger, and then its own totals
+    stop matching what it holds.
+    """
+    try:
+        answer = str(gl.get_contract_at(Address(address)).view().entries(str(MOVEMENTS)))
+    except Exception:
+        return ""
+    try:
+        said = json.loads(answer)
+    except Exception:
+        return _clip(answer, MAX_RECORD)
+    rows = said.get("entries") if isinstance(said, dict) else None
+    if not isinstance(rows, list) or not rows:
+        return ""
+    lines = []
+    for item in rows:
+        lines.append(json.dumps(item, sort_keys=True))
+    return _clip(chr(10).join(lines), MAX_RECORD)
+
+
 def _task(line: str, evidence: str, target: str, facts: str,
-          chain: str, overstated: bool) -> str:
+          chain: str, overstated: bool, record: str,
+          witness: str, witness_named: str) -> str:
     """Built from locals only. Nothing here may touch `self`."""
     reported = facts if facts else (
         "The protocol did not answer when it was asked. Nothing about its current "
@@ -429,6 +526,54 @@ contradicted."""
         weighed = chain
         unless = ""
 
+    # Said differently depending on whether there is a record, because an
+    # instruction about a document that is not in front of the reader is worse
+    # than saying nothing: it invites them to imagine one.
+    if record:
+        ledger = f"""WHAT THE PROTOCOL RECORDS HAVING HAPPENED, movement by movement, read from it
+just now and not supplied by whoever raised the alarm:
+{record}
+
+This is the protocol's own book rather than its summary of itself, and it is
+where a claim about particular movements is settled. **Every movement the claim
+asserts has to appear here.** A claim naming amounts, addresses or timings this
+record does not show is {NOT_CROSSED}, however precisely it is written and
+however plausible it sounds: precision is not evidence, and an invented figure
+is easier to write than a true one. Where the record does show them, that is the
+claim corroborated out of the accused's own book, which is the strongest thing
+available in this decision.
+
+Read the movements themselves rather than the summary above them. Who moved
+what, in what order, how close together: that is what a red line about patterns
+is asking about, and it is here rather than in any total."""
+    else:
+        ledger = """THE PROTOCOL PUBLISHES NO MOVEMENT RECORD.
+
+It answers with totals and nothing more, so there is nothing here against which
+a claim about particular withdrawals can be checked. That cuts both ways and it
+is not the claimant's fault: a true claim naming figures this protocol never
+reports cannot be corroborated either. Decide on what is actually in front of
+you, and do not treat the absence of a record as though it were a record
+showing nothing happened."""
+
+    # The accused's own witness, and the asymmetry that makes it usable.
+    if witness:
+        spoken = f"""WHAT THE PROTOCOL'S OWN WITNESS REPORTS, read from the address its owner named
+on {witness_named}, before any of this:
+{witness}
+
+This is not a neutral party. It is an agent the accused chose and could have
+built to say anything, so weigh it accordingly: **where it agrees with the
+claim, it is strong, because a protocol's own witness has no reason to accuse
+it.** Where it agrees with the protocol, it is worth about as much as the
+protocol saying so itself, which is to say it settles nothing. It cannot lift a
+claim the movement record supports, and a protocol whose witness contradicts its
+own book has produced a fact worth naming in your sentence rather than a
+defence."""
+    else:
+        spoken = """THE PROTOCOL NAMED NO WITNESS, so nothing from inside it answers this claim
+beyond its own report and its own book."""
+
     return f"""A protocol published a red line. Somebody says it is being crossed
 right now and wants the protocol stopped. Decide one thing only.
 
@@ -452,6 +597,10 @@ reproduced above and it means what it says there. Where the report contradicts
 the line, the line wins.
 
 {weighed}
+
+{ledger}
+
+{spoken}
 
 THE CLAIM MADE ABOUT IT:
 {evidence}
@@ -569,6 +718,9 @@ class Halt(gl.Contract):
             "alarms_upheld": 0,
             "alarms_refused": 0,
             "alarms_overturned": 0,
+            # Named later, by the owner, and never while an alarm is standing.
+            "witness": None,
+            "witness_named_at": None,
             "opened_at": _now_iso(),
             # What the protocol held when protection opened. Refreshed every
             # time this contract looks at it, so an alarm can be told whether
@@ -643,8 +795,16 @@ class Halt(gl.Contract):
                              owed)
         overstated = _overstated(held, owed)
 
+        # Its own book as well as its own summary. This is the difference
+        # between a round weighing a story and a round checking one.
+        movements = _record_of(address)
+
+        witness = str(record.get("witness") or "")
+        spoken = _witness_says(witness, address) if witness else ""
+
         line = str(record["red_line"])
-        task = _task(line, shown, address, facts, chain, overstated)
+        task = _task(line, shown, address, facts, chain, overstated, movements,
+                     spoken, str(record.get("witness_named_at") or ""))
 
         def run() -> str:
             try:
@@ -795,9 +955,12 @@ class Halt(gl.Contract):
                              owed)
         overstated = _overstated(held, owed)
 
+        movements = _record_of(address)
+
         line = str(record["red_line"])
         claimed = str(alarm["evidence"])
-        task = _appeal_task(line, claimed, said, address, facts, chain, overstated)
+        task = _appeal_task(line, claimed, said, address, facts, chain, overstated,
+                            movements)
 
         def run() -> str:
             try:
@@ -909,6 +1072,43 @@ class Halt(gl.Contract):
         if left > 0:
             _Recipient(gl.message.sender_address).emit_transfer(value=int(left))
         return json.dumps({"ok": True, "target": address, "returned": str(left)})
+
+    @gl.public.write
+    def name_witness(self, target: str, witness: str) -> str:
+        """Name the agent that will answer for this protocol when an alarm comes.
+
+        The owner only, and only while the guard is open with no alarm standing.
+        Naming one in the middle of an accusation would be choosing a defence
+        after seeing the charge, which is the one thing this cannot allow: the
+        value of a witness here is entirely that it was chosen before anybody
+        knew what it would be asked.
+
+        It can be replaced the same way, in quiet, and every replacement is
+        dated in the record the alarm reads. A protocol that changed witnesses
+        the week before an alarm has told you something.
+        """
+        address = _address(target)
+        speaker = _address(witness)
+        if not address or address not in self.guards:
+            return json.dumps({"ok": False, "error": "nothing is protected at that address"})
+        if not speaker:
+            return json.dumps({"ok": False, "error": "give the witness address"})
+
+        record = json.loads(self.guards[address])
+        if _addr(gl.message.sender_address.as_hex) != record["owner"]:
+            return json.dumps({"ok": False, "error": "only the owner names a witness"})
+        if record["state"] != OPEN:
+            return json.dumps({"ok": False,
+                               "error": "the guard is up; a witness cannot be chosen now"})
+        if self._standing_alarm(address) is not None:
+            return json.dumps({"ok": False,
+                               "error": "an alarm is standing; a witness cannot be chosen now"})
+
+        record["witness"] = speaker
+        record["witness_named_at"] = _now_iso()
+        self.guards[address] = json.dumps(record)
+        return json.dumps({"ok": True, "target": address, "witness": speaker,
+                           "named_at": record["witness_named_at"]})
 
     # ------------------------------------------------- the part with no round
 

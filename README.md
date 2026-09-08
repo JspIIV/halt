@@ -28,15 +28,18 @@ on a GenLayer call, is that the claimant writes the evidence, so the claimant ca
 write anything. Point it at a page you control, invent the figures, and stop
 whichever protocol you like.
 
-The claim is one of four things the round is given, and it is the only one its
-author controls.
+The claim is one of five things the round is given, and it is the only one its
+author controls. Everything else is read by this contract, from the protocol and
+from the chain, in the same transaction that judges the claim.
 
-| what the round reads | who wrote it |
-| --- | --- |
-| the red line | the protocol's owner, published before any of this and never editable |
-| what the protocol reports about itself | the protocol, read from it in this same transaction |
-| what the protocol actually holds | nobody, it is the chain |
-| the claim | whoever raised the alarm |
+| what the round reads | who wrote it | what it settles |
+| --- | --- | --- |
+| the red line | the owner, published before any of this and never editable | what counts as a breach |
+| what the protocol reports about itself | the protocol, read from it in this transaction | its own totals |
+| **its movement record** | the protocol's own ledger, read the same way | who moved what, in what order |
+| **its witness** | an agent the owner named in advance, read at the moment of the alarm | the arithmetic, worked from the same ledger |
+| what it actually holds | nobody, it is the chain | whether the rest of it is true |
+| the claim | whoever raised the alarm | nothing on its own |
 
 ### There is no fifth thing, and no link
 
@@ -57,8 +60,8 @@ also would have handed the one input the claimant already controls a second,
 larger mouth. What the round is given instead is a claim, and two readings this
 contract takes for itself from the protocol and the chain.
 
-The two middle ones are read in code, before the round opens, because nothing
-inside a nondet block may read state:
+Everything above the claim is read in code, before the round opens, because
+nothing inside a nondet block may read state:
 
 ```python
 # The protocol's own account of itself, read here rather than taken on trust
@@ -121,8 +124,120 @@ has the protocol that defeated a true alarm by reporting money it had already
 paid out, and the boundary where the check stops working.
 
 **None of this makes the claim itself trustworthy**, and it is not meant to. It
-makes the claim answerable: it has to survive two documents its author did not
+makes the claim answerable: it has to survive four readings its author did not
 write.
+
+### The protocol's own book, and why totals were not enough
+
+A summary cannot corroborate a claim about particular movements. Somebody says
+an address took three withdrawals in eight minutes; totals can say the vault
+still holds roughly what it should, and nothing more. A round with only totals
+in front of it is deciding whether a story sounds plausible, which is exactly
+the failure a guard like this is supposed to avoid.
+
+That is not hypothetical. It is on record here: **a true alarm was refused**
+because the claim named per address figures the protocol did not report, so
+nothing in front of the round bore it out. Refusing was the only defensible
+answer to what it was shown, and the person telling the truth lost their
+deposit.
+
+So the guardian reads `entries` as well, the protocol's own record of what
+moved, and the round is told what to do with it:
+
+> **Every movement the claim asserts has to appear here.** A claim naming
+> amounts, addresses or timings this record does not show is NOT_CROSSED,
+> however precisely it is written and however plausible it sounds: precision is
+> not evidence, and an invented figure is easier to write than a true one.
+
+A protocol without a movement record is not punished for it. The round is told
+the record is unavailable, told that this cuts both ways, and told not to treat
+the absence of a book as a book showing nothing happened.
+
+### A witness the accused chose
+
+The remaining gap is the one a reviewer named: the claim comes from outside, and
+nothing from inside the protocol answers it. Their suggestion was an agent
+internal to the project, with read only access to what the project knows,
+producing evidence the round could set beside the outsider's claim.
+
+`name_witness(target, witness)` is that, in the only shape a contract can hold.
+The owner names an address while nothing is happening, and the guardian reads
+one view from it, `report(target)`, at the moment an alarm arrives. What sits
+behind that address is the protocol's business.
+[`contracts/monitor.py`](contracts/monitor.py) is the smallest honest version:
+it reads the protocol's ledger and works out, per address, how much went in, how
+much came out, and **the largest share any one address took inside ten minutes**,
+which is the figure a red line about rapid exits is actually asking for and the
+one totals can never answer. No model, no judgement, no fetching.
+
+The obvious objection is that the accused picked its own witness. That is true,
+it cannot be fixed, and the design turns on saying so rather than pretending
+otherwise. The round is told:
+
+> This is not a neutral party. It is an agent the accused chose and could have
+> built to say anything, so weigh it accordingly: **where it agrees with the
+> claim, it is strong, because a protocol's own witness has no reason to accuse
+> it.** Where it agrees with the protocol, it is worth about as much as the
+> protocol saying so itself, which is to say it settles nothing.
+
+So a witness can convict and cannot acquit. A protocol that builds a flattering
+monitor has bought nothing; a protocol that builds an honest one has made its
+denials worth hearing. And it cannot be named or changed once an alarm is
+standing, because a defence chosen after seeing the charge is not a defence.
+
+### Proved, both directions
+
+A change that made a true alarm work would be easy and worthless if it also made
+a false one easier. So both were run against the same guardian, minutes apart,
+with the same shape of claim.
+
+**A true claim, against a protocol that really was being emptied.** The holder
+took 0.024 GEN out of its 0.04 position in three withdrawals a few minutes
+apart. `UPHELD` in 66 seconds:
+
+> "The protocol's own ledger records address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c
+> withdrawing 24,000,000,000,000,000 wei (60% of its 40,000,000,000,000,000 wei
+> deposit) across three transactions between 18:47:26 and 18:48:46, which is
+> within a ten-minute window."
+
+That sentence names the transactions and the window. The old guardian could not
+have written it, because it never saw a movement.
+
+**The same shape of claim, invented, against a protocol where nothing happened.**
+Precise figures, plausible arithmetic, and false. `REFUSED` in 53 seconds:
+
+> "The protocol's own movement record shows only a single deposit of
+> 40000000000000000 wei with zero withdrawals, directly contradicting the claim
+> that 0x0b57877ec84D96b672CD47D8Ea4424283fDB9F6C made three withdrawal
+> transactions totalling 0.031 GEN."
+
+And what the witness said about the emptied protocol, without being asked
+anything and without knowing there was a claim:
+
+> read from the protocol's own ledger, 4 movements:
+> 0x0b57…9F6C: put in 0.0400 GEN, took out 0.0240 GEN, which is 60 percent of
+> what it put in. the most any one address took out inside ten minutes was
+> 0.0240 GEN by 0x0b57…9F6C, 60 percent of what it had put in
+
+Seven checks in [results/record.json](results/record.json), including that the
+halted protocol is halted and the untouched one is not.
+
+```bash
+node scripts/prove_record.mjs
+```
+
+### Where this belongs
+
+The same reviewer put it better than the pitch did: this is closest to a **bug
+bounty a protocol runs against itself**, and most of its use is internal. A
+project publishes what must never happen to it, funds a bounty, and lets anybody
+in the world be the one who notices. Delegating that decision to a round of
+validators makes sense precisely because the decision is expensive and rare, and
+because the alternative is a multisig that has to be woken up.
+
+It is not a general purpose oracle and it is not a monitoring product. It is the
+one decision a protocol cannot make quickly and cannot safely leave to one
+person.
 
 You can try to beat it yourself, on a live protocol, at
 **[jspiiv.github.io/halt/#try](https://jspiiv.github.io/halt/#try)**. The
@@ -270,8 +385,20 @@ claim named a per address deposit and withdrawal, the protocol published only
 totals, and the validators quite correctly said the account did not support the
 figures. [`contracts/vault.py`](contracts/vault.py) shows the shape.
 
-**And report your movements in the order they happened.** We learned this one
-the hard way too, and it is in the next section.
+**And report your movements in the order they happened.** One more optional
+view, `entries(count)`, returning what moved rather than what is left. This is
+the one that decides whether a claim about particular withdrawals can be
+answered at all: the guardian reads it and tells the round that every movement
+the claim asserts has to appear there. A protocol without one is judged on its
+totals, as before, and the round is told that is all it has.
+
+**Optionally, name a witness.** `name_witness(target, witness)` points the
+guardian at an address of yours whose `report(target)` it will read when an
+alarm arrives. [`contracts/monitor.py`](contracts/monitor.py) is a working one
+in about a hundred lines. It is your own agent and the round is told so, which
+means it can corroborate an accusation against you and cannot talk you out of
+one. That sounds like a bad deal and is not: the protocols worth trusting are
+the ones whose own instruments can be read.
 
 ## Where the guard's facts come from
 
