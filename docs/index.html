@@ -167,7 +167,30 @@
                 </div>
 
                 <div class="bg-brand-card border border-brand-border rounded-2xl p-6">
-                    <p class="font-mono text-[11px] text-slate-500 tracking-widest mb-3">03 &nbsp;WHAT IT ACTUALLY HOLDS</p>
+                    <p class="font-mono text-[11px] text-slate-500 tracking-widest mb-3">03 &nbsp;WHAT IT RECORDS HAVING HAPPENED</p>
+                    <div id="trymoves" class="space-y-2 text-sm"></div>
+                    <p class="mt-3 text-xs text-slate-500 leading-relaxed">
+                        The protocol's own book rather than its summary of itself.
+                        Every movement your claim asserts has to appear here. One
+                        that names amounts or timings this record does not show is
+                        refused, however precisely it is written.
+                    </p>
+                </div>
+
+                <div class="bg-brand-card border border-brand-border rounded-2xl p-6">
+                    <p class="font-mono text-[11px] text-slate-500 tracking-widest mb-3">04 &nbsp;WHAT ITS OWN WITNESS SAYS</p>
+                    <div id="trywitness" class="text-sm text-slate-300 leading-relaxed whitespace-pre-line"></div>
+                    <p class="mt-3 text-xs text-slate-500 leading-relaxed">
+                        An agent this protocol named in advance, doing arithmetic
+                        over that same book. It is not neutral and the round is
+                        told so: a witness the accused chose counts for a lot when
+                        it agrees with you and almost nothing when it agrees with
+                        the protocol. It can convict and it cannot acquit.
+                    </p>
+                </div>
+
+                <div class="bg-brand-card border border-brand-border rounded-2xl p-6">
+                    <p class="font-mono text-[11px] text-slate-500 tracking-widest mb-3">05 &nbsp;WHAT IT ACTUALLY HOLDS</p>
                     <p id="trybalance" class="text-2xl font-bold text-white font-mono">…</p>
                     <p class="mt-2 text-xs text-slate-500 leading-relaxed">
                         The one number the accused does not author. Read off the
@@ -181,7 +204,7 @@
             <div class="lg:col-span-7">
                 <div class="bg-brand-card border border-brand-border rounded-2xl p-6">
                     <div class="flex items-center justify-between mb-3">
-                        <p class="font-mono text-[11px] text-slate-500 tracking-widest">04 &nbsp;YOUR CLAIM, AND ONLY YOURS</p>
+                        <p class="font-mono text-[11px] text-slate-500 tracking-widest">06 &nbsp;YOUR CLAIM, AND ONLY YOURS</p>
                         <span id="trycount" class="font-mono text-[11px] text-slate-600"></span>
                     </div>
 
@@ -1006,8 +1029,12 @@ fetch("./data.json").then(r => r.json()).then(d => {
  */
 import { createClient } from "https://esm.sh/genlayer-js@1.1.8";
 import { studionet } from "https://esm.sh/genlayer-js@1.1.8/chains";
+// The guard stores every address in lower case, and gen_call will not find a
+// contract unless it is asked for in the checksummed spelling. Inside the
+// contract this never comes up, because an address there is twenty bytes.
+import { getAddress } from "https://esm.sh/viem@2.21.0";
 
-const GUARDIAN = "0x280eff6e765C5d72C97F8ee406ED838257C89DfB";
+const GUARDIAN = "0x8C2087BC13f4788FEd82CE1123AA102CF3a738C5";
 
 // Writes the attempts. It holds nothing, pays nothing and
 // protects nothing: all it can do is produce a sentence.
@@ -1017,8 +1044,8 @@ const PROSECUTOR = "0xA64ad0bc207F53581F89D4f5a75Aa7dc30659F6A";
 // everybody after them to the next, which is the right behaviour: a halted
 // protocol is not something to keep offering as proof that it cannot happen.
 const TARGETS = [
-  "0xB3476511e2811c9E2760F283a63658A6C51F4cf0",
-  "0xF8559FC9Ea2c1762149929F9f19F4297fe1960f6",
+  "0xD431A03b3177cB710701A90c7364e9BBe4D17e89",
+  "0xe9Dc61E3FE95FB05E549B682cD5F878c3608BcB0",
 ];
 
 const DEPOSIT = 2000000000000000n;   // 0.002 GEN
@@ -1097,6 +1124,41 @@ async function load() {
     try {
       $("trybalance").textContent = gen(await reader.getBalance({ address }));
     } catch (e) { $("trybalance").textContent = "unreadable"; }
+
+    // The book, newest last, which is the order a window is asked about.
+    try {
+      const book = JSON.parse(await reader.readContract({
+        address, functionName: "entries", args: ["8"] }));
+      const rows = (book.entries || []).map(entry =>
+        '<div class="flex items-baseline justify-between gap-3 border-b border-brand-border/40 pb-2">'
+        + '<span class="text-slate-400">' + esc(entry.kind) + ' &middot; '
+        + esc(String(entry.who || "").slice(0, 10)) + '\u2026</span>'
+        + '<span class="font-mono text-slate-200">'
+        + gen(BigInt(entry.amount || entry.wanted || 0)) + '</span></div>');
+      $("trymoves").innerHTML = rows.length
+        ? rows.join("") + '<p class="text-xs text-slate-600 pt-1">' + book.total
+          + ' movements on record</p>'
+        : '<p class="text-slate-500">nothing has moved yet</p>';
+    } catch (e) {
+      $("trymoves").innerHTML =
+        '<p class="text-slate-500">this protocol publishes no movement record, and '
+        + 'the round is told so rather than left to assume nothing happened</p>';
+    }
+
+    // And its witness, if it named one before any of this started.
+    const witness = guard.guard.witness;
+    if (witness) {
+      try {
+        $("trywitness").textContent = String(await reader.readContract({
+          address: getAddress(witness), functionName: "report", args: [address] }));
+      } catch (e) {
+        $("trywitness").textContent = "its witness did not answer";
+      }
+    } else {
+      $("trywitness").textContent =
+        "this protocol named no witness, so nothing from inside it answers a claim "
+        + "beyond its own report and its own book";
+    }
 
     $("trycount").textContent = target.slice(0, 10) + "\u2026";
     return;
