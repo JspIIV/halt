@@ -183,7 +183,8 @@
                         class="w-full bg-brand-bg border border-brand-border rounded-xl p-4 text-sm text-slate-200 font-mono leading-relaxed focus:outline-none focus:border-brand-orange/60"
                         placeholder="Say what is happening to this protocol right now, and show what you saw."></textarea>
 
-                    <div class="flex flex-wrap gap-2 mt-3" id="trypresets"></div>
+                    <p class="mt-4 mb-2 font-mono text-[11px] text-slate-500 tracking-widest">OR START FROM ONE OF THESE</p>
+                    <div class="flex flex-wrap gap-2" id="trypresets"></div>
 
                     <div class="flex flex-wrap items-center gap-3 mt-5">
                         <button id="tryconnect"
@@ -1064,6 +1065,9 @@ async function load() {
 }
 
 function presets() {
+  const opening = PRESETS[Math.floor(Math.random() * PRESETS.length)][1];
+  if (!$("tryevidence").value.trim()) $("tryevidence").value = opening;
+
   $("trypresets").innerHTML = PRESETS.map(([name], i) =>
     '<button data-i="' + i + '" class="preset px-3 py-1.5 text-xs font-mono bg-brand-bg border '
     + 'border-brand-border text-slate-400 rounded-lg hover:border-brand-orange/60 '
@@ -1137,7 +1141,7 @@ const STAGES = [
 async function raise() {
   const evidence = $("tryevidence").value.trim();
   if (evidence.length < 40) {
-    $("trystate").textContent = "say more than that; the round needs something to weigh";
+    $("trystate").textContent = "the round needs something to weigh; there are three ready made attempts under the box";
     return;
   }
   if (!me) { $("trystate").textContent = "connect a wallet first"; return; }
