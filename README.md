@@ -320,6 +320,30 @@ validator can reach independently, and for a decision that stops a live protocol
 and moves somebody's deposit, each validator reaching it independently is
 stronger than each validator rating the leader's answer.
 
+## Reading the contract without reading all of it
+
+[`contracts/halt.py`](contracts/halt.py) is 1,187 lines and most of them are not
+the interesting part. Two systems share the file, which is most of why it looks
+long, and only one of them involves a validator ever being asked anything.
+
+| what | where | what it does |
+| --- | --- | --- |
+| `raise_alarm` | [line 566](contracts/halt.py#L566) | the whole thing in one method: reads the protocol, reads the chain, runs the round, moves the money |
+| `_task` | [line 379](contracts/halt.py#L379) | the words the validators are given. If you read one thing, read this |
+| `_appeal_task` | [line 247](contracts/halt.py#L247) | the same, for an owner answering an alarm against them |
+| `protect`, `lower`, `retire` | [491](contracts/halt.py#L491), [842](contracts/halt.py#L842), [871](contracts/halt.py#L871) | opening a guard, taking it down, closing it for good |
+| `promise`, `check`, `would_break` | [895](contracts/halt.py#L895) onward | the other system: a number, arithmetic, no round and no model |
+| everything before line 475 | | helpers that parse, clip and validate, plus the two prompts |
+
+The two prompts are the only places a judgement is asked for. Everything else in
+the file is ordinary Python doing ordinary things with numbers and strings, and
+it is deliberately dull: **a decision that stops a live protocol should have as
+little code as possible between the word the validators agreed on and what
+happens next.**
+
+A protocol that wants to be protected adds four lines and no keys, and that part
+is in [What a protocol has to add](#what-a-protocol-has-to-add).
+
 ## The agent
 
 `watcher.mjs` reads a protected protocol and raises alarms itself. It notices

@@ -12,6 +12,27 @@ evidence, and puts up a deposit. The validators read the evidence themselves and
 answer one question. If the line is being crossed the guard goes up in that same
 transaction, and the person who raised the alarm is paid.
 
+What is in this file
+--------------------
+
+Two systems share it, which is most of why it is long.
+
+  the guard        protect, raise_alarm, appeal, lower, retire
+                   a red line written in words, judged by a round of
+                   validators when somebody raises an alarm against it
+
+  the plain agent  promise, check, would_break
+                   a number, checked by arithmetic. No round, no model, no
+                   judgement. It is here because most of what a protocol
+                   wants watched is a number, and asking a jury for one
+                   would be absurd
+
+Everything above the class is either a small helper or the text of a prompt.
+The prompts are the only places a judgement is asked for at all: `_task` for
+an alarm, `_appeal_task` for the owner's answer to one.
+
+If you read three things, read `raise_alarm` and those two.
+
 Why the question is narrow on purpose
 -------------------------------------
 
