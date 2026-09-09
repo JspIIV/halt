@@ -1,0 +1,95 @@
+{
+  "proved_at": "2026-09-09T13:35:29.656Z",
+  "network": "studionext",
+  "explorer": "https://explorer-studio-dev.genlayer.com",
+  "guardian": "0xDAc118347788a9240FB34C81d7E322cbee8CCeEd",
+  "witness": "0xbdc6ad09D2F7F790cf448A39290F2Ff82e71B84d",
+  "drained": "0xd0552b3Bf2eB72DE4a42Bf8fAc4e95c9184669CB",
+  "untouched": "0x56A1832f49FD3B6dcac988c0D0e4CC4Af339D6a0",
+  "witness_report": "read from the protocol's own ledger, 4 movements: \n0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c: put in 0.0400 GEN, took out 0.0240 GEN, which is 60 percent of what it put in\nthe most any one address took out inside ten minutes was 0.0240 GEN by 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c, 60 percent of what it had put in",
+  "upheld": {
+    "outcome": "UPHELD",
+    "why": "The protocol's ledger records that address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c deposited 40000000000000000 and withdrew a total of 24000000000000000 (60%) via three transactions between 13:28:23 and 13:29:53, which exceeds the 50% limit within a ten-minute window.",
+    "seconds": 72,
+    "hash": "0xd230e21f3312d295da6f14d421f665131ae165cd0872bb100ad410612f04297e",
+    "claim": "Address 0x0b57877ec84D96b672CD47D8Ea4424283fDB9F6C has withdrawn 0.024 GEN from this vault in three transactions a few minutes apart, out of the 0.04 GEN it deposited. That is sixty percent of its position taken out inside the window, and the withdrawals are in the vault's own ledger."
+  },
+  "refused": {
+    "outcome": "REFUSED",
+    "why": "The protocol's own movement record shows only a single deposit and no withdrawals, contradicting the claim of three withdrawal transactions.",
+    "seconds": 68,
+    "hash": "0xe306a5a39de664d2aea2893575def3bef61a275221957720ab8776b8d8c3860c",
+    "claim": "Address 0x0b57877ec84D96b672CD47D8Ea4424283fDB9F6C has withdrawn 0.031 GEN from this vault in three transactions over the last eight minutes, out of the 0.04 GEN it deposited. That is seventy eight percent of its position taken out inside the window, and the position is nearly empty."
+  },
+  "checks": [
+    {
+      "label": "the true claim is upheld, which the summary alone could not support",
+      "ok": true
+    },
+    {
+      "label": "and the reason rests on what the protocol recorded rather than on the claim",
+      "ok": true
+    },
+    {
+      "label": "the invented claim is refused",
+      "ok": true
+    },
+    {
+      "label": "and the reason says the record does not show it",
+      "ok": true
+    },
+    {
+      "label": "the witness reports figures rather than an opinion",
+      "ok": true
+    },
+    {
+      "label": "the halted protocol is halted",
+      "ok": true
+    },
+    {
+      "label": "and the untouched one is not",
+      "ok": true
+    }
+  ],
+  "transcript": [
+    "Does the protocol's own book change the answer?",
+    "",
+    "  network studionext",
+    "  owner   0x80519c53f10D731e4FF83A7d9ACd69cF98da6258",
+    "  holder  0x0b57877ec84D96b672CD47D8Ea4424283fDB9F6C",
+    "",
+    "  guardian 0xDAc118347788a9240FB34C81d7E322cbee8CCeEd",
+    "  witness  0xbdc6ad09D2F7F790cf448A39290F2Ff82e71B84d",
+    "  protocol being emptied 0xd0552b3Bf2eB72DE4a42Bf8fAc4e95c9184669CB",
+    "",
+    "The holder takes most of its position out, in three goes, minutes apart.",
+    "  withdrew 8000000000000000 -> {\"ok\":true,\"withdrew\":\"8000000000000000\",\"left\":\"32000000000000000\"}",
+    "  withdrew 9000000000000000 -> {\"ok\":true,\"withdrew\":\"9000000000000000\",\"left\":\"23000000000000000\"}",
+    "  withdrew 7000000000000000 -> {\"ok\":true,\"withdrew\":\"7000000000000000\",\"left\":\"16000000000000000\"}",
+    "",
+    "What the protocol's own witness reports, unprompted:",
+    "    read from the protocol's own ledger, 4 movements: ",
+    "    0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c: put in 0.0400 GEN, took out 0.0240 GEN, which is 60 percent of what it put in",
+    "    the most any one address took out inside ten minutes was 0.0240 GEN by 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c, 60 percent of what it had put in",
+    "",
+    "  untouched protocol 0x56A1832f49FD3B6dcac988c0D0e4CC4Af339D6a0",
+    "",
+    "A true claim against the protocol that really is being emptied.",
+    "  UPHELD in 72s",
+    "  \"The protocol's ledger records that address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c deposited 40000000000000000 and withdrew a total of 24000000000000000 (60%) via three transactions between 13:28:23 and 13:29:53, which exceeds the 50% limit within a ten-minute window.\"",
+    "",
+    "The same shape of claim, precise and invented, against the one where nothing happened.",
+    "  REFUSED in 68s",
+    "  \"The protocol's own movement record shows only a single deposit and no withdrawals, contradicting the claim of three withdrawal transactions.\"",
+    "",
+    "  ok   the true claim is upheld, which the summary alone could not support",
+    "  ok   and the reason rests on what the protocol recorded rather than on the claim",
+    "  ok   the invented claim is refused",
+    "  ok   and the reason says the record does not show it",
+    "  ok   the witness reports figures rather than an opinion",
+    "  ok   the halted protocol is halted",
+    "  ok   and the untouched one is not",
+    "",
+    "7 checks. The round is checking a claim rather than weighing a story."
+  ]
+}

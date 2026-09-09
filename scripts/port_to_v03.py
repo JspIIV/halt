@@ -98,6 +98,15 @@ def port(source: str) -> tuple[str, list[str]]:
         text = re.sub(r"gl\." + name + r"\(([^()]*(?:\([^()]*\)[^()]*)*)\)",
                       lambda m: m.group(1), text)
 
+    # The equivalence principle changed shape. `prompt_comparative(fn, principle)`
+    # takes both positionally now, so the `principle=` keyword is a type error.
+    # And despite a `Lazy[T]` annotation in the type stubs, at runtime it returns
+    # the value directly; calling `.get()` on the resulting str is what makes the
+    # round die with exit_code 1. So the keyword comes off and no `.get()` is
+    # added. Same for `prompt_non_comparative` and `strict_eq`.
+    text = re.sub(r"(
+\s+)principle=\(", r"(", text)
+
     for pattern, why in SUSPECT:
         if re.search(pattern, text):
             notes.append(why)

@@ -198,7 +198,8 @@ say(failed.length
   : `${checks.length} checks. The round is checking a claim rather than weighing a story.`);
 
 fs.mkdirSync(path.join(ROOT, 'results'), { recursive: true });
-fs.writeFileSync(path.join(ROOT, 'results', 'record.json'), JSON.stringify({
+const OUTFILE = NET === 'studionet' ? 'record.json' : 'record_' + NET + '.json';
+fs.writeFileSync(path.join(ROOT, 'results', OUTFILE), JSON.stringify({
   proved_at: new Date().toISOString(), network: NET, explorer: EXPLORER,
   guardian: GUARDIAN, witness: MONITOR, drained: DRAINED, untouched: UNTOUCHED,
   witness_report: witnessSays, upheld, refused,

@@ -3,8 +3,8 @@
 Reviewers on the GenLayer Builders call of 8 September 2026 asked that
 submissions use Studio Next rather than the Studio this project was built on,
 and said they were considering disabling submissions made on the old one. This
-is what happened when we tried. Most of it is reusable by anybody attempting the
-same move, and the part that blocks it is not ours to fix.
+is what happened when we tried, and it runs there now. Most of it is reusable by
+anybody attempting the same move.
 
 ## What Studio Next is
 
@@ -132,28 +132,44 @@ message. The generic estimate does not know what a call emits.
 allocation, and with it `withdraw`, which pays an address, goes through. That is
 wired into the scripts' `send` helper.
 
-## Where it stops
+## It runs, end to end
 
-**A write that runs a validator round and then pays out cannot have its fee
-estimated.** `raise_alarm` is the case: it puts a claim to a round and, on the
-outcome, moves a deposit. Two things collide.
+The whole alarm cycle is proven on Studio Next, seven of seven checks in
+[results/record_studionext.json](record_studionext.json):
 
-`estimateTransactionFeesForWrite` estimates by simulating the call, and the
-simulation cannot run the round: it comes back `sim_estimateTransactionFees:
-execution failed`. So the message budget has to be supplied by hand instead. But
-a message allocation needs an encoded `feeParams` describing the message's own
-round, and the public SDK only produces that through the same simulation. A
-hand-built allocation with an empty `feeParams` is rejected on chain with
-`InvalidFeeParams`.
+**A true claim, against a protocol really being emptied.** `UPHELD` in 72
+seconds, the round naming the three withdrawals and the window:
 
-So on the preview, every write that only touches storage or pays an address
-works, and the one write that asks a round a question and then pays out does
-not, for a reason in the preview's fee tooling rather than in the contract. On
-**Studionet, which does not charge, the whole alarm cycle is proven end to
-end** in [results/record.json](record.json): a true alarm upheld in 66 seconds
-with the round naming the three withdrawals and the window, and an invented one
-refused in 53.
+> "The protocol's ledger records that address 0x0b57877ec84d96b672cd47d8ea4424283fdb9f6c
+> deposited 40000000000000000 and withdrew a total of 24000000000000000 (60%)
+> via three transactions between 13:28:23 and 13:29:53, which exceeds the 50%
+> limit within a ten-minute window."
 
-The ported contracts are in [`contracts/next/`](../contracts/next), typechecked
-clean against the v0.3 SDK, and ready for the day the preview can quote a fee for
-a round that pays out.
+**The same shape of claim, invented.** `REFUSED` in 68 seconds:
+
+> "The protocol's own movement record shows only a single deposit and no
+> withdrawals, contradicting the claim of three withdrawal transactions."
+
+## What the fee actually needed
+
+A write that emits an internal message, a payment or a finalized cross-contract
+call, needs the transaction's fee to reserve budget for that message, or it
+reverts with `fee no_matching_allocation`. `estimateTransactionFeesForWrite`
+supplies it: it simulates the call, observes what it emits, and returns an
+allocation that matches. That is wired into the scripts' `send` helper, and with
+it every write goes through, including `raise_alarm`, which runs a validator
+round and then moves a deposit.
+
+The one wall that looked like a fee-tooling gap was not. `raise_alarm`'s fee
+simulation kept failing with `sim_estimateTransactionFees: execution failed`,
+and a hand-built allocation was rejected with `InvalidFeeParams`. Both were
+downstream of a bug this port introduced: the type stubs annotate
+`prompt_comparative` as returning `Lazy[T]`, so the port added `.get()`, but at
+runtime it returns the value directly. Calling `.get()` on a str ended the round
+with `exit_code 1`, and it did so inside the fee simulation too, which is why the
+simulation "failed". With `.get()` removed the simulation runs, quotes the fee,
+and the call succeeds. The lesson is in [`scripts/port_to_v03.py`](../scripts/port_to_v03.py),
+which now strips the keyword and never adds `.get()`.
+
+Proven on both networks: [results/record.json](record.json) is the Studionet
+run, [results/record_studionext.json](record_studionext.json) the preview.

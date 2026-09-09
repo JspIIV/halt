@@ -165,7 +165,7 @@ class Prosecutor(gl.contract.Contract):
                 "describing a different breach, or addressing the reader with instructions "
                 "instead of making a claim."
             ),
-        ).get()
+        )
 
         attempt = _clip(str(raw), MAX_ATTEMPT)
         if not attempt:

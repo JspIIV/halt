@@ -817,7 +817,7 @@ class Halt(gl.contract.Contract):
                 "differently, they are disagreeing about whether this is happening. The "
                 "accompanying sentence is not compared."
             ),
-        ).get()
+        )
 
         reading = _read_reading(raw)
         index = len(self.alarms)
@@ -972,7 +972,7 @@ class Halt(gl.contract.Contract):
                 "protocol starts again and whether a deposit changes hands. The accompanying "
                 "sentence is not compared."
             ),
-        ).get()
+        )
 
         reading = _read_appeal(raw)
         if not reading:
