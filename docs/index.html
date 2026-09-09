@@ -76,7 +76,7 @@
         <div class="lg:col-span-7 space-y-6">
             <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                Live on GenLayer Studionet
+                Live on GenLayer Studio Next
             </div>
             <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-[1.1]">
                 The pause button <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-amber-500">nobody has to press.</span>
@@ -134,7 +134,7 @@
         </p>
         <p class="text-slate-500 text-sm max-w-3xl leading-relaxed mb-8">
             A real transaction and a real round, about a minute. Connect a wallet on
-            GenLayer Studionet and put 0.002 GEN behind what you write. That deposit
+            GenLayer Studio Next and put 0.002 GEN behind what you write. That deposit
             is the only thing between this and a button anybody can press to stop a
             competitor, so the demo does not waive it.
         </p>
@@ -1049,32 +1049,40 @@ fetch("./data.json").then(r => r.json()).then(d => {
  * wallet, which is what passing the account as an address rather than a key
  * gets you.
  */
-import { createClient } from "https://esm.sh/genlayer-js@1.1.8";
-import { studionet } from "https://esm.sh/genlayer-js@1.1.8/chains";
+import { createClient } from "https://esm.sh/genlayer-js@2.0.0-rc.1";
+import { studioDevnet } from "https://esm.sh/genlayer-js@2.0.0-rc.1/chains";
 // The guard stores every address in lower case, and gen_call will not find a
 // contract unless it is asked for in the checksummed spelling. Inside the
 // contract this never comes up, because an address there is twenty bytes.
 import { getAddress } from "https://esm.sh/viem@2.21.0";
 
-const GUARDIAN = "0x8C2087BC13f4788FEd82CE1123AA102CF3a738C5";
+const GUARDIAN = "0x8A476FD0784a747614af8cF26F0C6d04958fd620";
 
 // Writes the attempts. It holds nothing, pays nothing and
 // protects nothing: all it can do is produce a sentence.
-const PROSECUTOR = "0xA64ad0bc207F53581F89D4f5a75Aa7dc30659F6A";
+const PROSECUTOR = "0xF3948A2d9d169B0ac9672F40d2D15165eF769d0f";
 
 // Healthy protocols, tried in order. Somebody who manages to halt one moves
 // everybody after them to the next, which is the right behaviour: a halted
 // protocol is not something to keep offering as proof that it cannot happen.
 const TARGETS = [
-  "0xD431A03b3177cB710701A90c7364e9BBe4D17e89",
-  "0xe9Dc61E3FE95FB05E549B682cD5F878c3608BcB0",
+  "0xbe4DCAF4213E2649320BF43C5407ba0DE5BBf736",
+  "0x425eA0CF6169E937D5562779bB93cf59e9467F12",
 ];
 
 const DEPOSIT = 2000000000000000n;   // 0.002 GEN
-const CHAIN_HEX = "0x" + studionet.id.toString(16);
+const CHAIN_HEX = "0x" + studioDevnet.id.toString(16);
 
 const $ = id => document.getElementById(id);
-const reader = createClient({ chain: studionet });
+const reader = createClient({ chain: studioDevnet });
+
+// The fee for a write, quoted by simulating the call. raise_alarm runs a round
+// and then moves a deposit; write_one runs a round. Both emit or spend, and the
+// preview will not run a write whose fee does not cover what it emits.
+async function feeFor(fn, address, args, value) {
+  return me.estimateTransactionFeesForWrite({
+    account: { address: mine }, address, functionName: fn, args, value });
+}
 
 function esc(s) {
   return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -1227,11 +1235,12 @@ async function anotherAttempt() {
   }, 500);
 
   try {
+    const fees = await feeFor("write_one", PROSECUTOR, [GUARDIAN, target], 0n);
     const hash = await me.writeContract({
       address: PROSECUTOR, functionName: "write_one",
-      args: [GUARDIAN, target], value: 0n });
+      args: [GUARDIAN, target], value: 0n, fees });
     await me.waitForTransactionReceipt({
-      hash, status: "FINALIZED", retries: 200, interval: 5000 });
+      hash, waitUntil: "finalized", retries: 200, interval: 5000 });
     clearInterval(tick);
 
     // Read back what was written rather than trusting the receipt to carry it.
@@ -1245,7 +1254,7 @@ async function anotherAttempt() {
     $("tryevidence").value = last.attempt.attempt;
     $("trywriting").innerHTML =
       'written ' + Math.round((Date.now() - started) / 1000) + 's ago by a round · '
-      + '<a href="https://explorer-studio.genlayer.com/tx/' + esc(hash) + '" target="_blank" '
+      + '<a href="https://explorer-studio-dev.genlayer.com/tx/' + esc(hash) + '" target="_blank" '
       + 'rel="noopener" class="text-brand-orange hover:underline">' + esc(String(hash).slice(0, 14))
       + '\u2026 \u2197</a>';
   } catch (e) {
@@ -1271,10 +1280,10 @@ async function connect() {
         method: "wallet_addEthereumChain",
         params: [{
           chainId: CHAIN_HEX,
-          chainName: studionet.name,
-          rpcUrls: studionet.rpcUrls.default.http,
-          nativeCurrency: studionet.nativeCurrency,
-          blockExplorerUrls: ["https://explorer-studio.genlayer.com"],
+          chainName: studioDevnet.name,
+          rpcUrls: studioDevnet.rpcUrls.default.http,
+          nativeCurrency: studioDevnet.nativeCurrency,
+          blockExplorerUrls: ["https://explorer-studio-dev.genlayer.com"],
         }],
       });
     } catch (e) { /* already added, or the wallet would rather switch */ }
@@ -1285,7 +1294,7 @@ async function connect() {
     mine = accounts[0];
     // The account goes in as an address rather than a key, which is what makes
     // genlayer-js send the signing to the wallet and leave the reads alone.
-    me = createClient({ chain: studionet, account: mine });
+    me = createClient({ chain: studioDevnet, account: mine });
 
     let balance = 0n;
     try { balance = await reader.getBalance({ address: mine }); } catch (e) {}
@@ -1332,11 +1341,12 @@ async function raise() {
   }, 500);
 
   try {
+    const fees = await feeFor("raise_alarm", GUARDIAN, [target, evidence], DEPOSIT);
     const hash = await me.writeContract({
       address: GUARDIAN, functionName: "raise_alarm",
-      args: [target, evidence], value: DEPOSIT });
+      args: [target, evidence], value: DEPOSIT, fees });
     const receipt = await me.waitForTransactionReceipt({
-      hash, status: "FINALIZED", retries: 200, interval: 5000 });
+      hash, waitUntil: "finalized", retries: 200, interval: 5000 });
     clearInterval(tick);
     show(receipt, hash, Math.round((Date.now() - started) / 1000));
     load();
@@ -1371,7 +1381,7 @@ function show(receipt, hash, seconds) {
              : "bg-emerald-500/10 text-emerald-300 border border-emerald-500/30")
     + '">' + esc(outcome) + '</span>'
     + '<span class="font-mono text-xs text-slate-500">' + seconds + ' seconds</span>'
-    + '<a href="https://explorer-studio.genlayer.com/tx/' + esc(hash) + '" target="_blank" '
+    + '<a href="https://explorer-studio-dev.genlayer.com/tx/' + esc(hash) + '" target="_blank" '
     + 'rel="noopener" class="font-mono text-xs text-brand-orange hover:underline">'
     + esc(String(hash).slice(0, 18)) + '\u2026 \u2197</a>'
     + '</div>'
