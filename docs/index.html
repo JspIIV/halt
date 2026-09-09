@@ -1036,7 +1036,7 @@ fetch("./data.json").then(r => r.json()).then(d => {
 <script type="module">
 /* The live alarm.
  *
- * Everything here is a real transaction on GenLayer Studionet. There is no
+ * Everything here is a real transaction on GenLayer Studio Next. There is no
  * simulation and no canned answer: the claim typed above goes to the same
  * `raise_alarm` the scripts in this repository call, the round runs inside that
  * transaction, and what comes back is what the validators said about it.
@@ -1264,7 +1264,7 @@ async function anotherAttempt() {
   $("tryanother").disabled = false;
   $("tryraise").disabled = false;
 }
-/* Studionet has to be a network the wallet knows about before it will sign for
+/* Studio Next has to be a network the wallet knows about before it will sign for
  * it. Adding it is offered rather than assumed, and a refusal here is a person
  * saying no rather than an error. */
 async function connect() {
