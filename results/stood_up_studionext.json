@@ -1,0 +1,17 @@
+{
+  "at": "2026-09-09T12:23:59.644Z",
+  "network": "studionext",
+  "chain_id": 61997,
+  "rpc": "https://studio-dev.genlayer.com/api",
+  "explorer": "https://explorer-studio-dev.genlayer.com",
+  "guardian": "0xeBe8e5a2bFE979118281E62Ec5AdB1aA10787880",
+  "prosecutor": "0x59630F90c6CE2Dc72F1074Dc2f2bC5152dbD1758",
+  "witness": "0x7292D28828A980Cdc633Fc511D7dbDE7F0129514",
+  "protocols": [
+    "0xf2618ACa46706bccfD27EE85d7c537d2E2710f35",
+    "0x6c3259dD894dEde31b193E4C39B4DA4E25bC9ec7"
+  ],
+  "owner": "0x80519c53f10D731e4FF83A7d9ACd69cF98da6258",
+  "holder": "0x0b57877ec84D96b672CD47D8Ea4424283fDB9F6C",
+  "red_line": "No address may withdraw more than half of what it deposited into this vault within ten minutes. A pattern of repeated withdrawals that empties a holder position faster than that is forbidden and the vault must stop."
+}

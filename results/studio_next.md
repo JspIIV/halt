@@ -107,41 +107,53 @@ Two notes on it. It needs Python 3.11 or newer, because it calls
 v0.2 layout, failing with `No module named 'genlayer.py'`, so on a v0.3 contract
 only `typecheck` is usable.
 
-## Where it stops
+## What runs on it now
 
-**A contract with a storage collection does not deploy.** This is sixteen lines,
-it typechecks clean against the v0.3 SDK, it imports fine against that SDK
-locally, and on Studio Next it is accepted, charged, finalized, and comes back
-`execution_result: ERROR` with `exit_code 1` and both stderr and stdout empty:
-
-```python
-# v0.3.0
-# { "Depends": "py-genlayer:5jycge4q8k23462jtb0b9fyey1s9qz928sz2nbrd9mg4sxqg2qng" }
-
-import genlayer as gl
-
-
-class ProbeB(gl.contract.Contract):
-    owner: str
-    ledger: gl.DynArray[str]
-
-    def __init__(self, owner: str) -> None:
-        self.owner = owner
-
-    @gl.public.view
-    def size(self) -> str:
-        return str(len(self.ledger))
-```
-
-Remove `ledger` and it is their own example, which works. Every contract in this
-project keeps a `DynArray` or a `TreeMap`: the alarms, the ledger, the guards.
-
-So the move is written and ready, and it stops one line short of anything this
-project could run:
+The port turned out to be mechanical once the runner and the API shape were
+known, and [`scripts/port_to_v03.py`](../scripts/port_to_v03.py) does most of it.
+The `gl.storage.DynArray` spelling was the last thing that made a contract die
+silently; with it, the whole system stands up on the preview:
 
 ```bash
 HALT_NET=studionext node scripts/stand_up.mjs
 ```
 
-**Until that works, this stays on Studionet**, where the record, the video and
-every measurement on the page were made.
+deploys the guardian, the writer and the witness, protects two protocols and
+names a witness for each. Storage, cross-contract view calls, and payments all
+work: a protocol is protected, deposited into, and drained across three real
+withdrawals, and the witness reads its ledger back and reports the sixty percent
+correctly.
+
+**One fee rule is new and it matters.** A write that emits an internal message,
+a payment or a finalized cross-contract call, reverts with
+`fee no_matching_allocation` unless the transaction reserves budget for that
+message. The generic estimate does not know what a call emits.
+`estimateTransactionFeesForWrite` simulates the call and comes back with the
+allocation, and with it `withdraw`, which pays an address, goes through. That is
+wired into the scripts' `send` helper.
+
+## Where it stops
+
+**A write that runs a validator round and then pays out cannot have its fee
+estimated.** `raise_alarm` is the case: it puts a claim to a round and, on the
+outcome, moves a deposit. Two things collide.
+
+`estimateTransactionFeesForWrite` estimates by simulating the call, and the
+simulation cannot run the round: it comes back `sim_estimateTransactionFees:
+execution failed`. So the message budget has to be supplied by hand instead. But
+a message allocation needs an encoded `feeParams` describing the message's own
+round, and the public SDK only produces that through the same simulation. A
+hand-built allocation with an empty `feeParams` is rejected on chain with
+`InvalidFeeParams`.
+
+So on the preview, every write that only touches storage or pays an address
+works, and the one write that asks a round a question and then pays out does
+not, for a reason in the preview's fee tooling rather than in the contract. On
+**Studionet, which does not charge, the whole alarm cycle is proven end to
+end** in [results/record.json](record.json): a true alarm upheld in 66 seconds
+with the round naming the three withdrawals and the window, and an invented one
+refused in 53.
+
+The ported contracts are in [`contracts/next/`](../contracts/next), typechecked
+clean against the v0.3 SDK, and ready for the day the preview can quote a fee for
+a round that pays out.

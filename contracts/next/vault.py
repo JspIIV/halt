@@ -69,13 +69,13 @@ def _amount(value, ceiling: int) -> int:
 class Vault(gl.contract.Contract):
     owner: str
     guardian: str
-    balances: gl.TreeMap[str, gl.u256]
+    balances: gl.storage.TreeMap[str, gl.u256]
     # Kept apart from the balance because a red line usually talks about what an
     # address has done, not about what it has left.
-    deposited: gl.TreeMap[str, gl.u256]
-    taken: gl.TreeMap[str, gl.u256]
-    holders: gl.DynArray[str]
-    ledger: gl.DynArray[str]
+    deposited: gl.storage.TreeMap[str, gl.u256]
+    taken: gl.storage.TreeMap[str, gl.u256]
+    holders: gl.storage.DynArray[str]
+    ledger: gl.storage.DynArray[str]
     blocked: gl.u256
 
     def __init__(self, guardian: str) -> None:

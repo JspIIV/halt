@@ -74,6 +74,17 @@ def port(source: str) -> tuple[str, list[str]]:
     for name in UNDER_GL:
         text = re.sub(r"(?<![\w.])" + name + r"(?![\w])", "gl." + name, text)
 
+    # Storage collections have to be written out through the storage module.
+    # `gl.DynArray` and `gl.storage.DynArray` are the same object, so this looks
+    # like a style preference and is not: a class body annotated with the short
+    # spelling deploys, is charged for, finalizes, and comes back ERROR with
+    # exit_code 1 and an empty stderr. The generator that lays out storage
+    # resolves these by their written path. Read off the examples Studio Next
+    # ships, which all use the long one.
+    for name in ("TreeMap", "DynArray", "Array"):
+        text = text.replace("gl." + name + "[", "gl.storage." + name + "[")
+        text = text.replace("gl.storage.storage." + name + "[", "gl.storage." + name + "[")
+
     # The star import line itself must not be rewritten into gl.
     text = text.replace("import genlayer as gl.", "import genlayer as gl")
 

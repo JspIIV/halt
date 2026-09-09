@@ -33,6 +33,9 @@ import { KS, PASS } from './keys.mjs';
 import { chain, NET, EXPLORER, createClient, createAccount } from './network.mjs';
 
 const ROOT = path.join(path.dirname(url.fileURLToPath(import.meta.url)), '..');
+// The preview runs executor v0.3 and takes the ported contracts. Same code,
+// same comments, the differences are in scripts/port_to_v03.py.
+const SRC = NET === 'studionet' ? 'contracts' : 'contracts/next';
 const out = [];
 const say = line => { console.log(line); out.push(line); };
 
@@ -64,7 +67,7 @@ const settle = (who, hash) => who.client.waitForTransactionReceipt(
 
 async function deploy(who, file, args) {
   const hash = await who.client.deployContract({
-    code: fs.readFileSync(path.join(ROOT, file)), args, leaderOnly: false,
+    code: fs.readFileSync(path.join(ROOT, SRC, file)), args, leaderOnly: false,
     ...(fees ? { fees } : {}) });
   const receipt = await settle(who, hash);
   const at = receipt?.data?.contract_address;
@@ -72,9 +75,24 @@ async function deploy(who, file, args) {
   return at;
 }
 
+// A write that pays an address or calls another contract emits an internal
+// message, and on the preview the transaction's fee has to reserve budget for
+// it or the whole call reverts with `fee no_matching_allocation`. The plain
+// estimate does not know what a call will emit; this one simulates the call and
+// comes back with the allocations. On the stable network there is no fee at all
+// and this returns nothing, so the generic path is kept as the fallback.
+async function feesFor(who, address, fn, args, value) {
+  if (!fees) return undefined;
+  try {
+    return await who.client.estimateTransactionFeesForWrite({
+      account: who.client.account, address, functionName: fn, args, value });
+  } catch { return fees; }
+}
+
 async function send(who, address, fn, args, value = 0n) {
+  const perCall = await feesFor(who, address, fn, args, value);
   const hash = await who.client.writeContract({
-    address, functionName: fn, args, value, ...(fees ? { fees } : {}) });
+    address, functionName: fn, args, value, ...(perCall ? { fees: perCall } : {}) });
   return { said: read(await settle(who, hash)), hash };
 }
 
@@ -89,14 +107,14 @@ say('  owner   ' + owner.address);
 say('  holder  ' + holder.address);
 say('');
 
-const GUARDIAN = await deploy(owner, 'contracts/halt.py', []);
+const GUARDIAN = await deploy(owner, 'halt.py', []);
 say('  guardian ' + GUARDIAN);
-const MONITOR = await deploy(owner, 'contracts/monitor.py', []);
+const MONITOR = await deploy(owner, 'monitor.py', []);
 say('  witness  ' + MONITOR);
 
 // ------------------------------------------------- the protocol being emptied
 
-const DRAINED = await deploy(owner, 'contracts/vault.py', [GUARDIAN]);
+const DRAINED = await deploy(owner, 'vault.py', [GUARDIAN]);
 say('  protocol being emptied ' + DRAINED);
 await send(owner, GUARDIAN, 'protect', [DRAINED, RED_LINE], GEN / 100n);
 await send(owner, GUARDIAN, 'name_witness', [DRAINED, MONITOR]);
@@ -116,7 +134,7 @@ for (const line of witnessSays.split('\n')) say('    ' + line);
 
 // ------------------------------------------------------ the untouched protocol
 
-const UNTOUCHED = await deploy(owner, 'contracts/vault.py', [GUARDIAN]);
+const UNTOUCHED = await deploy(owner, 'vault.py', [GUARDIAN]);
 say('');
 say('  untouched protocol ' + UNTOUCHED);
 await send(owner, GUARDIAN, 'protect', [UNTOUCHED, RED_LINE], GEN / 100n);
