@@ -1,12 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- A tab icon is drawn at sixteen pixels. The header mark is a detailed path
-       built for a large display, and shrunk to that size it collapses into an
-       orange smudge that reads as somebody else's logo. This is the same thing
-       said in shapes that survive being made small: the shield, and the pause
-       inside it. The full mark is still used everywhere it has room, in
-       shield.svg. -->
-  <path d="M32 3 L58 12 v22 c0 14-11 23-26 27 C17 57 6 48 6 34 V12 Z"
-        fill="#FF5500"/>
-  <rect x="22.5" y="19" width="7" height="24" rx="1.8" fill="#0B0D0E"/>
-  <rect x="34.5" y="19" width="7" height="24" rx="1.8" fill="#0B0D0E"/>
+  <!-- The tab icon, drawn to match the logo rather than approximate it: a
+       flat-topped shield with two angled lower edges to a point, and the pause
+       inside. Kept as flat shapes so it survives being shrunk to sixteen
+       pixels, where a detailed path would collapse into an orange smudge. -->
+  <path d="M12 14 H52 V33 L32 55 L12 33 Z" fill="#FF5500"/>
+  <rect x="23" y="21" width="7" height="22" rx="2" fill="#0B0D0E"/>
+  <rect x="34" y="21" width="7" height="22" rx="2" fill="#0B0D0E"/>
 </svg>
