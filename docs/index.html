@@ -82,7 +82,7 @@
                 The pause button <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-orange to-amber-500">nobody has to press.</span>
             </h1>
             <p class="text-lg text-slate-400 max-w-2xl leading-relaxed">
-                A protocol publishes a red line in plain language and funds a bounty. Anyone who finds it being crossed says so, with evidence and a deposit. The validators weigh that claim against two things its author did not write, the protocol&rsquo;s own report and the balance the guard reads off the chain, and the protocol stops in that same transaction.
+                A protocol publishes a red line in plain language and funds a bounty. Anyone who finds it being crossed says so, with evidence and a deposit. The validators weigh that one claim against four things its author did not write: the protocol&rsquo;s own report, its movement record, the balance the guard reads off the chain, and a witness the protocol named in advance. If the line is crossed, the protocol stops in that same transaction.
             </p>
             <div class="flex flex-wrap items-center gap-4 pt-4">
                 <a href="#try" class="px-6 py-3.5 bg-brand-orange text-white font-semibold rounded-xl glow-box hover:bg-orange-600 transition-all">Try To Fool It</a>
@@ -105,7 +105,7 @@
                 <div class="p-5 font-mono text-xs sm:text-sm text-slate-300 overflow-x-auto leading-relaxed">
                     <pre><span class="text-purple-400">def</span> <span class="text-blue-400">_guard_is_up</span>(<span class="text-orange-300">self</span>) -> <span class="text-emerald-400">bool</span>:
     <span class="text-purple-400">return</span> <span class="text-emerald-400">bool</span>(
-        gl.get_contract_at(Address(<span class="text-orange-300">self</span>.guardian))
+        gl.contract.get_at(Address(<span class="text-orange-300">self</span>.guardian))
         .view().halted(gl.message.contract_address.as_hex)
     )</pre>
                 </div>
@@ -291,7 +291,7 @@
         <div class="flex flex-wrap items-end justify-between gap-4 mb-3">
             <div>
                 <p class="font-mono text-xs text-brand-orange tracking-widest mb-2">WATCH IT HAPPEN</p>
-                <h2 class="text-3xl sm:text-4xl font-bold text-white">Two things that actually happened.</h2>
+                <h2 class="text-3xl sm:text-4xl font-bold text-white">The one thing the demo won&rsquo;t do to you.</h2>
             </div>
             <div class="flex items-center gap-3">
                 <button id="wtplay" class="px-5 py-2.5 bg-brand-orange text-white font-semibold rounded-xl hover:bg-orange-600 transition-all">Play ▷</button>
@@ -301,10 +301,17 @@
         </div>
         <div id="wttabs" class="flex flex-wrap gap-2 mb-4"></div>
         <p id="wtsub" class="text-slate-300 max-w-3xl leading-relaxed mb-2"></p>
+        <p class="text-slate-300 max-w-3xl leading-relaxed mb-2">
+            The demo above only ever refuses you, because nothing is really being stolen from those
+            protocols. So the one thing it will not show is a protocol actually being stopped. That
+            is here, replayed from the record: a real drain that was halted, and the false alarms
+            that were turned away.
+        </p>
         <p class="text-slate-500 text-sm max-w-3xl leading-relaxed mb-8">
-            Not an illustration. Every line below is read from
+            Not an illustration. Every line is read from
             <a href="./data.json" class="text-brand-orange hover:underline">data.json</a>,
-            which is exported from the chain, and every time is the time it actually happened.
+            exported from the chain, and every time is the time it actually happened. Press Play, or
+            step through it.
         </p>
 
         <div class="h-1 bg-brand-border/60 rounded-full overflow-hidden mb-8">
@@ -383,7 +390,7 @@
             <div class="bg-brand-card p-5 rounded-xl border border-brand-border hover:border-brand-orange/50 transition-colors">
                 <span class="text-2xl font-mono font-bold text-brand-orange block mb-2">03</span>
                 <h3 class="text-white font-semibold mb-1">Validators read</h3>
-                <p class="text-xs text-slate-400">Evidence and protocol's own state.</p>
+                <p class="text-xs text-slate-400">The claim against the protocol's report, its ledger, its balance, its witness.</p>
             </div>
             <div class="bg-brand-card p-5 rounded-xl border border-brand-border hover:border-brand-orange/50 transition-colors">
                 <span class="text-2xl font-mono font-bold text-brand-orange block mb-2">04</span>
