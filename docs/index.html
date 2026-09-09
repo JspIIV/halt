@@ -118,103 +118,127 @@
     </section>
 
     <!-- TRY IT: a live alarm, raised by whoever is reading, against a protocol
-         that is not breaking its line. The point of putting this first is that
-         the objection people arrive with is that a system like this can be
-         talked into anything, and the only honest answer to that is a button. -->
+         that is not breaking its line.
+         The objection people arrive with is that a guard like this can be told
+         anything, and the only honest answer to that is a button. So it is the
+         first thing on the page, and the readings the claim is weighed against
+         are next to the box rather than in the contract where nobody looks. -->
     <section id="try" class="max-w-7xl mx-auto px-6 py-16 border-t border-brand-border/60">
         <p class="font-mono text-xs text-brand-orange tracking-widest mb-2">TRY TO FOOL IT</p>
         <h2 class="text-3xl sm:text-4xl font-bold text-white mb-3">Write the best lie you can.</h2>
         <p class="text-slate-300 max-w-3xl leading-relaxed mb-2">
             The protocol below is live on GenLayer right now and it is not breaking
-            its line. Write anything you like about it and send it to the
-            validators. If you can talk them into stopping it, you have broken
-            this, and the attempt is on chain either way.
+            its line. Send the validators anything you like about it. If you can
+            talk them into stopping it, you have broken this, and the attempt is on
+            chain either way.
         </p>
         <p class="text-slate-500 text-sm max-w-3xl leading-relaxed mb-8">
-            A real transaction and a real round, about a minute. Connect a wallet
-            on GenLayer Studionet and put 0.002 GEN behind what you write. That
-            deposit is the only thing separating this from a button anybody can
-            press to stop a competitor, so the demo does not waive it.
+            A real transaction and a real round, about a minute. Connect a wallet on
+            GenLayer Studionet and put 0.002 GEN behind what you write. That deposit
+            is the only thing between this and a button anybody can press to stop a
+            competitor, so the demo does not waive it.
         </p>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-            <!-- The three things the claimant does not get to write. This column
-                 is the whole argument: the claim is the only input under the
-                 attacker's control, and it is weighed against two that are not. -->
-            <div class="lg:col-span-5 space-y-4">
+            <!-- Everything the round reads that the claimant does not write.
+                 One card with five rows rather than five cards: the argument is
+                 the ratio, and five boxes of equal weight hid it. -->
+            <div class="lg:col-span-5">
                 <div class="bg-brand-card border border-brand-border rounded-2xl p-6">
-                    <p class="font-mono text-[11px] text-slate-500 tracking-widest mb-3">01 &nbsp;THE LINE, PUBLISHED FIRST</p>
-                    <p id="tryline" class="text-slate-200 leading-relaxed">Reading the chain…</p>
-                    <p id="tryline_meta" class="mt-3 text-xs font-mono text-slate-500"></p>
-                </div>
-
-                <div class="bg-brand-card border border-brand-border rounded-2xl p-6">
-                    <p class="font-mono text-[11px] text-slate-500 tracking-widest mb-3">02 &nbsp;WHAT THE PROTOCOL SAYS ABOUT ITSELF</p>
-                    <dl id="trystatus" class="space-y-2 text-sm"></dl>
-                    <details class="mt-3 group">
-                        <summary class="cursor-pointer text-xs font-mono text-slate-500 hover:text-slate-300 list-none">
-                            &#9656; what it actually returned
-                        </summary>
-                        <pre id="tryraw" class="mt-2 text-[11px] leading-relaxed font-mono text-slate-500 whitespace-pre-wrap break-all"></pre>
-                    </details>
-                    <p class="mt-3 text-xs text-slate-500 leading-relaxed">
-                        Read from the protocol by the guardian, in the same
-                        transaction as your claim. You do not supply it and you
-                        cannot edit it. Where your claim contradicts it, the
-                        contract tells the round to answer NOT_CROSSED.
+                    <p class="font-mono text-[11px] text-slate-500 tracking-widest mb-1">WHAT THE ROUND READS</p>
+                    <p class="text-sm text-slate-400 leading-relaxed mb-5">
+                        Five things, and you write one of them. The other four this
+                        contract reads for itself, from the protocol and from the
+                        chain, in the same transaction that judges you.
                     </p>
-                </div>
 
-                <div class="bg-brand-card border border-brand-border rounded-2xl p-6">
-                    <p class="font-mono text-[11px] text-slate-500 tracking-widest mb-3">03 &nbsp;WHAT IT RECORDS HAVING HAPPENED</p>
-                    <div id="trymoves" class="space-y-2 text-sm"></div>
-                    <p class="mt-3 text-xs text-slate-500 leading-relaxed">
-                        The protocol's own book rather than its summary of itself.
-                        Every movement your claim asserts has to appear here. One
-                        that names amounts or timings this record does not show is
-                        refused, however precisely it is written.
-                    </p>
-                </div>
+                    <div class="space-y-3">
+                        <details open class="group border-t border-brand-border/60 pt-3">
+                            <summary class="cursor-pointer list-none flex items-baseline justify-between gap-3">
+                                <span class="text-white font-semibold">The line its owner published</span>
+                                <span class="font-mono text-[10px] text-slate-600 shrink-0">THE OWNER</span>
+                            </summary>
+                            <p id="tryline" class="mt-2 text-sm text-slate-300 leading-relaxed">Reading the chain…</p>
+                            <p id="tryline_meta" class="mt-2 text-xs font-mono text-slate-500"></p>
+                        </details>
 
-                <div class="bg-brand-card border border-brand-border rounded-2xl p-6">
-                    <p class="font-mono text-[11px] text-slate-500 tracking-widest mb-3">04 &nbsp;WHAT ITS OWN WITNESS SAYS</p>
-                    <div id="trywitness" class="text-sm text-slate-300 leading-relaxed whitespace-pre-line"></div>
-                    <p class="mt-3 text-xs text-slate-500 leading-relaxed">
-                        An agent this protocol named in advance, doing arithmetic
-                        over that same book. It is not neutral and the round is
-                        told so: a witness the accused chose counts for a lot when
-                        it agrees with you and almost nothing when it agrees with
-                        the protocol. It can convict and it cannot acquit.
-                    </p>
-                </div>
+                        <details class="group border-t border-brand-border/60 pt-3">
+                            <summary class="cursor-pointer list-none flex items-baseline justify-between gap-3">
+                                <span class="text-white font-semibold">What it says about itself</span>
+                                <span class="font-mono text-[10px] text-slate-600 shrink-0">THE PROTOCOL</span>
+                            </summary>
+                            <dl id="trystatus" class="mt-2 space-y-2 text-sm"></dl>
+                            <p class="mt-2 text-xs text-slate-500 leading-relaxed">
+                                Read from it in the same transaction. You do not supply
+                                it and cannot edit it. Where your claim contradicts it,
+                                the contract tells the round to refuse.
+                            </p>
+                            <details class="mt-2">
+                                <summary class="cursor-pointer text-xs font-mono text-slate-600 hover:text-slate-400 list-none">
+                                    &#9656; what it actually returned
+                                </summary>
+                                <pre id="tryraw" class="mt-2 text-[11px] leading-relaxed font-mono text-slate-500 whitespace-pre-wrap break-all"></pre>
+                            </details>
+                        </details>
 
-                <div class="bg-brand-card border border-brand-border rounded-2xl p-6">
-                    <p class="font-mono text-[11px] text-slate-500 tracking-widest mb-3">05 &nbsp;WHAT IT ACTUALLY HOLDS</p>
-                    <p id="trybalance" class="text-2xl font-bold text-white font-mono">…</p>
-                    <p class="mt-2 text-xs text-slate-500 leading-relaxed">
-                        The one number the accused does not author. Read off the
-                        chain by the guardian while it judges, and compared with
-                        what the protocol claims is owed.
-                    </p>
+                        <details class="group border-t border-brand-border/60 pt-3">
+                            <summary class="cursor-pointer list-none flex items-baseline justify-between gap-3">
+                                <span class="text-white font-semibold">What it records having happened</span>
+                                <span class="font-mono text-[10px] text-slate-600 shrink-0">ITS OWN BOOK</span>
+                            </summary>
+                            <div id="trymoves" class="mt-2 space-y-2 text-sm"></div>
+                            <p class="mt-2 text-xs text-slate-500 leading-relaxed">
+                                Every movement your claim asserts has to appear here.
+                                One that names amounts or timings this record does not
+                                show is refused, however precisely it is written.
+                            </p>
+                        </details>
+
+                        <details class="group border-t border-brand-border/60 pt-3">
+                            <summary class="cursor-pointer list-none flex items-baseline justify-between gap-3">
+                                <span class="text-white font-semibold">What its own witness says</span>
+                                <span class="font-mono text-[10px] text-slate-600 shrink-0">ITS AGENT</span>
+                            </summary>
+                            <div id="trywitness" class="mt-2 text-sm text-slate-300 leading-relaxed whitespace-pre-line"></div>
+                            <p class="mt-2 text-xs text-slate-500 leading-relaxed">
+                                An agent this protocol named in advance, doing
+                                arithmetic over that same book. Not neutral, and the
+                                round is told so: it counts for a lot when it agrees
+                                with you and almost nothing when it agrees with the
+                                protocol. It can convict and it cannot acquit.
+                            </p>
+                        </details>
+
+                        <details class="group border-t border-brand-border/60 pt-3">
+                            <summary class="cursor-pointer list-none flex items-baseline justify-between gap-3">
+                                <span class="text-white font-semibold">What it actually holds</span>
+                                <span class="font-mono text-[10px] text-slate-600 shrink-0">NOBODY</span>
+                            </summary>
+                            <p id="trybalance" class="mt-2 text-2xl font-bold text-white font-mono">…</p>
+                            <p class="mt-2 text-xs text-slate-500 leading-relaxed">
+                                The one number the accused does not author. Read off the
+                                chain while the round runs, and compared against what
+                                the protocol claims it owes.
+                            </p>
+                        </details>
+                    </div>
                 </div>
             </div>
 
             <!-- The one input that is yours -->
             <div class="lg:col-span-7">
-                <div class="bg-brand-card border border-brand-border rounded-2xl p-6">
-                    <div class="flex items-center justify-between mb-3">
-                        <p class="font-mono text-[11px] text-slate-500 tracking-widest">06 &nbsp;YOUR CLAIM, AND ONLY YOURS</p>
+                <div class="bg-brand-card border border-brand-orange/30 rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-1">
+                        <p class="font-mono text-[11px] text-brand-orange tracking-widest">AND THE ONE YOU WRITE</p>
                         <span id="trycount" class="font-mono text-[11px] text-slate-600"></span>
                     </div>
-
-                    <p class="text-xs text-slate-500 leading-relaxed mb-3">
+                    <p class="text-xs text-slate-500 leading-relaxed mb-4">
                         Text, and nothing else. The alarm carries no link and this
-                        contract fetches nothing, so there is no page anybody can
-                        stand up and fill with invented figures. What you write is
-                        weighed against the two readings above, which it takes for
-                        itself.
+                        contract fetches nothing, so there is no page anybody can stand
+                        up and fill with invented figures.
                     </p>
+
                     <textarea id="tryevidence" rows="7" spellcheck="false"
                         class="w-full bg-brand-bg border border-brand-border rounded-xl p-4 text-sm text-slate-200 font-mono leading-relaxed focus:outline-none focus:border-brand-orange/60"
                         placeholder="Write what you say is happening to this protocol, or have one written for you."></textarea>
@@ -228,13 +252,12 @@
                     </div>
                     <p class="text-xs text-slate-500 leading-relaxed">
                         Nothing here is a stored example. A second contract reads the
-                        same line and the same report the guard is about to read, and
-                        a round writes a fresh accusation against them, seconds before
-                        you send it. Nobody has seen the sentence you are about to
-                        send, this page included.
+                        same line and the same book the guard is about to read, and a
+                        round writes a fresh accusation against them, seconds before you
+                        send it. Nobody has seen the sentence, this page included.
                     </p>
 
-                    <div class="flex flex-wrap items-center gap-3 mt-5">
+                    <div class="flex flex-wrap items-center gap-3 mt-6">
                         <button id="tryconnect"
                             class="px-6 py-3 bg-brand-orange text-white font-semibold rounded-xl hover:bg-orange-600 transition-all glow-box disabled:opacity-40 disabled:cursor-not-allowed">
                             Connect a wallet
@@ -252,17 +275,16 @@
                     <div id="tryresult" class="hidden mt-6 border-t border-brand-border/60 pt-6"></div>
 
                     <p class="mt-6 text-xs text-slate-600 leading-relaxed">
-                        The deposit is 0.002 GEN and it is not refunded when an
-                        alarm is refused: it goes to the protocol the alarm
-                        accused. That is the only thing standing between this and
-                        a button anybody can press to stop a competitor. To send
-                        it from your own account instead:
+                        The deposit is not refunded when an alarm is refused: it goes to
+                        the protocol the alarm accused. To send the same call from your
+                        own terminal instead:
                         <span class="font-mono text-slate-500">node scripts/raise.mjs &lt;guardian&gt; &lt;protocol&gt; &lt;file&gt; &lt;label&gt;</span>
                     </p>
                 </div>
             </div>
         </div>
     </section>
+
 
     <!-- WALKTHROUGH: one alarm, replayed from the record -->
     <section id="watch" class="max-w-7xl mx-auto px-6 py-16 border-t border-brand-border/60">
