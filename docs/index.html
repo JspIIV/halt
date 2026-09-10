@@ -1143,6 +1143,11 @@ const reader = createClient({ chain: studioDevnet });
 // and then moves a deposit; write_one runs a round. Both emit or spend, and the
 // preview will not run a write whose fee does not cover what it emits.
 async function feeFor(fn, address, args, value) {
+  // write_one emits no message, so the plain round fee covers it and there is
+  // no reason to run the round once more just to price it. That halves the
+  // wait on Another attempt. raise_alarm pays out, so its fee has to reserve
+  // that message, and only simulating the call can size it.
+  if (fn === "write_one") return me.estimateTransactionFees({});
   return me.estimateTransactionFeesForWrite({
     account: { address: mine }, address, functionName: fn, args, value });
 }
