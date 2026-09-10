@@ -1029,6 +1029,9 @@ fetch("./data.json").then(r => r.json()).then(d => {
       + "already gone through, and one of those was hiding a live protocol halted on a false claim; "
       + "they were read back off the guardian and are counted here with the rest."
       + (auto ? " The agent's own catch, with nobody in the loop, took " + auto.seconds + " seconds." : "");
+    document.getElementById("trialnote").innerHTML +=
+      ' <span class="text-brand-orange">Raise an alarm in the demo above and it lands at the top of this'
+      + ' list, marked live, Studio Next.</span> The rest are the record measured on Studionet.';
 
     const cut = 12;
     const tone = o => o === "UPHELD" ? "text-rose-400"
@@ -1464,6 +1467,7 @@ function show(receipt, hash, seconds) {
     + (upheld ? ""
               : '<p class="text-xs text-slate-500 mt-4 leading-relaxed">The deposit went to the '
                 + 'protocol you accused. Write something better and try again.</p>');
+  try { recordLive(outcome, hash, seconds); } catch (e) {}
 }
 
 load();
