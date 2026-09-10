@@ -647,9 +647,10 @@ fetch("./data.json").then(r => r.json()).then(d => {
   }).join(""));
 
   document.getElementById("stamp").textContent =
-    "Read from " + short(d.halt) + " on " + d.network + ", "
+    "The record above was measured on " + d.network + ", read from " + short(d.halt) + ", "
     + new Date(d.exported_at).toISOString().slice(0, 16).replace("T", " ")
-    + " UTC. Contracts, tests and every dataset on GitHub.";
+    + " UTC. The live demo at the top runs on Studio Next. Contracts, tests and every "
+    + "dataset on GitHub.";
 }).catch(() => {
   const el = document.getElementById("trialnote");
   if (el) el.textContent = "Nothing exported yet.";
