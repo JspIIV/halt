@@ -59,7 +59,6 @@
             <!-- NAV LINKS -->
             <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">
                 <a href="#try" class="hover:text-white transition-colors">Try It</a>
-                <a href="#broke" class="hover:text-white transition-colors">A Halt</a>
                 <a href="#how-it-works" class="hover:text-white transition-colors">How It Works</a>
                 <a href="#integration" class="hover:text-white transition-colors">Integration</a>
                 <a href="#measured" class="hover:text-white transition-colors">Measured</a>
@@ -288,82 +287,81 @@
     </section>
 
 
-    <!-- LIVE EVIDENCE / PROOF DISPLAY (WHAT BROKE) -->
-    <section id="broke" class="max-w-7xl mx-auto px-6 py-16 border-t border-brand-border/60">
-        <div class="mb-10">
-            <p class="text-brand-orange font-mono text-sm tracking-widest uppercase">A real halt, the hardest kind</p>
-            <h2 class="text-3xl font-bold text-white mt-1">Two wallets that were really one</h2>
-            <p class="text-slate-400 mt-3 max-w-3xl leading-relaxed">
-                This protocol&rsquo;s red line was not about a single address. It said that wallets
-                acting together count as one actor, and no actor may take more than a third of the
-                vault. Two wallets each withdrew only <span class="text-slate-200">40 percent of
-                their own deposit</span>, under any per-address limit, so ordinary code sees two
-                innocent users. But they were funded seconds apart, withdrew the same amounts in the
-                same order seconds apart, and together took more than a third of everything. The
-                round read that pattern as one hand and stopped the protocol. No arithmetic rule
-                could have caught it.
-            </p>
-            <p class="text-slate-500 text-sm mt-3 max-w-3xl leading-relaxed">
-                Read live from the chain below: the protocol&rsquo;s own status says halted, and its
-                ledger shows the two moving in lockstep. This is the case that needs a network that
-                can judge a pattern, not just check a number.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Left Card -->
-            <div id="statuscard" class="bg-brand-card border border-rose-500/30 rounded-2xl p-6 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-2xl"></div>
-                <div class="flex items-center gap-3 mb-4">
-                    <span id="statusdot" class="w-3 h-3 rounded-full bg-rose-500 animate-ping"></span>
-                    <span class="font-mono text-xs text-rose-400 uppercase tracking-wider">Its own status</span>
-                </div>
-                <h3 id="statustitle" class="text-xl font-bold text-white mb-2">Reading the chain…</h3>
-                <p id="statusaddr" class="text-sm font-mono text-slate-400 bg-brand-bg p-3 rounded-lg border border-brand-border mb-4 break-all"></p>
-                <p id="statuswhy" class="text-sm text-slate-400"></p>
-            </div>
-
-            <!-- Right Card -->
-            <div class="bg-brand-card border border-brand-border rounded-2xl p-6">
-                <span class="font-mono text-xs text-slate-400 uppercase tracking-wider block mb-4">Its own ledger, what moved</span>
-                <div id="ledger" class="space-y-4"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- HOW IT WORKS -->
+    <!-- HOW IT WORKS: the flow, as a diagram -->
     <section id="how-it-works" class="max-w-7xl mx-auto px-6 py-16 border-t border-brand-border/60">
-        <div class="mb-12">
-            <p class="text-brand-orange font-mono text-sm tracking-widest uppercase">How It Works</p>
-            <h2 class="text-3xl font-bold text-white mt-1">Five steps, and the last one is <em class="text-slate-400 not-italic">a transaction</em></h2>
+        <div class="mb-8">
+            <p class="text-brand-orange font-mono text-sm tracking-widest uppercase">How it works</p>
+            <h2 class="text-3xl font-bold text-white mt-1">How a halt happens</h2>
+            <p class="text-slate-400 mt-3 max-w-3xl leading-relaxed">
+                From a line published in advance to a protocol stopped in one transaction. Whoever
+                raises the alarm writes only the claim; everything it is weighed against is read from
+                the protocol and the chain, in the same transaction that judges it.
+            </p>
         </div>
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-4 sm:p-8 overflow-x-auto">
+            <svg viewBox="0 0 920 690" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto" font-family="ui-sans-serif, system-ui, sans-serif">
+      <defs>
+        <marker id="ah" markerWidth="9" markerHeight="9" refX="5" refY="3" orient="auto">
+          <path d="M0 0 L6 3 L0 6 Z" fill="#FF5500"/>
+        </marker>
+      </defs>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div class="bg-brand-card p-5 rounded-xl border border-brand-border hover:border-brand-orange/50 transition-colors">
-                <span class="text-2xl font-mono font-bold text-brand-orange block mb-2">01</span>
-                <h3 class="text-white font-semibold mb-1">Publish a red line</h3>
-                <p class="text-xs text-slate-400">Plain language, funded bounty.</p>
-            </div>
-            <div class="bg-brand-card p-5 rounded-xl border border-brand-border hover:border-brand-orange/50 transition-colors">
-                <span class="text-2xl font-mono font-bold text-brand-orange block mb-2">02</span>
-                <h3 class="text-white font-semibold mb-1">Anyone raises alarm</h3>
-                <p class="text-xs text-slate-400">Evidence, deposit at stake.</p>
-            </div>
-            <div class="bg-brand-card p-5 rounded-xl border border-brand-border hover:border-brand-orange/50 transition-colors">
-                <span class="text-2xl font-mono font-bold text-brand-orange block mb-2">03</span>
-                <h3 class="text-white font-semibold mb-1">Validators read</h3>
-                <p class="text-xs text-slate-400">The claim against the protocol's report, its ledger, its balance, its witness.</p>
-            </div>
-            <div class="bg-brand-card p-5 rounded-xl border border-brand-border hover:border-brand-orange/50 transition-colors">
-                <span class="text-2xl font-mono font-bold text-brand-orange block mb-2">04</span>
-                <h3 class="text-white font-semibold mb-1">They have to agree</h3>
-                <p class="text-xs text-slate-400">Or nothing moves at all.</p>
-            </div>
-            <div class="bg-brand-card p-5 rounded-xl border border-rose-500/40 bg-rose-500/5">
-                <span class="text-2xl font-mono font-bold text-rose-400 block mb-2">05</span>
-                <h3 class="text-white font-semibold mb-1">Withdrawals stop</h3>
-                <p class="text-xs text-slate-400">Same transaction, no key.</p>
-            </div>
+      <!-- 1 -->
+      <rect x="180" y="16" width="560" height="80" rx="12" fill="#12141A" stroke="#1E222D"/>
+      <text x="204" y="44" fill="#FF5500" font-family="monospace" font-size="11" letter-spacing="2">1 &#183; ONCE, BY THE OWNER</text>
+      <text x="204" y="72" fill="#ffffff" font-size="18" font-weight="700">Publishes a red line, and funds a bounty</text>
+      <line x1="460" y1="98" x2="460" y2="118" stroke="#FF5500" stroke-width="2" marker-end="url(#ah)"/>
+
+      <!-- 2 -->
+      <rect x="180" y="120" width="560" height="80" rx="12" fill="#12141A" stroke="#1E222D"/>
+      <text x="204" y="148" fill="#FF5500" font-family="monospace" font-size="11" letter-spacing="2">2 &#183; ANYONE, WITH SOMETHING AT STAKE</text>
+      <text x="204" y="176" fill="#ffffff" font-size="18" font-weight="700">Raises an alarm: a claim, backed by a deposit</text>
+      <line x1="460" y1="202" x2="460" y2="222" stroke="#FF5500" stroke-width="2" marker-end="url(#ah)"/>
+
+      <!-- 3 -->
+      <rect x="60" y="224" width="800" height="176" rx="12" fill="#12141A" stroke="#1E222D"/>
+      <text x="84" y="252" fill="#FF5500" font-family="monospace" font-size="11" letter-spacing="2">3 &#183; THE ROUND READS FIVE THINGS, YOU WROTE ONE</text>
+      <text x="84" y="278" fill="#ffffff" font-size="18" font-weight="700">The claim, weighed against four it did not write</text>
+      <g font-size="13" text-anchor="middle">
+        <rect x="84"  y="300" width="178" height="58" rx="9" fill="#0A0B0E" stroke="#1E222D"/>
+        <text x="173" y="326" fill="#cbd5e1">The red line</text>
+        <text x="173" y="345" fill="#64748b" font-size="11">the owner</text>
+        <rect x="272" y="300" width="178" height="58" rx="9" fill="#0A0B0E" stroke="#1E222D"/>
+        <text x="361" y="326" fill="#cbd5e1">Its own report</text>
+        <text x="361" y="345" fill="#64748b" font-size="11">the protocol</text>
+        <rect x="460" y="300" width="178" height="58" rx="9" fill="#0A0B0E" stroke="#1E222D"/>
+        <text x="549" y="326" fill="#cbd5e1">Its ledger + witness</text>
+        <text x="549" y="345" fill="#64748b" font-size="11">the protocol</text>
+        <rect x="648" y="300" width="178" height="58" rx="9" fill="#0A0B0E" stroke="#1E222D"/>
+        <text x="737" y="326" fill="#cbd5e1">Its real balance</text>
+        <text x="737" y="345" fill="#64748b" font-size="11">the chain</text>
+      </g>
+      <text x="84" y="384" fill="#94a3b8" font-size="13">A claim that contradicts these, or names figures they do not show, is refused.</text>
+      <line x1="460" y1="400" x2="460" y2="420" stroke="#FF5500" stroke-width="2" marker-end="url(#ah)"/>
+
+      <!-- 4 -->
+      <rect x="180" y="422" width="560" height="80" rx="12" fill="#12141A" stroke="#1E222D"/>
+      <text x="204" y="450" fill="#FF5500" font-family="monospace" font-size="11" letter-spacing="2">4 &#183; THE VALIDATORS, TOGETHER</text>
+      <text x="204" y="478" fill="#ffffff" font-size="18" font-weight="700">Agree on one word, or nothing moves</text>
+
+      <!-- branch -->
+      <path d="M460 502 L460 526 L250 526 L250 548" fill="none" stroke="#1E222D" stroke-width="2" marker-end="url(#ah)"/>
+      <path d="M460 502 L460 526 L670 526 L670 548" fill="none" stroke="#1E222D" stroke-width="2" marker-end="url(#ah)"/>
+
+      <!-- CROSSED -->
+      <rect x="60" y="550" width="380" height="118" rx="12" fill="#12141A" stroke="#f43f5e" stroke-opacity="0.4"/>
+      <text x="84" y="578" fill="#fb7185" font-family="monospace" font-size="12" font-weight="700" letter-spacing="1">CROSSED</text>
+      <text x="84" y="606" fill="#ffffff" font-size="16" font-weight="700">The protocol halts</text>
+      <text x="84" y="632" fill="#94a3b8" font-size="13">In the same transaction. No key,</text>
+      <text x="84" y="651" fill="#94a3b8" font-size="13">nobody woken. The alarm is paid.</text>
+
+      <!-- NOT_CROSSED -->
+      <rect x="480" y="550" width="380" height="118" rx="12" fill="#12141A" stroke="#34d399" stroke-opacity="0.4"/>
+      <text x="504" y="578" fill="#34d399" font-family="monospace" font-size="12" font-weight="700" letter-spacing="1">NOT_CROSSED</text>
+      <text x="504" y="606" fill="#ffffff" font-size="16" font-weight="700">Nothing moves</text>
+      <text x="504" y="632" fill="#94a3b8" font-size="13">The deposit goes to the protocol</text>
+      <text x="504" y="651" fill="#94a3b8" font-size="13">the alarm accused. Being wrong costs.</text>
+    </svg>
         </div>
     </section>
 
@@ -558,50 +556,6 @@ fetch("./data.json").then(r => r.json()).then(d => {
     const el = document.getElementById(id); if (el) el.href = url;
   });
 
-  /* ---------------------------------------------------------- the live card */
-  const guard = d.guard || {};
-  const up = guard.state === "HALTED";
-  document.getElementById("statustitle").textContent =
-    up ? "This protocol is halted right now." : "This protocol is running.";
-  document.getElementById("statusaddr").textContent = d.vault;
-  if (!up) {
-    document.getElementById("statuscard").className =
-      "bg-brand-card border border-emerald-500/30 rounded-2xl p-6 relative overflow-hidden";
-    document.getElementById("statusdot").className =
-      "w-3 h-3 rounded-full bg-emerald-400 animate-pulse";
-  }
-  const upheld = co && (co.alarms || []).filter(a => a.outcome === "UPHELD").pop();
-  document.getElementById("statuswhy").textContent = upheld ? upheld.why
-    : "No alarm stands against it. A guard is open and funded, and withdrawals are unaffected.";
-
-  /* ------------------------------------------------------------- the ledger */
-  if (co) {
-    const rows = (co.status.positions || []).map((p, i) =>
-      '<div class="p-3 bg-brand-bg rounded-lg border border-brand-border flex justify-between items-center gap-3">'
-      + '<span class="font-mono text-xs text-slate-300">Address ' + (i ? "B" : "A") + " ("
-      + short(p.who) + ')</span>'
-      + '<span class="text-xs font-mono text-rose-400">Out: ' + gen(p.withdrawn) + " GEN</span></div>").join("");
-
-    const events = (co.status.recent || []).map(e => ({ kind: e.kind, t: Date.parse(e.at) }));
-    const gapOf = kind => {
-      const both = events.filter(e => e.kind === kind);
-      return both.length === 2 ? Math.round(Math.abs(both[1].t - both[0].t) / 1000) : null;
-    };
-    const funded = gapOf("deposit"), pulled = gapOf("withdraw");
-    const share = (co.status.positions || []).map(p =>
-      Math.round(Number(p.withdrawn) / Number(p.deposited) * 100));
-
-    set("ledger", rows
-      + '<div class="text-xs text-slate-500 italic leading-relaxed">Funded '
-      + (funded !== null ? funded + " seconds" : "moments") + " apart, withdrawn "
-      + (pulled !== null ? pulled + " seconds" : "moments")
-      + " apart, in the same order they were funded. "
-      + (share.length && share.every(x => x === share[0])
-          ? "Each took " + share[0] + " percent of its own deposit, inside every per address rule. "
-          : "")
-      + "Combined: more than a third of the vault.</div>");
-  }
-
   /* --------------------------------------------------------------- the KPIs */
   const tr = d.trials;
   const b = d.battery && d.battery.summary;
@@ -695,7 +649,8 @@ fetch("./data.json").then(r => r.json()).then(d => {
     + new Date(d.exported_at).toISOString().slice(0, 16).replace("T", " ")
     + " UTC. Contracts, tests and every dataset on GitHub.";
 }).catch(() => {
-  document.getElementById("statustitle").textContent = "Nothing exported yet.";
+  const el = document.getElementById("trialnote");
+  if (el) el.textContent = "Nothing exported yet.";
 });
 </script>
 
