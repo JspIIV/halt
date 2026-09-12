@@ -1,5 +1,24 @@
 # Halt
 
+**A protocol publishes a red line in plain English. Anyone can say it was crossed, backed by a deposit. Validators decide. If the line is crossed, payouts stop in the same transaction.**
+
+- **Live demo:** https://jspiiv.github.io/halt — raise a real alarm from your own wallet, on GenLayer Studio Next.
+- **Proof:** 27 alarms upheld, 15 refused, every one on chain.
+- **The line Solidity cannot hold:** two wallets acting as one actor, halted in 87 seconds.
+- **Why it needs GenLayer:** the claim is written by the accuser; the ledger and the balance are read by the contract, not taken on its word. A false alarm loses its deposit.
+
+### Why GenLayer, in one table
+
+| | Solidity `pause` | Halt |
+| --- | --- | --- |
+| Who stops it | an owner or a multisig | anyone, decided by a validator round |
+| The rule | `amount > X` | "these two addresses are acting as one" |
+| What it weighs | nothing | the protocol's ledger, its chain balance, and the claim |
+| A false alarm | spams the owner | loses its deposit |
+| The first atomic exploit | not stopped | not stopped, said plainly |
+
+---
+
 **An emergency stop that nobody has to reach.**
 
 A protocol publishes a red line in plain language and funds a bounty behind it.
@@ -10,7 +29,7 @@ chain, and if the line is being crossed the protocol stops paying out in that
 same transaction. A false alarm loses its deposit. A protocol stopped by mistake
 can appeal and be released at once.
 
-Live on Studionet. Every number on this page comes from a transaction.
+The record below was measured on Studionet; every number comes from a transaction. The live demo runs on Studio Next.
 
 | | |
 | --- | --- |
